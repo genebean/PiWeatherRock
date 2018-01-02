@@ -29,7 +29,7 @@ its running there are some keyboard shortcuts to see additional information:
 * __h__: Displays the help screen which contains some diagnostic info along
   with the current conditions
 * __c__: Displays a calendar
-* __q__: Quits the program 
+* __q__: Quits the program
 
 ## Influence and Credit
 
@@ -38,11 +38,18 @@ its running there are some keyboard shortcuts to see additional information:
 * The buld of this project originated with the code written by Jim Kemp and
   published at
   http://www.instructables.com/id/Raspberry-Pi-Internet-Weather-Station/.
-* Some ideas were also taken from
-  https://github.com/sarnold/pitft-weather-display.
-* Almost all the icons have been replaced with ones from
-  https://github.com/manifestinteractive/weather-underground-icons. The version
-  currently in use are from commit
-  [47aca0a69c1246d80ee1b915c4f9906adbaa1e1b](https://github.com/manifestinteractive/weather-underground-icons/tree/47aca0a69c1246d80ee1b915c4f9906adbaa1e1b)
 * Jim Kemp's version pulled from weather.com via pywapi but that doesn't seem
   seem to work any longer. This project now pulls from Weather Underground.
+* Some ideas were also taken from
+  https://github.com/sarnold/pitft-weather-display.
+
+### Icons
+
+Almost all the icons have been replaced with ones from
+[github.com/manifestinteractive/weather-underground-icons](https://github.com/manifestinteractive/weather-underground-icons/tree/47aca0a69c1246d80ee1b915c4f9906adbaa1e1b).
+
+### GPIOmock.py
+
+Pulled GPIOmock.py from
+[github.com/grantwinney/52-Weeks-of-Pi](https://github.com/grantwinney/52-Weeks-of-Pi/blob/b4df240bfb224b1c027c9adf71cac8159286aade/GPIOmock.py)
+to enable testing in an x86 virtual machine.
