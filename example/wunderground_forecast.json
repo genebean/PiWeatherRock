@@ -1,0 +1,388 @@
+{
+  "response": {
+    "termsofService": "http://www.wunderground.com/weather/api/d/terms.html",
+    "version": "0.1",
+    "features": {
+      "forecast": 1
+    }
+  },
+  "forecast": {
+    "txt_forecast": {
+      "date": "10:09 PM PST",
+      "forecastday": [
+        {
+          "title": "Saturday",
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 0,
+          "pop": "0",
+          "fcttext": "Clouds early, some clearing late. Lows overnight in the mid 30s.",
+          "icon": "partlycloudy"
+        },
+        {
+          "title": "Saturday Night",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 1,
+          "pop": "0",
+          "fcttext": "Cloudy early with some clearing expected late. Areas of dense fog developing. Low near 35F. Winds NE at 10 to 15 mph.",
+          "icon": "nt_partlycloudy"
+        },
+        {
+          "title": "Sunday",
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 2,
+          "pop": "0",
+          "fcttext": "Areas of dense morning fog. Partly cloudy. High 42F. Winds ENE at 10 to 20 mph.",
+          "icon": "partlycloudy"
+        },
+        {
+          "title": "Sunday Night",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 3,
+          "pop": "0",
+          "fcttext": "Partly to mostly cloudy. Areas of dense fog developing. Low 33F. Winds ENE at 10 to 20 mph.",
+          "icon": "nt_partlycloudy"
+        },
+        {
+          "title": "Monday",
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 4,
+          "pop": "0",
+          "fcttext": "Some clouds in the morning will give way to mainly sunny skies for the afternoon. High 44F. Winds ENE at 5 to 10 mph.",
+          "icon": "partlycloudy"
+        },
+        {
+          "title": "Monday Night",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 5,
+          "pop": "0",
+          "fcttext": "Partly cloudy in the evening with more clouds for later at night. Low 33F. Winds ENE at 10 to 15 mph.",
+          "icon": "nt_partlycloudy"
+        },
+        {
+          "title": "Tuesday",
+          "icon_url": "http://icons.wxug.com/i/c/k/mostlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 6,
+          "pop": "0",
+          "fcttext": "A mix of clouds and sun in the morning followed by cloudy skies during the afternoon. High 43F. Winds ENE at 10 to 15 mph.",
+          "icon": "mostlycloudy"
+        },
+        {
+          "title": "Tuesday Night",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_mostlycloudy.gif",
+          "fcttext_metric": "",
+          "period": 7,
+          "pop": "0",
+          "fcttext": "Mostly cloudy skies. Low around 35F. Winds ENE at 10 to 15 mph.",
+          "icon": "nt_mostlycloudy"
+        }
+      ]
+    },
+    "simpleforecast": {
+      "forecastday": [
+        {
+          "avehumidity": 87,
+          "maxhumidity": 0,
+          "avewind": {
+            "kph": 0,
+            "degrees": 180,
+            "dir": "South",
+            "mph": 0
+          },
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "snow_allday": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "maxwind": {
+            "kph": 0,
+            "degrees": 0,
+            "dir": "",
+            "mph": 0
+          },
+          "minhumidity": 0,
+          "period": 1,
+          "pop": 0,
+          "skyicon": "",
+          "high": {
+            "fahrenheit": "48",
+            "celsius": "8"
+          },
+          "qpf_night": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "qpf_allday": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "low": {
+            "fahrenheit": "35",
+            "celsius": "2"
+          },
+          "snow_night": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "date": {
+            "tz_short": "PST",
+            "weekday_short": "Sat",
+            "isdst": "0",
+            "monthname": "December",
+            "hour": 19,
+            "min": "00",
+            "ampm": "PM",
+            "tz_long": "America/Los_Angeles",
+            "month": 12,
+            "epoch": "1514689200",
+            "sec": 0,
+            "weekday": "Saturday",
+            "pretty": "7:00 PM PST on December 30, 2017",
+            "year": 2017,
+            "yday": 363,
+            "day": 30,
+            "monthname_short": "Dec"
+          },
+          "snow_day": {
+            "cm": null,
+            "in": null
+          },
+          "qpf_day": {
+            "mm": null,
+            "in": null
+          },
+          "conditions": "Partly Cloudy",
+          "icon": "partlycloudy"
+        },
+        {
+          "avehumidity": 76,
+          "maxhumidity": 0,
+          "avewind": {
+            "kph": 24,
+            "degrees": 71,
+            "dir": "ENE",
+            "mph": 15
+          },
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "snow_allday": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "maxwind": {
+            "kph": 32,
+            "degrees": 71,
+            "dir": "ENE",
+            "mph": 20
+          },
+          "minhumidity": 0,
+          "period": 2,
+          "pop": 0,
+          "skyicon": "",
+          "high": {
+            "fahrenheit": "42",
+            "celsius": "6"
+          },
+          "qpf_night": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "qpf_allday": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "low": {
+            "fahrenheit": "33",
+            "celsius": "1"
+          },
+          "snow_night": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "date": {
+            "tz_short": "PST",
+            "weekday_short": "Sun",
+            "isdst": "0",
+            "monthname": "December",
+            "hour": 19,
+            "min": "00",
+            "ampm": "PM",
+            "tz_long": "America/Los_Angeles",
+            "month": 12,
+            "epoch": "1514775600",
+            "sec": 0,
+            "weekday": "Sunday",
+            "pretty": "7:00 PM PST on December 31, 2017",
+            "year": 2017,
+            "yday": 364,
+            "day": 31,
+            "monthname_short": "Dec"
+          },
+          "snow_day": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "qpf_day": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "conditions": "Partly Cloudy",
+          "icon": "partlycloudy"
+        },
+        {
+          "avehumidity": 74,
+          "maxhumidity": 0,
+          "avewind": {
+            "kph": 14,
+            "degrees": 74,
+            "dir": "ENE",
+            "mph": 9
+          },
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "snow_allday": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "maxwind": {
+            "kph": 16,
+            "degrees": 74,
+            "dir": "ENE",
+            "mph": 10
+          },
+          "minhumidity": 0,
+          "period": 3,
+          "pop": 0,
+          "skyicon": "",
+          "high": {
+            "fahrenheit": "44",
+            "celsius": "7"
+          },
+          "qpf_night": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "qpf_allday": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "low": {
+            "fahrenheit": "33",
+            "celsius": "1"
+          },
+          "snow_night": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "date": {
+            "tz_short": "PST",
+            "weekday_short": "Mon",
+            "isdst": "0",
+            "monthname": "January",
+            "hour": 19,
+            "min": "00",
+            "ampm": "PM",
+            "tz_long": "America/Los_Angeles",
+            "month": 1,
+            "epoch": "1514862000",
+            "sec": 0,
+            "weekday": "Monday",
+            "pretty": "7:00 PM PST on January 01, 2018",
+            "year": 2018,
+            "yday": 0,
+            "day": 1,
+            "monthname_short": "Jan"
+          },
+          "snow_day": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "qpf_day": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "conditions": "Partly Cloudy",
+          "icon": "partlycloudy"
+        },
+        {
+          "avehumidity": 69,
+          "maxhumidity": 0,
+          "avewind": {
+            "kph": 19,
+            "degrees": 72,
+            "dir": "ENE",
+            "mph": 12
+          },
+          "icon_url": "http://icons.wxug.com/i/c/k/mostlycloudy.gif",
+          "snow_allday": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "maxwind": {
+            "kph": 24,
+            "degrees": 72,
+            "dir": "ENE",
+            "mph": 15
+          },
+          "minhumidity": 0,
+          "period": 4,
+          "pop": 0,
+          "skyicon": "",
+          "high": {
+            "fahrenheit": "43",
+            "celsius": "6"
+          },
+          "qpf_night": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "qpf_allday": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "low": {
+            "fahrenheit": "35",
+            "celsius": "2"
+          },
+          "snow_night": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "date": {
+            "tz_short": "PST",
+            "weekday_short": "Tue",
+            "isdst": "0",
+            "monthname": "January",
+            "hour": 19,
+            "min": "00",
+            "ampm": "PM",
+            "tz_long": "America/Los_Angeles",
+            "month": 1,
+            "epoch": "1514948400",
+            "sec": 0,
+            "weekday": "Tuesday",
+            "pretty": "7:00 PM PST on January 02, 2018",
+            "year": 2018,
+            "yday": 1,
+            "day": 2,
+            "monthname_short": "Jan"
+          },
+          "snow_day": {
+            "cm": 0.0,
+            "in": 0.0
+          },
+          "qpf_day": {
+            "mm": 0,
+            "in": 0.0
+          },
+          "conditions": "Mostly Cloudy",
+          "icon": "mostlycloudy"
+        }
+      ]
+    }
+  }
+}
