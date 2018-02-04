@@ -160,11 +160,11 @@ class SmDisplay:
 
     ####################################################################
     def UpdateWeather( self ):
-        if (self.observation_time == '') or (time.time() - self.last_update_check > weather_settings.WU_CHECK_INTERVAL):
+        if (self.observation_time == '') or (time.time() - self.last_update_check > config.WU_CHECK_INTERVAL):
             self.last_update_check = time.time()
 
             # This is where the magic happens.
-            url = 'http://api.wunderground.com/api/%s/alerts/astronomy/conditions/forecast/q/%s.json' % ('d271534fe43a6c14', '97201')
+            url = 'http://api.wunderground.com/api/%s/alerts/astronomy/conditions/forecast/q/%s.json' % (config.WU_API_KEY, config.ZIP_CODE)
             self.weather = requests.get(url).json()
             co = self.weather['current_observation']
             sun = self.weather['sun_phase']
