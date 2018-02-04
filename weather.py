@@ -82,7 +82,7 @@ class SmDisplay:
 
         # Check which frame buffer drivers are available
         # Start with fbcon since directfb hangs with composite output
-        drivers = ['fbcon', 'directfb', 'svgalib']
+        drivers = ['fbcon', 'directfb', 'svgalib', 'x11']
         found = False
         for driver in drivers:
             # Make sure that SDL_VIDEODRIVER is set
