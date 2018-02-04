@@ -19,8 +19,19 @@ https://www.wunderground.com/weather/api/d/docs and get an API key. After
 getting a key, copy `config.py.sample` to `config.py` and fill in values for
 your setup.
 
-Once you have your config file in place, you will need to install dependancies:
-via `pip install -r requirements.txt`
+Once you have your config file in place, you will need to install dependencies.
+If you want to use pacakges from apt then run this:
+
+```bash
+sudo apt-get install python-serial python-requests python-pygame
+```
+
+If you want to use versions from pip do this instead:
+
+```bash
+sudo apt-get install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libjpeg-dev libportmidi-dev libtimedate-perl
+pip install -r requirements.txt
+```
 
 Now you should be able to run `python weather.py` to start the program. While
 its running there are some keyboard shortcuts to see additional information:
