@@ -2,6 +2,11 @@
 
 _Designed with a 3.5" 480x320 TFT display in mind_
 
+
+| Main screen                                                  | Help screen                                            |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
+| ![weather-screenshot](screenshots/PiWeatherRock-Weather.png) | ![help-screenshot](screenshots/PiWeatherRock-Help.png) |
+
 ## Introduction
 
 PiWeatherRock is an internet-connected weather station. Its purpose is to
