@@ -237,21 +237,17 @@ class SmDisplay:
         font = pygame.font.SysFont( fn, int(ymax*th), bold=1 )        # Regular Font
         sfont = pygame.font.SysFont( fn, int(ymax*sh), bold=1 )       # Small Font for Seconds
 
-        tm1 = time.strftime( "%a, %b %d   %I:%M", time.localtime() )  # 1st part
-        tm2 = time.strftime( "%S", time.localtime() )                 # 2nd
-        tm3 = time.strftime( " %P", time.localtime() )                #
+        tm1 = time.strftime( "%a, %b %d   %I:%M", time.localtime() )  # time
+        tm2 = time.strftime( " %P", time.localtime() )                # am/pm
 
         rtm1 = font.render( tm1, True, lc )
         (tx1,ty1) = rtm1.get_size()
         rtm2 = sfont.render( tm2, True, lc )
         (tx2,ty2) = rtm2.get_size()
-        rtm3 = font.render( tm3, True, lc )
-        (tx3,ty3) = rtm3.get_size()
 
-        tp = xmax / 2 - (tx1 + tx2 + tx3) / 2
+        tp = xmax / 2 - (tx1 + tx2) / 2
         self.screen.blit( rtm1, (tp,self.tmdateYPos) )
         self.screen.blit( rtm2, (tp+tx1+3,self.tmdateYPosSm) )
-        self.screen.blit( rtm3, (tp+tx1+tx2,self.tmdateYPos) )
 
         # Outside Temp
         font = pygame.font.SysFont( fn, int(ymax*(0.5-0.15)*0.6), bold=1 )
@@ -288,7 +284,7 @@ class SmDisplay:
         dtxt = dfont.render( unichr(0x2109), True, lc )
         self.screen.blit( dtxt, (xmax*x2+tx*1.01,ymax*(st+so)) )
 
-        txt = font.render( 'Current Cond:', True, lc )
+        txt = font.render( 'Currently:', True, lc )
         self.screen.blit( txt, (xmax*xp,ymax*(st+gp*1)) )
         txt = font.render( self.weather['current_observation']['weather'], True, lc )
         self.screen.blit( txt, (xmax*x2,ymax*(st+gp*1)) )
@@ -522,7 +518,7 @@ class SmDisplay:
         s = "Weather observation time: %s" % self.observation_time
         self.sPrint( s, sfont, xmax*0.05, 8, lc )
 
-        s = "Current Cond: %s" % self.weather['current_observation']['weather']
+        s = "Currently: %s" % self.weather['current_observation']['weather']
         self.sPrint( s, sfont, xmax*0.05, 9, lc )
 
         # Outside Temperature
@@ -788,7 +784,12 @@ while running:
         # Once the screen is updated, we have a full second to get the weather.
         # Once per minute, update the weather from the net.
         if ( s == 0 ):
-            myDisp.UpdateWeather()
+            try:
+                myDisp.UpdateWeather()
+            except JSONDecodeError:
+                print 'Decoding JSON has failed (threw JSONDecodeError)'
+            except ValueError: # includes simplejson.decoder.JSONDecodeError
+                print 'Decoding JSON has failed (threw ValueError)'
 
     if ( mode == 'h'):
         # Pace the screen updates to once per second.
@@ -807,7 +808,12 @@ while running:
             myDisp.disp_help( inDaylight, dayHrs, dayMins, tDaylight, tDarkness )
         # Refresh the weather data once per minute.
         if ( int(s) == 0 ):
-            myDisp.UpdateWeather()
+            try:
+                myDisp.UpdateWeather()
+            except JSONDecodeError:
+                print 'Decoding JSON has failed (threw JSONDecodeError)'
+            except ValueError: # includes simplejson.decoder.JSONDecodeError
+                print 'Decoding JSON has failed (threw ValueError)'
 
     ( inDaylight, dayHrs, dayMins, tDaylight, tDarkness) = Daylight( myDisp.sunrise, myDisp.sunset )
 
