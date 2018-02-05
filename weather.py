@@ -126,28 +126,16 @@ class SmDisplay:
         self.sunrise = '7:00 AM'
         self.sunset = '8:00 PM'
 
-        """
-        # Larger Display
-        self.xmax = 800 - 35
-        self.ymax = 600 - 5
-        self.scaleIcon = True        # Weather icons need scaling.
-        self.iconScale = 1.5         # Icon scale amount.
-        self.subwinTh = 0.05         # Sub window text height
-        self.tmdateTh = 0.100        # Time & Date Text Height
-        self.tmdateSmTh = 0.06
-        self.tmdateYPos = 10         # Time & Date Y Position
-        self.tmdateYPosSm = 18       # Time & Date Y Position Small
-        """
-
-        # Small Display
-        # self.xmax = pygame.display.Info().current_w - 35
-        # self.ymax = pygame.display.Info().current_h - 5
-        self.xmax = 480 - 35
-        self.ymax = 320 - 5
-        self.scaleIcon = False       # No icon scaling needed.
-        self.iconScale = 1.0
-        self.subwinTh = 0.065        # Sub window text height
-        self.tmdateTh = 0.125        # Time & Date Text Height
+        if config.FULLSCREEN:
+          self.xmax = pygame.display.Info().current_w - 35
+          self.ymax = pygame.display.Info().current_h - 5
+          self.iconFolder = 'icons/256x256/'
+        else:
+          self.xmax = 480 - 35
+          self.ymax = 320 - 5
+          self.iconFolder = 'icons/64x64/'
+        self.subwinTh = 0.055        # Sub window text height
+        self.tmdateTh = 0.115        # Time & Date Text Height
         self.tmdateSmTh = 0.075
         self.tmdateYPos = 8          # Time & Date Y Position
         self.tmdateYPosSm = 18       # Time & Date Y Position Small
@@ -266,11 +254,11 @@ class SmDisplay:
         self.screen.blit( rtm3, (tp+tx1+tx2,self.tmdateYPos) )
 
         # Outside Temp
-        font = pygame.font.SysFont( fn, int(ymax*(0.5-0.15)*0.9), bold=1 )
+        font = pygame.font.SysFont( fn, int(ymax*(0.5-0.15)*0.6), bold=1 )
         txt = font.render( self.temp, True, lc )
         (tx,ty) = txt.get_size()
         # Show degree F symbol using magic unicode char in a smaller font size.
-        dfont = pygame.font.SysFont( fn, int(ymax*(0.5-0.15)*0.5), bold=1 )
+        dfont = pygame.font.SysFont( fn, int(ymax*(0.5-0.15)*0.3), bold=1 )
         dtxt = dfont.render( unichr(0x2109), True, lc )
         (tx2,ty2) = dtxt.get_size()
         x = xmax*0.27 - (tx*1.02 + tx2) / 2
@@ -323,7 +311,7 @@ class SmDisplay:
         wx =     0.125            # Sub Window Centers
         wy =     0.530            # Sub Windows Yaxis Start
         th =     self.subwinTh    # Text Height
-        rpth =   0.100            # Rain Present Text Height
+        rpth =   0.060            # Rain Present Text Height
         gp =     0.065            # Line Spacing Gap
         ro =     0.010 * xmax     # "Rain:" Text Window Offset winthin window.
         rpl =    5.95             # Rain percent line offset.
@@ -343,12 +331,8 @@ class SmDisplay:
         rptxt = rpfont.render( self.rain[0]+'%', True, lc )
         (tx,ty) = rptxt.get_size()
         self.screen.blit( rptxt, (xmax*wx-tx/2,ymax*(wy+gp*rpl)) )
-        icon = pygame.image.load('icons/' + self.icon[0] + '.png').convert_alpha()
+        icon = pygame.image.load(self.iconFolder + self.icon[0] + '.png').convert_alpha()
         (ix,iy) = icon.get_size()
-        if self.scaleIcon:
-            icon2 = pygame.transform.scale( icon, (int(ix*1.5),int(iy*1.5)) )
-            (ix,iy) = icon2.get_size()
-            icon = icon2
         if ( iy < 90 ):
             yo = (90 - iy) / 2
         else:
@@ -366,12 +350,8 @@ class SmDisplay:
         rptxt = rpfont.render( self.rain[1]+'%', True, lc )
         (tx,ty) = rptxt.get_size()
         self.screen.blit( rptxt, (xmax*wx*3-tx/2,ymax*(wy+gp*rpl)) )
-        icon = pygame.image.load('icons/' + self.icon[1] + '.png').convert_alpha()
+        icon = pygame.image.load(self.iconFolder + self.icon[1] + '.png').convert_alpha()
         (ix,iy) = icon.get_size()
-        if self.scaleIcon:
-            icon2 = pygame.transform.scale( icon, (int(ix*1.5),int(iy*1.5)) )
-            (ix,iy) = icon2.get_size()
-            icon = icon2
         if ( iy < 90 ):
             yo = (90 - iy) / 2
         else:
@@ -389,12 +369,8 @@ class SmDisplay:
         rptxt = rpfont.render( self.rain[2]+'%', True, lc )
         (tx,ty) = rptxt.get_size()
         self.screen.blit( rptxt, (xmax*wx*5-tx/2,ymax*(wy+gp*rpl)) )
-        icon = pygame.image.load('icons/' + self.icon[2] + '.png').convert_alpha()
+        icon = pygame.image.load(self.iconFolder + self.icon[2] + '.png').convert_alpha()
         (ix,iy) = icon.get_size()
-        if self.scaleIcon:
-            icon2 = pygame.transform.scale( icon, (int(ix*1.5),int(iy*1.5)) )
-            (ix,iy) = icon2.get_size()
-            icon = icon2
         if ( iy < 90 ):
             yo = (90 - iy) / 2
         else:
@@ -412,12 +388,8 @@ class SmDisplay:
         rptxt = rpfont.render( self.rain[3]+'%', True, lc )
         (tx,ty) = rptxt.get_size()
         self.screen.blit( rptxt, (xmax*wx*7-tx/2,ymax*(wy+gp*rpl)) )
-        icon = pygame.image.load('icons/' + self.icon[3] + '.png').convert_alpha()
+        icon = pygame.image.load(self.iconFolder + self.icon[3] + '.png').convert_alpha()
         (ix,iy) = icon.get_size()
-        if self.scaleIcon:
-            icon2 = pygame.transform.scale( icon, (int(ix*1.5),int(iy*1.5)) )
-            (ix,iy) = icon2.get_size()
-            icon = icon2
         if ( iy < 90 ):
             yo = (90 - iy) / 2
         else:
@@ -727,7 +699,7 @@ btnShutdownCnt = 0
 if GPIO.input( 17 ):
     print "Warning: Shutdown Switch is Active!"
     myDisp.screen.fill( (0,0,0) )
-    icon = pygame.image.load('icons/' + 'shutdown.jpg')
+    icon = pygame.image.load('icons/64x64/' + 'shutdown.jpg')
     (ix,iy) = icon.get_size()
     myDisp.screen.blit( icon, (800/2-ix/2,400/2-iy/2) )
     font = pygame.font.SysFont( "freesans", 40, bold=1 )
@@ -751,7 +723,7 @@ while running:
         if btnShutdownCnt > 25:
             print "Shutdown!"
             myDisp.screen.fill( (0,0,0) )
-            icon = pygame.image.load('icons/' + 'shutdown.jpg')
+            icon = pygame.image.load('icons/64x64/' + 'shutdown.jpg')
             (ix,iy) = icon.get_size()
             myDisp.screen.blit( icon, (800/2-ix/2,400/2-iy/2) )
             font = pygame.font.SysFont( "freesans", 60, bold=1 )
