@@ -267,11 +267,11 @@ class SmDisplay:
         # Conditions
         st = 0.17    # Yaxis Start Pos
         gp = 0.065   # Line Spacing Gap
-        th = 0.06    # Text Height
-        dh = 0.05    # Degree Symbol Height
-        so = 0.01    # Degree Symbol Yaxis Offset
+        th = 0.05    # Text Height
+        dh = 0.03    # Degree Symbol Height
+        so = 0.001   # Degree Symbol Yaxis Offset
         xp = 0.52    # Xaxis Start Pos
-        x2 = 0.78    # Second Column Xaxis Start Pos
+        x2 = 0.73    # Second Column Xaxis Start Pos
 
         font = pygame.font.SysFont( fn, int(ymax*th), bold=1 )
         txt = font.render( 'Feels Like:', True, lc )
@@ -486,21 +486,17 @@ class SmDisplay:
         font = pygame.font.SysFont( fn, int(ymax*thl), bold=1 )        # Regular Font
         sfont = pygame.font.SysFont( fn, int(ymax*sh), bold=1 )        # Small Font
 
-        tm1 = time.strftime( "%a, %b %d   %I:%M", time.localtime() )   # 1st part
-        tm2 = time.strftime( "%S", time.localtime() )                  # 2nd
-        tm3 = time.strftime( " %P", time.localtime() )                 #
+        tm1 = time.strftime( "%a, %b %d   %I:%M", time.localtime() )   # time
+        tm2 = time.strftime( " %P", time.localtime() )                 # am/pm
 
         rtm1 = font.render( tm1, True, lc )
         (tx1,ty1) = rtm1.get_size()
         rtm2 = sfont.render( tm2, True, lc )
         (tx2,ty2) = rtm2.get_size()
-        rtm3 = font.render( tm3, True, lc )
-        (tx3,ty3) = rtm3.get_size()
 
-        tp = xmax / 2 - (tx1 + tx2 + tx3) / 2
+        tp = xmax / 2 - (tx1 + tx2) / 2
         self.screen.blit( rtm1, (tp,self.tmdateYPos) )
         self.screen.blit( rtm2, (tp+tx1+3,self.tmdateYPosSm) )
-        self.screen.blit( rtm3, (tp+tx1+tx2,self.tmdateYPos) )
 
         self.sPrint( "Sunrise: %s" % self.sunrise, sfont, xmax*0.05, 3, lc )
         self.sPrint( "Sunset: %s" % self.sunset, sfont, xmax*0.05, 4, lc )
@@ -512,26 +508,19 @@ class SmDisplay:
         else:          s = "Sunrise in (Hrs:Min): %d:%02d" % stot( tDaylight )
         self.sPrint( s, sfont, xmax*0.05, 6, lc )
 
-        s = "Weather checked at %s" % time.strftime("%a, %d %b %Y %H:%M:%S %Z", time.localtime(self.last_update_check))
+        s = ""
         self.sPrint( s, sfont, xmax*0.05, 7, lc )
 
-        s = "Weather observation time: %s" % self.observation_time
+        s = "Weather checked at"
         self.sPrint( s, sfont, xmax*0.05, 8, lc )
 
-        s = "Currently: %s" % self.weather['current_observation']['weather']
+        s = "    %s" % time.strftime("%a, %d %b %Y %H:%M:%S %Z", time.localtime(self.last_update_check))
         self.sPrint( s, sfont, xmax*0.05, 9, lc )
 
-        # Outside Temperature
-        s = self.temp + unichr(176) + 'F '
-        s = s + self.baro + 'inHg '
-        s = s + 'Wind ' + self.wind_speed
-        if self.gust != 'N/A':
-            s = s + '/' + self.gust
-        if self.wind_speed != 'calm':
-            s = s + 'mph @' + self.wind_direction + unichr(176)
+        s = "Weather observation time:"
         self.sPrint( s, sfont, xmax*0.05, 10, lc )
 
-        s = "Visability %smi" % self.vis
+        s = "    %s" % self.observation_time
         self.sPrint( s, sfont, xmax*0.05, 11, lc )
 
         # Update the display
