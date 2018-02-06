@@ -775,10 +775,10 @@ while running:
         if ( s == 0 ):
             try:
                 myDisp.UpdateWeather()
-            except JSONDecodeError:
-                print 'Decoding JSON has failed (threw JSONDecodeError)'
             except ValueError: # includes simplejson.decoder.JSONDecodeError
-                print 'Decoding JSON has failed (threw ValueError)'
+                print("Decoding JSON has failed", sys.exc_info()[0])
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
 
     if ( mode == 'h'):
         # Pace the screen updates to once per second.
@@ -799,10 +799,10 @@ while running:
         if ( int(s) == 0 ):
             try:
                 myDisp.UpdateWeather()
-            except JSONDecodeError:
-                print 'Decoding JSON has failed (threw JSONDecodeError)'
             except ValueError: # includes simplejson.decoder.JSONDecodeError
-                print 'Decoding JSON has failed (threw ValueError)'
+                print("Decoding JSON has failed", sys.exc_info()[0])
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
 
     ( inDaylight, dayHrs, dayMins, tDaylight, tDarkness) = Daylight( myDisp.sunrise, myDisp.sunset )
 
@@ -826,4 +826,3 @@ while running:
 
 
 pygame.quit()
-
