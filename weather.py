@@ -47,6 +47,7 @@ import random
 import requests
 import serial
 import string
+import syslog
 import time
 
 from X10 import *
@@ -79,6 +80,7 @@ class SmDisplay:
         disp_no = os.getenv("DISPLAY")
         if disp_no:
             print "X Display = {0}".format(disp_no)
+            syslog.syslog("X Display = {0}".format(disp_no))
 
         # Check which frame buffer drivers are available
         # Start with fbcon since directfb hangs with composite output
@@ -92,6 +94,7 @@ class SmDisplay:
                 pygame.display.init()
             except pygame.error:
                 print 'Driver: {0} failed.'.format(driver)
+                syslog.syslog('Driver: {0} failed.'.format(driver))
                 continue
             found = True
             break
@@ -101,6 +104,7 @@ class SmDisplay:
 
         size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
         print "Framebuffer Size: %d x %d" % (size[0], size[1])
+        syslog.syslog("Framebuffer Size: %d x %d" % (size[0], size[1]))
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
         # Clear the screen to start
         self.screen.fill((0, 0, 0))
