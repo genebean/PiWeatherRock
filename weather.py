@@ -467,12 +467,12 @@ class SmDisplay:
     ####################################################################
     def disp_help( self, inDaylight, dayHrs, dayMins, tDaylight, tDarkness ):
         # Fill the screen with black
-        self.screen.fill( (166,166,166) )
+        self.screen.fill( (0,0,0) )
         xmax = self.xmax
         ymax = self.ymax
         xmin = 10
         lines = 5
-        line_color = (166,166,166)
+        line_color = (0,0,0)
         text_color = (255,255,255)
         font_name = "freesans"
 
