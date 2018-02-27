@@ -467,21 +467,22 @@ class SmDisplay:
     ####################################################################
     def disp_help( self, inDaylight, dayHrs, dayMins, tDaylight, tDarkness ):
         # Fill the screen with black
-        self.screen.fill( (0,0,0) )
+        self.screen.fill( (166,166,166) )
         xmax = self.xmax
         ymax = self.ymax
         xmin = 10
         lines = 5
-        lc = (255,255,255)
+        line_color = (166,166,166)
+        text_color = (255,255,255)
         sfn = "freemono"
         fn = "freesans"
 
         # Draw Screen Border
-        pygame.draw.line( self.screen, lc, (xmin,0),(xmax,0), lines )
-        pygame.draw.line( self.screen, lc, (xmin,0),(xmin,ymax), lines )
-        pygame.draw.line( self.screen, lc, (xmin,ymax),(xmax,ymax), lines )
-        pygame.draw.line( self.screen, lc, (xmax,0),(xmax,ymax), lines )
-        pygame.draw.line( self.screen, lc, (xmin,ymax*0.15),(xmax,ymax*0.15), lines )
+        pygame.draw.line( self.screen, line_color, (xmin,0),(xmax,0), lines )
+        pygame.draw.line( self.screen, line_color, (xmin,0),(xmin,ymax), lines )
+        pygame.draw.line( self.screen, line_color, (xmin,ymax),(xmax,ymax), lines )
+        pygame.draw.line( self.screen, line_color, (xmax,0),(xmax,ymax), lines )
+        pygame.draw.line( self.screen, line_color, (xmin,ymax*0.15),(xmax,ymax*0.15), lines )
 
         thl = self.tmdateTh    # Large Text Height
         sh = self.tmdateSmTh   # Small Text Height
@@ -490,42 +491,42 @@ class SmDisplay:
         font = pygame.font.SysFont( fn, int(ymax*thl), bold=1 )        # Regular Font
         sfont = pygame.font.SysFont( fn, int(ymax*sh), bold=1 )        # Small Font
 
-        tm1 = time.strftime( "%a, %b %d   %I:%M", time.localtime() )   # time
+        tm1 = time.strftime( "%I:%M", time.localtime() )   # time
         tm2 = time.strftime( " %P", time.localtime() )                 # am/pm
 
-        rtm1 = font.render( tm1, True, lc )
+        rtm1 = font.render( tm1, True, text_color )
         (tx1,ty1) = rtm1.get_size()
-        rtm2 = sfont.render( tm2, True, lc )
+        rtm2 = sfont.render( tm2, True, text_color )
         (tx2,ty2) = rtm2.get_size()
 
         tp = xmax / 2 - (tx1 + tx2) / 2
         self.screen.blit( rtm1, (tp,self.tmdateYPos) )
         self.screen.blit( rtm2, (tp+tx1+3,self.tmdateYPosSm) )
 
-        self.sPrint( "Sunrise: %s" % self.sunrise, sfont, xmax*0.05, 3, lc )
-        self.sPrint( "Sunset: %s" % self.sunset, sfont, xmax*0.05, 4, lc )
+        self.sPrint( "Sunrise: %s" % self.sunrise, sfont, xmax*0.05, 3, text_color )
+        self.sPrint( "Sunset: %s" % self.sunset, sfont, xmax*0.05, 4, text_color )
 
         s = "Daylight (Hrs:Min): %d:%02d" % (dayHrs, dayMins)
-        self.sPrint( s, sfont, xmax*0.05, 5, lc )
+        self.sPrint( s, sfont, xmax*0.05, 5, text_color )
 
         if inDaylight: s = "Sunset in (Hrs:Min): %d:%02d" % stot( tDarkness )
         else:          s = "Sunrise in (Hrs:Min): %d:%02d" % stot( tDaylight )
-        self.sPrint( s, sfont, xmax*0.05, 6, lc )
+        self.sPrint( s, sfont, xmax*0.05, 6, text_color )
 
         s = ""
-        self.sPrint( s, sfont, xmax*0.05, 7, lc )
+        self.sPrint( s, sfont, xmax*0.05, 7, text_color )
 
         s = "Weather checked at"
-        self.sPrint( s, sfont, xmax*0.05, 8, lc )
+        self.sPrint( s, sfont, xmax*0.05, 8, text_color )
 
         s = "    %s" % time.strftime("%a, %d %b %Y %H:%M:%S %Z", time.localtime(self.last_update_check))
-        self.sPrint( s, sfont, xmax*0.05, 9, lc )
+        self.sPrint( s, sfont, xmax*0.05, 9, text_color )
 
         s = "Weather observation time:"
-        self.sPrint( s, sfont, xmax*0.05, 10, lc )
+        self.sPrint( s, sfont, xmax*0.05, 10, text_color )
 
         s = "    %s" % self.observation_time
-        self.sPrint( s, sfont, xmax*0.05, 11, lc )
+        self.sPrint( s, sfont, xmax*0.05, 11, text_color )
 
         # Update the display
         pygame.display.update()
