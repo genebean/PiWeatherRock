@@ -474,7 +474,6 @@ class SmDisplay:
         lines = 5
         line_color = (166,166,166)
         text_color = (255,255,255)
-        sfn = "freemono"
         fn = "freesans"
 
         # Draw Screen Border
