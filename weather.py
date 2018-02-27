@@ -607,13 +607,14 @@ def Daylight( sr, st ):
 
 ############################################################################
 def btnNext( channel ):
-    global mode, dispTO
+    global mode, non_weather_timeout, periodic_help_activation
 
     if ( mode == 'c' ): mode = 'w'
     elif (mode == 'w' ): mode ='h'
     elif (mode == 'h' ): mode ='c'
 
-    dispTO = 0
+    non_weather_timeout = 0
+    periodic_help_activation = 0
 
     print "Button Event!"
 
@@ -671,9 +672,10 @@ mode = 'w'        # Default to weather mode.
 # Create an instance of the lcd display class.
 myDisp = SmDisplay()
 
-running = True   # Stay running while True
-s = 0            # Seconds Placeholder to pace display.
-dispTO = 0       # Display timeout to automatically switch back to weather dispaly.
+running = True             # Stay running while True
+seconds = 0                # Seconds Placeholder to pace display.
+non_weather_timeout = 0    # Display timeout to automatically switch back to weather dispaly.
+periodic_help_activation = 0  # Switch to help periodically to prevent screen burn
 
 # Loads data from Weather.com into class variables.
 if myDisp.UpdateWeather() == False:
@@ -736,12 +738,14 @@ while running:
             # On 'c' key, set mode to 'calendar'.
             elif ( event.key == K_c ):
                 mode = 'c'
-                dispTO = 0
+                non_weather_timeout = 0
+                periodic_help_activation = 0
 
             # On 'w' key, set mode to 'weather'.
             elif ( event.key == K_w ):
                 mode = 'w'
-                dispTO = 0
+                non_weather_timeout = 0
+                periodic_help_activation = 0
 
             # On 's' key, save a screen shot.
             elif ( event.key == K_s ):
@@ -750,33 +754,38 @@ while running:
             # On 'h' key, set mode to 'help'.
             elif ( event.key == K_h ):
                 mode = 'h'
-                dispTO = 0
+                non_weather_timeout = 0
+                periodic_help_activation = 0
 
     # Automatically switch back to weather display after a couple minutes.
     if mode != 'w':
-        dispTO += 1
-        if dispTO > 3000:    # Five minute timeout at 100ms loop rate.
+        periodic_help_activation = 0
+        non_weather_timeout += 1
+        if non_weather_timeout > 3000:    # Five minute timeout at 100ms loop rate.
             mode = 'w'
     else:
-        dispTO = 0
+        non_weather_timeout = 0
+        periodic_help_activation += 1
+        if periodic_help_activation > 9000:  # 15 minute timeout at 100ms loop rate
+            mode = 'h'
 
     # Calendar Display Mode
     if ( mode == 'c' ):
         # Update / Refresh the display after each second.
-        if ( s != time.localtime().tm_sec ):
-            s = time.localtime().tm_sec
+        if ( seconds != time.localtime().tm_sec ):
+            seconds = time.localtime().tm_sec
             myDisp.disp_calendar()
 
     # Weather Display Mode
     if ( mode == 'w' ):
         # Update / Refresh the display after each second.
-        if ( s != time.localtime().tm_sec ):
-            s = time.localtime().tm_sec
+        if ( seconds != time.localtime().tm_sec ):
+            seconds = time.localtime().tm_sec
             myDisp.disp_weather()
             #ser.write( "Weather\r\n" )
         # Once the screen is updated, we have a full second to get the weather.
         # Once per minute, update the weather from the net.
-        if ( s == 0 ):
+        if ( seconds == 0 ):
             try:
                 myDisp.UpdateWeather()
             except ValueError: # includes simplejson.decoder.JSONDecodeError
@@ -786,8 +795,8 @@ while running:
 
     if ( mode == 'h'):
         # Pace the screen updates to once per second.
-        if s != time.localtime().tm_sec:
-            s = time.localtime().tm_sec
+        if seconds != time.localtime().tm_sec:
+            seconds = time.localtime().tm_sec
 
             ( inDaylight, dayHrs, dayMins, tDaylight, tDarkness) = Daylight( myDisp.sunrise, myDisp.sunset )
 
@@ -800,7 +809,7 @@ while running:
             # Stat Screen Display.
             myDisp.disp_help( inDaylight, dayHrs, dayMins, tDaylight, tDarkness )
         # Refresh the weather data once per minute.
-        if ( int(s) == 0 ):
+        if ( int(seconds) == 0 ):
             try:
                 myDisp.UpdateWeather()
             except ValueError: # includes simplejson.decoder.JSONDecodeError
