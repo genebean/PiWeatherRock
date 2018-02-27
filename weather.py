@@ -490,17 +490,17 @@ class SmDisplay:
         regular_font = pygame.font.SysFont( font_name, int(ymax*thl), bold=1 )
         small_font = pygame.font.SysFont( font_name, int(ymax*sh), bold=1 )
 
-        tm1 = time.strftime( "%I:%M", time.localtime() )   # time
-        tm2 = time.strftime( " %P", time.localtime() )     # am/pm
+        hours_and_minites = time.strftime( "%I:%M", time.localtime() )
+        am_pm = time.strftime( " %P", time.localtime() )
 
-        rtm1 = regular_font.render( tm1, True, text_color )
-        (tx1,ty1) = rtm1.get_size()
-        rtm2 = small_font.render( tm2, True, text_color )
-        (tx2,ty2) = rtm2.get_size()
+        rendered_hours_and_minutes = regular_font.render( hours_and_minites, True, text_color )
+        (tx1,ty1) = rendered_hours_and_minutes.get_size()
+        rendered_am_pm = small_font.render( am_pm, True, text_color )
+        (tx2,ty2) = rendered_am_pm.get_size()
 
         tp = xmax / 2 - (tx1 + tx2) / 2
-        self.screen.blit( rtm1, (tp,self.tmdateYPos) )
-        self.screen.blit( rtm2, (tp+tx1+3,self.tmdateYPosSm) )
+        self.screen.blit( rendered_hours_and_minutes, (tp,self.tmdateYPos) )
+        self.screen.blit( rendered_am_pm, (tp+tx1+3,self.tmdateYPosSm) )
 
         self.sPrint( "Sunrise: %s" % self.sunrise, small_font, xmax*0.05, 3, text_color )
         self.sPrint( "Sunset: %s" % self.sunset, small_font, xmax*0.05, 4, text_color )
