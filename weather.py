@@ -506,27 +506,27 @@ class SmDisplay:
         self.sPrint( "Sunrise: %s" % self.sunrise, sfont, xmax*0.05, 3, text_color )
         self.sPrint( "Sunset: %s" % self.sunset, sfont, xmax*0.05, 4, text_color )
 
-        s = "Daylight (Hrs:Min): %d:%02d" % (dayHrs, dayMins)
-        self.sPrint( s, sfont, xmax*0.05, 5, text_color )
+        text = "Daylight (Hrs:Min): %d:%02d" % (dayHrs, dayMins)
+        self.sPrint( text, sfont, xmax*0.05, 5, text_color )
 
-        if inDaylight: s = "Sunset in (Hrs:Min): %d:%02d" % stot( tDarkness )
-        else:          s = "Sunrise in (Hrs:Min): %d:%02d" % stot( tDaylight )
-        self.sPrint( s, sfont, xmax*0.05, 6, text_color )
+        if inDaylight: text = "Sunset in (Hrs:Min): %d:%02d" % stot( tDarkness )
+        else:          text = "Sunrise in (Hrs:Min): %d:%02d" % stot( tDaylight )
+        self.sPrint( text, sfont, xmax*0.05, 6, text_color )
 
-        s = ""
-        self.sPrint( s, sfont, xmax*0.05, 7, text_color )
+        text = ""
+        self.sPrint( text, sfont, xmax*0.05, 7, text_color )
 
-        s = "Weather checked at"
-        self.sPrint( s, sfont, xmax*0.05, 8, text_color )
+        text = "Weather checked at"
+        self.sPrint( text, sfont, xmax*0.05, 8, text_color )
 
-        s = "    %s" % time.strftime("%a, %d %b %Y %H:%M:%S %Z", time.localtime(self.last_update_check))
-        self.sPrint( s, sfont, xmax*0.05, 9, text_color )
+        text = "    %s" % time.strftime("%a, %d %b %Y %H:%M:%S %Z", time.localtime(self.last_update_check))
+        self.sPrint( text, sfont, xmax*0.05, 9, text_color )
 
-        s = "Weather observation time:"
-        self.sPrint( s, sfont, xmax*0.05, 10, text_color )
+        text = "Weather observation time:"
+        self.sPrint( text, sfont, xmax*0.05, 10, text_color )
 
-        s = "    %s" % self.observation_time
-        self.sPrint( s, sfont, xmax*0.05, 11, text_color )
+        text = "    %s" % self.observation_time
+        self.sPrint( text, sfont, xmax*0.05, 11, text_color )
 
         # Update the display
         pygame.display.update()
