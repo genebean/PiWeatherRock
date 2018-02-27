@@ -764,11 +764,13 @@ while running:
         non_weather_timeout += 1
         if non_weather_timeout > 3000:    # Five minute timeout at 100ms loop rate.
             mode = 'w'
+            syslog.syslog("Switched to weather mode")
     else:
         non_weather_timeout = 0
         periodic_help_activation += 1
         if periodic_help_activation > 9000:  # 15 minute timeout at 100ms loop rate
             mode = 'h'
+            syslog.syslog("Switched to help mode")
 
     # Calendar Display Mode
     if ( mode == 'c' ):
