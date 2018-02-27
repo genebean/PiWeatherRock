@@ -47,6 +47,7 @@ import random
 import requests
 import serial
 import string
+import sys
 import syslog
 import time
 
