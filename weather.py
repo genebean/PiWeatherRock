@@ -483,12 +483,12 @@ class SmDisplay:
         pygame.draw.line( self.screen, line_color, (xmax,0),(xmax,ymax), lines )
         pygame.draw.line( self.screen, line_color, (xmin,ymax*0.15),(xmax,ymax*0.15), lines )
 
-        thl = self.tmdateTh    # Large Text Height
-        sh = self.tmdateSmTh   # Small Text Height
+        time_height_large = self.tmdateTh
+        time_height_small = self.tmdateSmTh
 
         # Time & Date
-        regular_font = pygame.font.SysFont( font_name, int(ymax*thl), bold=1 )
-        small_font = pygame.font.SysFont( font_name, int(ymax*sh), bold=1 )
+        regular_font = pygame.font.SysFont( font_name, int(ymax*time_height_large), bold=1 )
+        small_font = pygame.font.SysFont( font_name, int(ymax*time_height_small), bold=1 )
 
         hours_and_minites = time.strftime( "%I:%M", time.localtime() )
         am_pm = time.strftime( " %P", time.localtime() )
