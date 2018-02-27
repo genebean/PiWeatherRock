@@ -232,28 +232,29 @@ class SmDisplay:
         xmax = self.xmax
         ymax = self.ymax
         lines = 5
-        lc = (255, 255, 255)
+        line_color = (255, 255, 255)
+        text_color = (255, 255, 255)
         fn = "freesans"
 
         # Draw Screen Border
-        pygame.draw.line(self.screen, lc, (xmin, 0), (xmax, 0),
-                         lines)                     # Top
-        pygame.draw.line(self.screen, lc, (xmin, 0),
-                         (xmin, ymax), lines)                  # Left
-        pygame.draw.line(self.screen, lc, (xmin, ymax),
-                         (xmax, ymax), lines)               # Bottom
-        pygame.draw.line(self.screen, lc, (xmax, 0),
-                         (xmax, ymax + 2), lines)                # Right
-        pygame.draw.line(self.screen, lc, (xmin, ymax * 0.15),
-                         (xmax, ymax * 0.15), lines)     # Bottom of top box
-        pygame.draw.line(self.screen, lc, (xmin, ymax * 0.5),
-                         (xmax, ymax * 0.5), lines)       # Bottom of middle box
-        pygame.draw.line(self.screen, lc, (xmax * 0.25, ymax * 0.5),
-                         (xmax * 0.25, ymax), lines)  # Bottom row, left vertical
-        pygame.draw.line(self.screen, lc, (xmax * 0.5, ymax * 0.15),
+        pygame.draw.line(self.screen, line_color, (xmin, 0), (xmax, 0),
+                         lines)                      # Top
+        pygame.draw.line(self.screen, line_color, (xmin, 0),
+                         (xmin, ymax), lines)        # Left
+        pygame.draw.line(self.screen, line_color, (xmin, ymax),
+                         (xmax, ymax), lines)        # Bottom
+        pygame.draw.line(self.screen, line_color, (xmax, 0),
+                         (xmax, ymax + 2), lines)    # Right
+        pygame.draw.line(self.screen, line_color, (xmin, ymax * 0.15),
+                         (xmax, ymax * 0.15), lines) # Bottom of top box
+        pygame.draw.line(self.screen, line_color, (xmin, ymax * 0.5),
+                         (xmax, ymax * 0.5), lines)  # Bottom of middle box
+        pygame.draw.line(self.screen, line_color, (xmax * 0.25, ymax * 0.5),
+                         (xmax * 0.25, ymax), lines) # Bottom row, left vertical
+        pygame.draw.line(self.screen, line_color, (xmax * 0.5, ymax * 0.15),
                          (xmax * 0.5, ymax), lines)  # Bottom row, center vertical
-        pygame.draw.line(self.screen, lc, (xmax * 0.75, ymax * 0.5),
-                         (xmax * 0.75, ymax), lines)  # Bottom row, right vertical
+        pygame.draw.line(self.screen, line_color, (xmax * 0.75, ymax * 0.5),
+                         (xmax * 0.75, ymax), lines) # Bottom row, right vertical
 
         # Time & Date
         th = self.tmdateTh
@@ -266,9 +267,9 @@ class SmDisplay:
         tm1 = time.strftime("%a, %b %d   %I:%M", time.localtime())  # time
         tm2 = time.strftime(" %P", time.localtime())                # am/pm
 
-        rtm1 = font.render(tm1, True, lc)
+        rtm1 = font.render(tm1, True, text_color)
         (tx1, ty1) = rtm1.get_size()
-        rtm2 = sfont.render(tm2, True, lc)
+        rtm2 = sfont.render(tm2, True, text_color)
         (tx2, ty2) = rtm2.get_size()
 
         tp = xmax / 2 - (tx1 + tx2) / 2
@@ -277,11 +278,11 @@ class SmDisplay:
 
         # Outside Temp
         font = pygame.font.SysFont(fn, int(ymax * (0.5 - 0.15) * 0.6), bold=1)
-        txt = font.render(self.temp, True, lc)
+        txt = font.render(self.temp, True, text_color)
         (tx, ty) = txt.get_size()
         # Show degree F symbol using magic unicode char in a smaller font size.
         dfont = pygame.font.SysFont(fn, int(ymax * (0.5 - 0.15) * 0.3), bold=1)
-        dtxt = dfont.render(unichr(0x2109), True, lc)
+        dtxt = dfont.render(unichr(0x2109), True, text_color)
         (tx2, ty2) = dtxt.get_size()
         x = xmax * 0.27 - (tx * 1.02 + tx2) / 2
         self.screen.blit(txt, (x, ymax * 0.20))
@@ -300,35 +301,35 @@ class SmDisplay:
         x2 = 0.73    # Second Column Xaxis Start Pos
 
         font = pygame.font.SysFont(fn, int(ymax * th), bold=1)
-        txt = font.render('Feels Like:', True, lc)
+        txt = font.render('Feels Like:', True, text_color)
         self.screen.blit(txt, (xmax * xp, ymax * st))
-        txt = font.render(self.feels_like, True, lc)
+        txt = font.render(self.feels_like, True, text_color)
         self.screen.blit(txt, (xmax * x2, ymax * st))
         (tx, ty) = txt.get_size()
         # Show degree F symbol using magic unicode char.
         dfont = pygame.font.SysFont(fn, int(ymax * dh), bold=1)
-        dtxt = dfont.render(unichr(0x2109), True, lc)
+        dtxt = dfont.render(unichr(0x2109), True, text_color)
         self.screen.blit(dtxt, (xmax * x2 + tx * 1.01, ymax * (st + so)))
 
-        txt = font.render('Currently:', True, lc)
+        txt = font.render('Currently:', True, text_color)
         self.screen.blit(txt, (xmax * xp, ymax * (st + gp * 1)))
         txt = font.render(
-            self.weather['current_observation']['weather'], True, lc)
+            self.weather['current_observation']['weather'], True, text_color)
         self.screen.blit(txt, (xmax * x2, ymax * (st + gp * 1)))
 
-        txt = font.render('Windspeed:', True, lc)
+        txt = font.render('Windspeed:', True, text_color)
         self.screen.blit(txt, (xmax * xp, ymax * (st + gp * 2)))
-        txt = font.render(self.wind_speed + ' mph', True, lc)
+        txt = font.render(self.wind_speed + ' mph', True, text_color)
         self.screen.blit(txt, (xmax * x2, ymax * (st + gp * 2)))
 
-        txt = font.render('Direction:', True, lc)
+        txt = font.render('Direction:', True, text_color)
         self.screen.blit(txt, (xmax * xp, ymax * (st + gp * 3)))
-        txt = font.render(string.upper(self.wind_dir), True, lc)
+        txt = font.render(string.upper(self.wind_dir), True, text_color)
         self.screen.blit(txt, (xmax * x2, ymax * (st + gp * 3)))
 
-        txt = font.render('Humidity:', True, lc)
+        txt = font.render('Humidity:', True, text_color)
         self.screen.blit(txt, (xmax * xp, ymax * (st + gp * 4)))
-        txt = font.render(self.humid, True, lc)
+        txt = font.render(self.humid, True, text_color)
         self.screen.blit(txt, (xmax * x2, ymax * (st + gp * 4)))
 
         wx = 0.125            # Sub Window Centers
@@ -343,16 +344,16 @@ class SmDisplay:
         rpfont = pygame.font.SysFont(fn, int(ymax * rpth), bold=1)
 
         # Sub Window 1
-        txt = font.render('Today:', True, lc)
+        txt = font.render('Today:', True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * wx - tx / 2, ymax * (wy + gp * 0)))
         txt = font.render(self.temps[0][0] +
-                          ' / ' + self.temps[0][1], True, lc)
+                          ' / ' + self.temps[0][1], True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * wx - tx / 2, ymax * (wy + gp * 5)))
         #rtxt = font.render('Rain:', True, lc)
         #self.screen.blit(rtxt, (ro,ymax*(wy+gp*5)))
-        rptxt = rpfont.render(self.rain[0] + '%', True, lc)
+        rptxt = rpfont.render(self.rain[0] + '%', True, text_color)
         (tx, ty) = rptxt.get_size()
         self.screen.blit(rptxt, (xmax * wx - tx / 2, ymax * (wy + gp * rpl)))
         icon = pygame.image.load(
@@ -366,15 +367,15 @@ class SmDisplay:
             icon, (xmax * wx - ix / 2, ymax * (wy + gp * 1.2) + yo))
 
         # Sub Window 2
-        txt = font.render(self.day[1] + ':', True, lc)
+        txt = font.render(self.day[1] + ':', True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * (wx * 3) - tx / 2, ymax * (wy + gp * 0)))
         txt = font.render(self.temps[1][0] +
-                          ' / ' + self.temps[1][1], True, lc)
+                          ' / ' + self.temps[1][1], True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * wx * 3 - tx / 2, ymax * (wy + gp * 5)))
         #self.screen.blit(rtxt, (xmax*wx*2+ro,ymax*(wy+gp*5)))
-        rptxt = rpfont.render(self.rain[1] + '%', True, lc)
+        rptxt = rpfont.render(self.rain[1] + '%', True, text_color)
         (tx, ty) = rptxt.get_size()
         self.screen.blit(
             rptxt, (xmax * wx * 3 - tx / 2, ymax * (wy + gp * rpl)))
@@ -389,15 +390,15 @@ class SmDisplay:
                                 ymax * (wy + gp * 1.2) + yo))
 
         # Sub Window 3
-        txt = font.render(self.day[2] + ':', True, lc)
+        txt = font.render(self.day[2] + ':', True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * (wx * 5) - tx / 2, ymax * (wy + gp * 0)))
         txt = font.render(self.temps[2][0] +
-                          ' / ' + self.temps[2][1], True, lc)
+                          ' / ' + self.temps[2][1], True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * wx * 5 - tx / 2, ymax * (wy + gp * 5)))
         #self.screen.blit(rtxt, (xmax*wx*4+ro,ymax*(wy+gp*5)))
-        rptxt = rpfont.render(self.rain[2] + '%', True, lc)
+        rptxt = rpfont.render(self.rain[2] + '%', True, text_color)
         (tx, ty) = rptxt.get_size()
         self.screen.blit(
             rptxt, (xmax * wx * 5 - tx / 2, ymax * (wy + gp * rpl)))
@@ -412,15 +413,15 @@ class SmDisplay:
                                 ymax * (wy + gp * 1.2) + yo))
 
         # Sub Window 4
-        txt = font.render(self.day[3] + ':', True, lc)
+        txt = font.render(self.day[3] + ':', True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * (wx * 7) - tx / 2, ymax * (wy + gp * 0)))
         txt = font.render(self.temps[3][0] +
-                          ' / ' + self.temps[3][1], True, lc)
+                          ' / ' + self.temps[3][1], True, text_color)
         (tx, ty) = txt.get_size()
         self.screen.blit(txt, (xmax * wx * 7 - tx / 2, ymax * (wy + gp * 5)))
         #self.screen.blit(rtxt, (xmax*wx*6+ro,ymax*(wy+gp*5)))
-        rptxt = rpfont.render(self.rain[3] + '%', True, lc)
+        rptxt = rpfont.render(self.rain[3] + '%', True, text_color)
         (tx, ty) = rptxt.get_size()
         self.screen.blit(
             rptxt, (xmax * wx * 7 - tx / 2, ymax * (wy + gp * rpl)))
