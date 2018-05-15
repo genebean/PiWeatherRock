@@ -28,7 +28,7 @@
 
 """ Fetches weather reports Weather Underground for display on small screens."""
 
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 
 ###############################################################################
 #   Raspberry Pi Weather Display
@@ -58,19 +58,24 @@ import config
 from X10 import X10_Bright, X10_Off, X10_On, X10_SetClock, X10_Status
 
 # Setup GPIO pin BCM GPIO04
-if platform.machine() == 'x86_64':
-    import GPIOmock as GPIO
-else:
-    import RPi.GPIO as GPIO
+if not platform.system() == 'Darwin':
+    ENABLE_GPIO = True
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)    # Next
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)   # Shutdown
+    if platform.machine() == 'x86_64':
+        import GPIOmock as GPIO
+    else:
+        import RPi.GPIO as GPIO
+
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)    # Next
+    GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)   # Shutdown
+else:
+    ENABLE_GPIO = False
 
 MOUSE_X, MOUSE_Y = 0, 0
 MODE = 'w'               # Default to weather mode.
 
-UNICODE_DEGREE = unichr(0x2109)
+UNICODE_DEGREE = u'\xb0'
 
 
 ###############################################################################
@@ -81,33 +86,38 @@ class SmDisplay:
 
     ####################################################################
     def __init__(self):
-        "Ininitializes a new pygame screen using the framebuffer"
-        # Based on "Python GUI in Linux frame buffer"
-        # http://www.karoltomala.com/blog/?p=679
-        disp_no = os.getenv("DISPLAY")
-        if disp_no:
-            print "X Display = {0}".format(disp_no)
-            syslog.syslog("X Display = {0}".format(disp_no))
+        if platform.system() == 'Darwin':
+            pygame.display.init()
+            driver = pygame.display.get_driver()
+            print 'Using the {0} driver.'.format(driver)
+        else:
+            "Ininitializes a new pygame screen using the framebuffer"
+            # Based on "Python GUI in Linux frame buffer"
+            # http://www.karoltomala.com/blog/?p=679
+            disp_no = os.getenv("DISPLAY")
+            if disp_no:
+                print "X Display = {0}".format(disp_no)
+                syslog.syslog("X Display = {0}".format(disp_no))
 
-        # Check which frame buffer drivers are available
-        # Start with fbcon since directfb hangs with composite output
-        drivers = ['x11', 'fbcon', 'directfb', 'svgalib']
-        found = False
-        for driver in drivers:
-            # Make sure that SDL_VIDEODRIVER is set
-            if not os.getenv('SDL_VIDEODRIVER'):
-                os.putenv('SDL_VIDEODRIVER', driver)
-            try:
-                pygame.display.init()
-            except pygame.error:
-                print 'Driver: {0} failed.'.format(driver)
-                syslog.syslog('Driver: {0} failed.'.format(driver))
-                continue
-            found = True
-            break
+            # Check which frame buffer drivers are available
+            # Start with fbcon since directfb hangs with composite output
+            drivers = ['x11', 'fbcon', 'directfb', 'svgalib']
+            found = False
+            for driver in drivers:
+                # Make sure that SDL_VIDEODRIVER is set
+                if not os.getenv('SDL_VIDEODRIVER'):
+                    os.putenv('SDL_VIDEODRIVER', driver)
+                try:
+                    pygame.display.init()
+                except pygame.error:
+                    print 'Driver: {0} failed.'.format(driver)
+                    syslog.syslog('Driver: {0} failed.'.format(driver))
+                    continue
+                found = True
+                break
 
-        if not found:
-            raise Exception('No suitable video driver found!')
+            if not found:
+                raise Exception('No suitable video driver found!')
 
         size = (pygame.display.Info().current_w,
                 pygame.display.Info().current_h)
@@ -267,7 +277,7 @@ class SmDisplay:
         small_font = pygame.font.SysFont(font_name, int(self.ymax * self.time_date_small_text_height), bold=1)
 
         time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
-        am_pm_string = time.strftime(" %P", time.localtime())
+        am_pm_string = time.strftime(" %p", time.localtime())
 
         rendered_time_string = time_date_font.render(time_string, True, text_color)
         (rendered_time_x, rendered_time_y) = rendered_time_string.get_size()
@@ -362,7 +372,7 @@ class SmDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = 0
+            icon_y_offset = config.LARGE_ICON_OFFSET
         self.screen.blit(
             icon, (self.xmax * subwindow_centers - icon_size_x / 2, self.ymax * (subwindows_y_start_position + line_spacing_gap * 1.2) + icon_y_offset))
 
@@ -385,7 +395,7 @@ class SmDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = 0
+            icon_y_offset = config.LARGE_ICON_OFFSET
         self.screen.blit(icon, (self.xmax * subwindow_centers * 3 - icon_size_x / 2,
                                 self.ymax * (subwindows_y_start_position + line_spacing_gap * 1.2) + icon_y_offset))
 
@@ -408,7 +418,7 @@ class SmDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = 0
+            icon_y_offset = config.LARGE_ICON_OFFSET
         self.screen.blit(icon, (self.xmax * subwindow_centers * 5 - icon_size_x / 2,
                                 self.ymax * (subwindows_y_start_position + line_spacing_gap * 1.2) + icon_y_offset))
 
@@ -431,7 +441,7 @@ class SmDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = 0
+            icon_y_offset = config.LARGE_ICON_OFFSET
         self.screen.blit(icon, (self.xmax * subwindow_centers * 7 - icon_size_x / 2,
                                 self.ymax * (subwindows_y_start_position + line_spacing_gap * 1.2) + icon_y_offset))
 
@@ -465,7 +475,7 @@ class SmDisplay:
         tm1 = time.strftime("%a, %b %d   %I:%M",
                             time.localtime())    # 1st part
         tm2 = time.strftime("%S", time.localtime())                   # 2nd
-        tm3 = time.strftime(" %P", time.localtime())                  #
+        tm3 = time.strftime(" %p", time.localtime())                  #
 
         rtm1 = time_date_font.render(tm1, True, line_color)
         (tx1, ty1) = rtm1.get_size()
@@ -533,7 +543,7 @@ class SmDisplay:
             font_name, int(self.ymax * time_height_small), bold=1)
 
         hours_and_minites = time.strftime("%I:%M", time.localtime())
-        am_pm = time.strftime(" %P", time.localtime())
+        am_pm = time.strftime(" %p", time.localtime())
 
         rendered_hours_and_minutes = regular_font.render(
             hours_and_minites, True, text_color)
@@ -733,52 +743,54 @@ if myDisp.update_weather() == False:
     print 'Error: no data from Weather.com.'
     running = False
 
-# Attach GPIO callback to our new button input on pin #4.
-GPIO.add_event_detect(4, GPIO.RISING, callback=btnNext, bouncetime=400)
-#GPIO.add_event_detect(17, GPIO.RISING, callback=btnShutdown, bouncetime=100)
-button_shutdown_count = 0
+if ENABLE_GPIO:
+    # Attach GPIO callback to our new button input on pin #4.
+    GPIO.add_event_detect(4, GPIO.RISING, callback=btnNext, bouncetime=400)
+    #GPIO.add_event_detect(17, GPIO.RISING, callback=btnShutdown, bouncetime=100)
+    button_shutdown_count = 0
 
-if GPIO.input(17):
-    print "Warning: Shutdown Switch is Active!"
-    myDisp.screen.fill((0, 0, 0))
-    icon = pygame.image.load('icons/64x64/' + 'shutdown.jpg')
-    (ix, iy) = icon.get_size()
-    myDisp.screen.blit(icon, (800 / 2 - ix / 2, 400 / 2 - iy / 2))
-    gpio_font = pygame.font.SysFont("freesans", 40, bold=1)
-    rf = gpio_font.render("Please toggle shutdown siwtch.", True, (255, 255, 255))
-    (tx1, ty1) = rf.get_size()
-    myDisp.screen.blit(rf, (800 / 2 - tx1 / 2, iy + 20))
-    pygame.display.update()
-    pygame.time.wait(1000)
-    while GPIO.input(17):
-        pygame.time.wait(100)
+    if GPIO.input(17):
+        print "Warning: Shutdown Switch is Active!"
+        myDisp.screen.fill((0, 0, 0))
+        icon = pygame.image.load('icons/64x64/' + 'shutdown.jpg')
+        (ix, iy) = icon.get_size()
+        myDisp.screen.blit(icon, (800 / 2 - ix / 2, 400 / 2 - iy / 2))
+        gpio_font = pygame.font.SysFont("freesans", 40, bold=1)
+        rf = gpio_font.render("Please toggle shutdown siwtch.", True, (255, 255, 255))
+        (tx1, ty1) = rf.get_size()
+        myDisp.screen.blit(rf, (800 / 2 - tx1 / 2, iy + 20))
+        pygame.display.update()
+        pygame.time.wait(1000)
+        while GPIO.input(17):
+            pygame.time.wait(100)
 
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 while running:
 
-    # Debounce the shutdown switch. The main loop rnus at 100ms. So, if the
-    # button (well, a switch really) counter "btnShutdownCnt" counts above
-    # 25 then the switch must have been on continuously for 2.5 seconds.
-    if GPIO.input(17):
-        button_shutdown_count += 1
-        if button_shutdown_count > 25:
-            print "Shutdown!"
-            myDisp.screen.fill((0, 0, 0))
-            icon = pygame.image.load('icons/64x64/' + 'shutdown.jpg')
-            (ix, iy) = icon.get_size()
-            myDisp.screen.blit(icon, (800 / 2 - ix / 2, 400 / 2 - iy / 2))
-            shutdown_button_font = pygame.font.SysFont("freesans", 60, bold=1)
-            rtm1 = shutdown_button_font.render("Shuting Down!", True, (255, 255, 255))
-            (tx1, ty1) = rtm1.get_size()
-            myDisp.screen.blit(rtm1, (800 / 2 - tx1 / 2, iy + 20))
-            pygame.display.update()
-            pygame.time.wait(1000)
-            #os.system("sudo shutdown -h now")
-            while GPIO.input(17):
-                pygame.time.wait(100)
-    else:
-        button_shutdown_count = 0
+    if ENABLE_GPIO:
+        # Debounce the shutdown switch. The main loop rnus at 100ms. So, if the
+        # button (well, a switch really) counter "btnShutdownCnt" counts above
+        # 25 then the switch must have been on continuously for 2.5 seconds.
+        if GPIO.input(17):
+            button_shutdown_count += 1
+            if button_shutdown_count > 25:
+                print "Shutdown!"
+                myDisp.screen.fill((0, 0, 0))
+                icon = pygame.image.load('icons/64x64/' + 'shutdown.jpg')
+                (ix, iy) = icon.get_size()
+                myDisp.screen.blit(icon, (800 / 2 - ix / 2, 400 / 2 - iy / 2))
+                shutdown_button_font = pygame.font.SysFont("freesans", 60, bold=1)
+                rtm1 = shutdown_button_font.render("Shuting Down!", True, (255, 255, 255))
+                (tx1, ty1) = rtm1.get_size()
+                myDisp.screen.blit(rtm1, (800 / 2 - tx1 / 2, iy + 20))
+                pygame.display.update()
+                pygame.time.wait(1000)
+                #os.system("sudo shutdown -h now")
+                while GPIO.input(17):
+                    pygame.time.wait(100)
+        else:
+            button_shutdown_count = 0
 
     # Look for and process keyboard events to change modes.
     for event in pygame.event.get():

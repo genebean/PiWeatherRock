@@ -23,6 +23,10 @@ genebean/PiWeatherRock:
         # Full screen is for when this is running on a TV or
         # similar device with a much higher resolution.
         FULLSCREEN = True
+
+        # If the weather icons are overlapping the text try adjusting
+        # this value. Negative values raise the icon.
+        LARGE_ICON_OFFSET = -23.5
         EOF
   PkgInclude:
     - '*'
