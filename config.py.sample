@@ -1,15 +1,17 @@
 # Settings used by weather.py
 """ Constants used in weather.py """
-# This is your Weather Underground API key
-WU_API_KEY = 'yourkeyhere'
+# This is your Dark Sky API key
+DS_API_KEY = 'yourkeyhere'
 
 # Seconds between API calls.
-# Note: the free WU access only allows for 500 calls / day
-#       aka a check ~ every 2.88 minutes
-WU_CHECK_INTERVAL = 300 # 5 minutes
+# Note: the free Dark Sky access only allows for 1,000 calls / day
+#       aka a check ~ every 1.44 minutes
+DS_CHECK_INTERVAL = 300 # 5 minutes
 
 # The location you want to check
-ZIP_CODE = '97201'
+# 33.7490° N, 84.3880° W == Atlanta, GA
+LAT = 33.7490
+LON = -84.3880
 
 # Full screen is for when this is running on a TV or
 # similar device with a much higher resolution.
@@ -18,4 +20,3 @@ FULLSCREEN = False
 # If the weather icons are overlapping the text try adjusting
 # this value. Negative values raise the icon.
 LARGE_ICON_OFFSET = -23.5
-
