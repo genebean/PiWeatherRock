@@ -345,6 +345,19 @@ class SmDisplay:
                                  line_spacing_gap
                                  * 1.2) + icon_y_offset))
 
+    def disp_summary(self):
+        y_start_position = 0.444
+        conditions_text_height = 0.04
+        text_color = (255, 255, 255)
+        font_name = "freesans"
+
+        conditions_font = pygame.font.SysFont(
+            font_name, int(self.ymax * conditions_text_height), bold=1)
+        txt = conditions_font.render(self.weather.summary, True, text_color)
+        txt_x = txt.get_size()[0]
+        x = self.xmax * 0.27 - (txt_x * 1.02) / 2
+        self.screen.blit(txt, (x, self.ymax *  y_start_position))
+
     def disp_weather(self):
         # Fill the screen with black
         self.screen.fill((0, 0, 0))
@@ -431,33 +444,37 @@ class SmDisplay:
         self.screen.blit(degree_txt, (x, self.ymax * 0.2))
         # self.screen.blit(dtxt, (self.xmax*0.02+tx*1.02,self.ymax*0.2))
 
+        # show current conditions under current temp
+        self.disp_summary()
+
         # Conditions
-        self.display_conditions_line(
-            'Currently:', self.weather.summary, False)
+        # self.display_conditions_line(
+        #     'Currently:', self.weather.summary, False)
         self.display_conditions_line(
             'Feels Like:', int(round(self.weather.apparentTemperature)),
-            True, 1)
+            True)
+
+        try:
+            wind_bearing = self.weather.windBearing
+            wind_direction = deg_to_compass(wind_bearing) + ' @ '
+        except AttributeError:
+            wind_direction = ''
+        wind_txt = wind_direction + str(int(round(self.weather.windSpeed))) + ' mph'
+        self.display_conditions_line(
+            'Wind:', wind_txt, False, 1)
+
         self.display_conditions_line(
             'Humidity:', str(int(round((self.weather.humidity * 100)))) + '%',
             False, 2)
+
+        # Skipping multiplier 3 (line 4)
+
         if self.take_umbrella:
-            self.display_conditions_line(
-                'Grab your umbrella!', '', False, 4)
+            umbrella_txt = 'Grab your umbrella!'
         else:
-            self.display_conditions_line(
-                'No umbrella needed today.', '', False, 4)
-
-        # self.display_conditions_line(
-        #     'Windspeed', str(int(round(self.weather.windSpeed))) + ' mph',
-        #     False, 2)
-
-        # try:
-        #     wind_bearing = self.weather.windBearing
-        #     wind_direction = deg_to_compass(wind_bearing)
-        # except AttributeError:
-        #     wind_direction = ''
-        # self.display_conditions_line(
-        #     'Direction', wind_direction, False, 3)
+            umbrella_txt = 'No umbrella needed today.'
+        self.display_conditions_line(
+            umbrella_txt, '', False, 4)
 
         # Today
         today = self.weather.daily[0]
