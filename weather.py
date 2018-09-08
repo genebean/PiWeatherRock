@@ -358,6 +358,20 @@ class SmDisplay:
         x = self.xmax * 0.27 - (txt_x * 1.02) / 2
         self.screen.blit(txt, (x, self.ymax *  y_start_position))
 
+    def disp_umbrella_info(self, umbrella_txt):
+        x_start_position = 0.52
+        y_start_position = 0.444
+        conditions_text_height = 0.04
+        text_color = (255, 255, 255)
+        font_name = "freesans"
+
+        conditions_font = pygame.font.SysFont(
+            font_name, int(self.ymax * conditions_text_height), bold=1)
+        txt = conditions_font.render(umbrella_txt, True, text_color)
+        self.screen.blit(txt, (
+            self.xmax * x_start_position,
+            self.ymax * y_start_position))
+
     def disp_weather(self):
         # Fill the screen with black
         self.screen.fill((0, 0, 0))
@@ -473,8 +487,7 @@ class SmDisplay:
             umbrella_txt = 'Grab your umbrella!'
         else:
             umbrella_txt = 'No umbrella needed today.'
-        self.display_conditions_line(
-            umbrella_txt, '', False, 4)
+        self.disp_umbrella_info(umbrella_txt)
 
         # Today
         today = self.weather.daily[0]
