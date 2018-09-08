@@ -221,17 +221,22 @@ class SmDisplay:
 
                 # start with saying we don't need an umbrella
                 self.take_umbrella = False
-                # determine if an umbrella is needed during daylight hours
-                for hour in self.weather.hourly:
-                    hr = datetime.datetime.fromtimestamp(hour.time)
-                    sr = datetime.datetime.fromtimestamp(
-                        self.weather.daily[0].sunriseTime)
-                    ss = datetime.datetime.fromtimestamp(
-                        self.weather.daily[0].sunsetTime)
-                    rain_chance = hour.precipProbability
-                    if hr >= sr and hr <= ss and rain_chance >= .3:
-                        self.take_umbrella = True
-                        break
+                icon_now = self.weather.icon
+                icon_today = self.weather.daily[0].icon
+                if icon_now == 'rain' or icon_today == 'rain':
+                    self.take_umbrella = True
+                else:
+                    # determine if an umbrella is needed during daylight hours
+                    for hour in self.weather.hourly:
+                        hr = datetime.datetime.fromtimestamp(hour.time)
+                        sr = datetime.datetime.fromtimestamp(
+                            self.weather.daily[0].sunriseTime)
+                        ss = datetime.datetime.fromtimestamp(
+                            self.weather.daily[0].sunsetTime)
+                        rain_chance = hour.precipProbability
+                        if hr >= sr and hr <= ss and rain_chance >= .3:
+                            self.take_umbrella = True
+                            break
 
             except requests.exceptions.RequestException as e:
                 print('Request exception: ' + str(e))
