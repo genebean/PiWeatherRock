@@ -273,21 +273,16 @@ class SmDisplay:
         txt = conditions_font.render(str(cond), True, text_color)
         self.screen.blit(txt, (self.xmax * second_column_x_start_position,
                                self.ymax * y_start))
-        (txt_x, txt_y) = txt.get_size()
 
         if is_temp:
+            txt_x = txt.get_size()[0]
             # Show degree F symbol using magic unicode char.
-            degree_font = pygame.font.SysFont(font_name,
-                                              int(self.ymax *
-                                                  degree_symbol_height),
-                                              bold=1)
+            degree_font = pygame.font.SysFont(
+                font_name, int(self.ymax * degree_symbol_height), bold=1)
             degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
-            self.screen.blit(degree_txt, (self.xmax *
-                                          second_column_x_start_position +
-                                          txt_x * 1.01,
-                                          self.ymax *
-                                          (y_start +
-                                           degree_symbol_y_offset)))
+            self.screen.blit(degree_txt, (
+                self.xmax * second_column_x_start_position + txt_x * 1.01,
+                self.ymax * (y_start + degree_symbol_y_offset)))
 
     def display_subwindow(self, data, day, c_times):
         subwindow_centers = 0.125
@@ -356,7 +351,7 @@ class SmDisplay:
         txt = conditions_font.render(self.weather.summary, True, text_color)
         txt_x = txt.get_size()[0]
         x = self.xmax * 0.27 - (txt_x * 1.02) / 2
-        self.screen.blit(txt, (x, self.ymax *  y_start_position))
+        self.screen.blit(txt, (x, self.ymax * y_start_position))
 
     def disp_umbrella_info(self, umbrella_txt):
         x_start_position = 0.52
@@ -381,89 +376,10 @@ class SmDisplay:
         text_color = (255, 255, 255)
         font_name = "freesans"
 
-        # Draw Screen Border
-        # Top
-        pygame.draw.line(self.screen, line_color, (xmin, 0), (self.xmax, 0),
-                         lines)
-        # Left
-        pygame.draw.line(self.screen, line_color, (xmin, 0),
-                         (xmin, self.ymax), lines)
-        # Bottom
-        pygame.draw.line(self.screen, line_color, (xmin, self.ymax),
-                         (self.xmax, self.ymax), lines)
-        # Right
-        pygame.draw.line(self.screen, line_color, (self.xmax, 0),
-                         (self.xmax, self.ymax + 2), lines)
-        # Bottom of top box
-        pygame.draw.line(self.screen, line_color, (xmin, self.ymax * 0.15),
-                         (self.xmax, self.ymax * 0.15), lines)
-        # Bottom of middle box
-        pygame.draw.line(self.screen, line_color, (xmin, self.ymax * 0.5),
-                         (self.xmax, self.ymax * 0.5), lines)
-        # Bottom row, left vertical
-        pygame.draw.line(self.screen, line_color, (self.xmax * 0.25,
-                                                   self.ymax * 0.5),
-                         (self.xmax * 0.25, self.ymax), lines)
-        # Bottom row, center vertical
-        pygame.draw.line(self.screen, line_color, (self.xmax * 0.5,
-                                                   self.ymax * 0.15),
-                         (self.xmax * 0.5, self.ymax), lines)
-        # Bottom row, right vertical
-        pygame.draw.line(self.screen, line_color, (self.xmax * 0.75,
-                                                   self.ymax * 0.5),
-                         (self.xmax * 0.75, self.ymax), lines)
-
-        # Time & Date
-        time_date_font = pygame.font.SysFont(
-            font_name, int(self.ymax * self.time_date_text_height), bold=1)
-        # Small Font for Seconds
-        small_font = pygame.font.SysFont(font_name,
-                                         int(self.ymax *
-                                             self.time_date_small_text_height),
-                                         bold=1)
-
-        time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
-        am_pm_string = time.strftime(" %p", time.localtime())
-
-        rendered_time_string = time_date_font.render(time_string, True,
-                                                     text_color)
-        (rendered_time_x, rendered_time_y) = rendered_time_string.get_size()
-        rendered_am_pm_string = small_font.render(am_pm_string, True,
-                                                  text_color)
-        (rendered_am_pm_x, rendered_am_pm_y) = rendered_am_pm_string.get_size()
-
-        full_time_string_x_position = self.xmax / 2 - (rendered_time_x +
-                                                       rendered_am_pm_x) / 2
-        self.screen.blit(rendered_time_string, (full_time_string_x_position,
-                                                self.time_date_y_position))
-        self.screen.blit(rendered_am_pm_string,
-                         (full_time_string_x_position + rendered_time_x + 3,
-                          self.time_date_small_y_position))
-
-        # Outside Temp
-        outside_temp_font = pygame.font.SysFont(
-            font_name, int(self.ymax * (0.5 - 0.15) * 0.6), bold=1)
-        txt = outside_temp_font.render(
-            str(int(round(self.weather.temperature))), True, text_color)
-        (txt_x, txt_y) = txt.get_size()
-        # Show degree F symbol using magic unicode char in a smaller font size.
-        degree_font = pygame.font.SysFont(
-            font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
-        degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
-        (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
-        x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x) / 2
-        self.screen.blit(txt, (x, self.ymax * 0.20))
-        # self.screen.blit(txt, (self.xmax*0.02,self.ymax*0.15))
-        x = x + (txt_x * 1.02)
-        self.screen.blit(degree_txt, (x, self.ymax * 0.2))
-        # self.screen.blit(dtxt, (self.xmax*0.02+tx*1.02,self.ymax*0.2))
-
-        # show current conditions under current temp
+        self.draw_screen_border(line_color, xmin, lines)
+        self.disp_time_date(font_name, text_color)
+        self.disp_current_temp(font_name, text_color)
         self.disp_summary()
-
-        # Conditions
-        # self.display_conditions_line(
-        #     'Currently:', self.weather.summary, False)
         self.display_conditions_line(
             'Feels Like:', int(round(self.weather.apparentTemperature)),
             True)
@@ -473,7 +389,8 @@ class SmDisplay:
             wind_direction = deg_to_compass(wind_bearing) + ' @ '
         except AttributeError:
             wind_direction = ''
-        wind_txt = wind_direction + str(int(round(self.weather.windSpeed))) + ' mph'
+        wind_txt = wind_direction + str(
+            int(round(self.weather.windSpeed))) + ' mph'
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
@@ -505,6 +422,83 @@ class SmDisplay:
 
         # Update the display
         pygame.display.update()
+
+    def disp_current_temp(self, font_name, text_color):
+        # Outside Temp
+        outside_temp_font = pygame.font.SysFont(
+            font_name, int(self.ymax * (0.5 - 0.15) * 0.6), bold=1)
+        txt = outside_temp_font.render(
+            str(int(round(self.weather.temperature))), True, text_color)
+        (txt_x, txt_y) = txt.get_size()
+        # Show degree F symbol using magic unicode char in a smaller font size.
+        degree_font = pygame.font.SysFont(
+            font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
+        degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
+        (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
+        x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x) / 2
+        self.screen.blit(txt, (x, self.ymax * 0.20))
+        x = x + (txt_x * 1.02)
+        self.screen.blit(degree_txt, (x, self.ymax * 0.2))
+
+    def disp_time_date(self, font_name, text_color):
+        # Time & Date
+        time_date_font = pygame.font.SysFont(
+            font_name, int(self.ymax * self.time_date_text_height), bold=1)
+        # Small Font for Seconds
+        small_font = pygame.font.SysFont(
+            font_name,
+            int(self.ymax * self.time_date_small_text_height), bold=1)
+
+        time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
+        am_pm_string = time.strftime(" %p", time.localtime())
+
+        rendered_time_string = time_date_font.render(time_string, True,
+                                                     text_color)
+        (rendered_time_x, rendered_time_y) = rendered_time_string.get_size()
+        rendered_am_pm_string = small_font.render(am_pm_string, True,
+                                                  text_color)
+        (rendered_am_pm_x, rendered_am_pm_y) = rendered_am_pm_string.get_size()
+
+        full_time_string_x_position = self.xmax / 2 - (rendered_time_x +
+                                                       rendered_am_pm_x) / 2
+        self.screen.blit(rendered_time_string, (full_time_string_x_position,
+                                                self.time_date_y_position))
+        self.screen.blit(rendered_am_pm_string,
+                         (full_time_string_x_position + rendered_time_x + 3,
+                          self.time_date_small_y_position))
+
+    def draw_screen_border(self, line_color, xmin, lines):
+        # Draw Screen Border
+        # Top
+        pygame.draw.line(self.screen, line_color, (xmin, 0), (self.xmax, 0),
+                         lines)
+        # Left
+        pygame.draw.line(self.screen, line_color, (xmin, 0),
+                         (xmin, self.ymax), lines)
+        # Bottom
+        pygame.draw.line(self.screen, line_color, (xmin, self.ymax),
+                         (self.xmax, self.ymax), lines)
+        # Right
+        pygame.draw.line(self.screen, line_color, (self.xmax, 0),
+                         (self.xmax, self.ymax + 2), lines)
+        # Bottom of top box
+        pygame.draw.line(self.screen, line_color, (xmin, self.ymax * 0.15),
+                         (self.xmax, self.ymax * 0.15), lines)
+        # Bottom of middle box
+        pygame.draw.line(self.screen, line_color, (xmin, self.ymax * 0.5),
+                         (self.xmax, self.ymax * 0.5), lines)
+        # Bottom row, left vertical
+        pygame.draw.line(self.screen, line_color, (self.xmax * 0.25,
+                                                   self.ymax * 0.5),
+                         (self.xmax * 0.25, self.ymax), lines)
+        # Bottom row, center vertical
+        pygame.draw.line(self.screen, line_color, (self.xmax * 0.5,
+                                                   self.ymax * 0.15),
+                         (self.xmax * 0.5, self.ymax), lines)
+        # Bottom row, right vertical
+        pygame.draw.line(self.screen, line_color, (self.xmax * 0.75,
+                                                   self.ymax * 0.5),
+                         (self.xmax * 0.75, self.ymax), lines)
 
     ####################################################################
     def sPrint(self, text, font, x, line_number, text_color):
