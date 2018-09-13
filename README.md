@@ -3,9 +3,9 @@
 _Designed with a 3.5" 480x320 TFT display in mind_
 
 
-| Main screen                                                  | Info screen                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------ |
-| ![weather-screenshot](screenshots/PiWeatherRock-Weather.png) | ![info-screenshot](screenshots/PiWeatherRock-Info.png) |
+| Daily forecast                                               | Hourly forecast                                        | Info screen |
+| ------------------------------------------------------------ | ------------------------------------------------------ | ----------- |
+| ![daily-forecast-screenshot](screenshots/PiWeatherRock-Daily.png) |![hourly-forecast-screenshot](screenshots/PiWeatherRock-Hourly.png)| ![info-screenshot](screenshots/PiWeatherRock-Info.png) |             |
 
 ## Introduction
 
