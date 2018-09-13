@@ -227,6 +227,7 @@ class SmDisplay:
                     self.take_umbrella = True
                 else:
                     # determine if an umbrella is needed during daylight hours
+                    curr_date = datetime.datetime.today().date()
                     for hour in self.weather.hourly:
                         hr = datetime.datetime.fromtimestamp(hour.time)
                         sr = datetime.datetime.fromtimestamp(
@@ -234,7 +235,9 @@ class SmDisplay:
                         ss = datetime.datetime.fromtimestamp(
                             self.weather.daily[0].sunsetTime)
                         rain_chance = hour.precipProbability
-                        if hr >= sr and hr <= ss and rain_chance >= .3:
+                        is_today = hr.date() == curr_date
+                        is_daylight_hr = hr >= sr and hr <= ss
+                        if is_today and is_daylight_hr and rain_chance >= .25:
                             self.take_umbrella = True
                             break
 
