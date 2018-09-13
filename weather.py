@@ -28,7 +28,7 @@
 
 """ Fetches weather reports from Dark Sky for displaying on a screen. """
 
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 
 ###############################################################################
 #   Raspberry Pi Weather Display
@@ -53,7 +53,7 @@ import requests
 import config
 
 # globals
-MODE = 'w'  # Default to weather mode.
+MODE = 'd'  # Default to weather mode.
 MOUSE_X, MOUSE_Y = 0, 0
 UNICODE_DEGREE = u'\xb0'
 
@@ -119,7 +119,7 @@ def stot(sec):
 
 
 ###############################################################################
-class SmDisplay:
+class my_display:
     screen = None
 
     ####################################################################
@@ -307,10 +307,16 @@ class SmDisplay:
                                (subwindow_centers * c_times) - txt_x / 2,
                                self.ymax * (subwindows_y_start_position +
                                             line_spacing_gap * 0)))
-        txt = forecast_font.render(
-            str(int(round(data.temperatureLow))) + ' / ' +
-            str(int(round(data.temperatureHigh))),
-            True, text_color)
+        if hasattr(data, 'temperatureLow'):
+            txt = forecast_font.render(
+                str(int(round(data.temperatureLow))) + UNICODE_DEGREE +
+                ' / ' +
+                str(int(round(data.temperatureHigh))) + UNICODE_DEGREE,
+                True, text_color)
+        else:
+            txt = forecast_font.render(
+                str(int(round(data.temperature))) + UNICODE_DEGREE,
+                True, text_color)
         (txt_x, txt_y) = txt.get_size()
         self.screen.blit(txt, (self.xmax *
                                (subwindow_centers * c_times) - txt_x / 2,
@@ -422,6 +428,77 @@ class SmDisplay:
             this_day_string = this_day_no.strftime("%A")
             multiplier += 2
             self.display_subwindow(this_day, this_day_string, multiplier)
+
+        # Update the display
+        pygame.display.update()
+
+    def disp_hourly(self):
+        # Fill the screen with black
+        self.screen.fill((0, 0, 0))
+        xmin = 10
+        lines = 5
+        line_color = (255, 255, 255)
+        text_color = (255, 255, 255)
+        font_name = "freesans"
+
+        self.draw_screen_border(line_color, xmin, lines)
+        self.disp_time_date(font_name, text_color)
+        self.disp_current_temp(font_name, text_color)
+        self.disp_summary()
+        self.display_conditions_line(
+            'Feels Like:', int(round(self.weather.apparentTemperature)),
+            True)
+
+        try:
+            wind_bearing = self.weather.windBearing
+            wind_direction = deg_to_compass(wind_bearing) + ' @ '
+        except AttributeError:
+            wind_direction = ''
+        wind_txt = wind_direction + str(
+            int(round(self.weather.windSpeed))) + ' mph'
+        self.display_conditions_line(
+            'Wind:', wind_txt, False, 1)
+
+        self.display_conditions_line(
+            'Humidity:', str(int(round((self.weather.humidity * 100)))) + '%',
+            False, 2)
+
+        # Skipping multiplier 3 (line 4)
+
+        if self.take_umbrella:
+            umbrella_txt = 'Grab your umbrella!'
+        else:
+            umbrella_txt = 'No umbrella needed today.'
+        self.disp_umbrella_info(umbrella_txt)
+
+        # Current hour
+        this_hour = self.weather.hourly[0]
+        this_hour_24_int = int(datetime.datetime.fromtimestamp(
+            this_hour.time).strftime("%H"))
+        if this_hour_24_int <= 11:
+            ampm = 'a.m.'
+        else:
+            ampm = 'p.m.'
+        this_hour_12_int = int(datetime.datetime.fromtimestamp(
+            this_hour.time).strftime("%I"))
+        this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
+        multiplier = 1
+        self.display_subwindow(this_hour, this_hour_string, multiplier)
+
+        # counts from 0 to 2
+        for future_hour in range(3):
+            this_hour = self.weather.hourly[future_hour + 1]
+            this_hour_24_int = int(datetime.datetime.fromtimestamp(
+                this_hour.time).strftime("%H"))
+            if this_hour_24_int <= 11:
+                ampm = 'a.m.'
+            else:
+                ampm = 'p.m.'
+            this_hour_12_int = int(datetime.datetime.fromtimestamp(
+                this_hour.time).strftime("%I"))
+            this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
+            multiplier += 2
+            self.display_subwindow(this_hour, this_hour_string, multiplier)
 
         # Update the display
         pygame.display.update()
@@ -607,7 +684,7 @@ class SmDisplay:
 # So, five things are returned as:
 #  (InDaylight, Hours, Minutes, secToSun, secToDark).
 ############################################################################
-def Daylight(weather):
+def daylight(weather):
     inDaylight = False    # Default return code.
 
     # Get current datetime with tz's local day and time.
@@ -645,23 +722,8 @@ def Daylight(weather):
             delta_seconds_til_dark)
 
 
-############################################################################
-def btnNext(channel):
-    global MODE, non_weather_timeout, periodic_info_activation
-
-    if MODE == 'w':
-        MODE = 'i'
-    elif MODE == 'i':
-        MODE = 'w'
-
-    non_weather_timeout = 0
-    periodic_info_activation = 0
-
-    print("Button Event!")
-
-
 # Create an instance of the lcd display class.
-myDisp = SmDisplay()
+my_disp = my_display()
 
 running = True             # Stay running while True
 seconds = 0                # Seconds Placeholder to pace display.
@@ -670,9 +732,9 @@ non_weather_timeout = 0
 # Switch to info periodically to prevent screen burn
 periodic_info_activation = 0
 
-# Loads data from Weather.com into class variables.
-if myDisp.get_forecast() is False:
-    print('Error: no data from Weather.com.')
+# Loads data from darksky.net into class variables.
+if my_disp.get_forecast() is False:
+    print('Error: no data from darksky.net.')
     running = False
 
 
@@ -685,15 +747,15 @@ while running:
             if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
                 running = False
 
-            # On 'w' key, set mode to 'weather'.
-            elif event.key == pygame.K_w:
-                MODE = 'w'
+            # On 'd' key, set mode to 'weather'.
+            elif event.key == pygame.K_d:
+                MODE = 'd'
                 non_weather_timeout = 0
                 periodic_info_activation = 0
 
             # On 's' key, save a screen shot.
             elif event.key == pygame.K_s:
-                myDisp.screen_cap()
+                my_disp.screen_cap()
 
             # On 'i' key, set mode to 'info'.
             elif event.key == pygame.K_i:
@@ -701,61 +763,87 @@ while running:
                 non_weather_timeout = 0
                 periodic_info_activation = 0
 
+            # on 'h' key, set mode to 'hourly'
+            elif event.key == pygame.K_h:
+                MODE = 'h'
+                non_weather_timeout = 0
+                periodic_info_activation = 0
+
     # Automatically switch back to weather display after a couple minutes.
-    if MODE != 'w':
+    if MODE != 'd' and MODE != 'h':
         periodic_info_activation = 0
         non_weather_timeout += 1
         # Five minute timeout at 100ms loop rate.
         if non_weather_timeout > 3000:
-            MODE = 'w'
+            MODE = 'd'
             syslog.syslog("Switched to weather mode")
     else:
         non_weather_timeout = 0
         periodic_info_activation += 1
+        curr_min_int = int(datetime.datetime.now().strftime("%M"))
         # 15 minute timeout at 100ms loop rate
         if periodic_info_activation > 9000:
             MODE = 'i'
             syslog.syslog("Switched to info mode")
+        elif periodic_info_activation > 600 and curr_min_int % 2 == 0:
+            MODE = 'h'
+        elif periodic_info_activation > 600:
+            MODE = 'd'
 
-    # Weather Display Mode
-    if MODE == 'w':
+    # Daily Weather Display Mode
+    if MODE == 'd':
         # Update / Refresh the display after each second.
         if seconds != time.localtime().tm_sec:
             seconds = time.localtime().tm_sec
-            myDisp.disp_weather()
+            my_disp.disp_weather()
             # ser.write("Weather\r\n")
         # Once the screen is updated, we have a full second to get the weather.
         # Once per minute, update the weather from the net.
         if seconds == 0:
             try:
-                myDisp.get_forecast()
+                my_disp.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
                 print("Decoding JSON has failed", sys.exc_info()[0])
             except BaseException:
                 print("Unexpected error:", sys.exc_info()[0])
-
-    if MODE == 'i':
+    # Hourly Weather Display Mode
+    elif MODE == 'h':
+        # Update / Refresh the display after each second.
+        if seconds != time.localtime().tm_sec:
+            seconds = time.localtime().tm_sec
+            my_disp.disp_hourly()
+        # Once the screen is updated, we have a full second to get the weather.
+        # Once per minute, update the weather from the net.
+        if seconds == 0:
+            try:
+                my_disp.get_forecast()
+            except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                print("Decoding JSON has failed", sys.exc_info()[0])
+            except BaseException:
+                print("Unexpected error:", sys.exc_info()[0])
+    # Info Screen Display Mode
+    elif MODE == 'i':
         # Pace the screen updates to once per second.
         if seconds != time.localtime().tm_sec:
             seconds = time.localtime().tm_sec
 
             (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-             delta_seconds_til_dark) = Daylight(myDisp.weather)
+             delta_seconds_til_dark) = daylight(my_disp.weather)
 
             # Extra info display.
-            myDisp.disp_info(inDaylight, dayHrs, dayMins, seconds_til_daylight,
+            my_disp.disp_info(inDaylight, dayHrs, dayMins, seconds_til_daylight,
                              delta_seconds_til_dark)
         # Refresh the weather data once per minute.
         if int(seconds) == 0:
             try:
-                myDisp.get_forecast()
+                my_disp.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
                 print("Decoding JSON has failed", sys.exc_info()[0])
             except BaseException:
                 print("Unexpected error:", sys.exc_info()[0])
 
     (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-     delta_seconds_til_dark) = Daylight(myDisp.weather)
+     delta_seconds_til_dark) = daylight(my_disp.weather)
 
     # Loop timer.
     pygame.time.wait(100)
