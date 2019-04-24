@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Settings used by weather.py
 """ Constants used in weather.py """
 # This is your Dark Sky API key
