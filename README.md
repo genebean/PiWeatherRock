@@ -2,7 +2,6 @@
 
 _Designed with a 3.5" 480x320 TFT display in mind_
 
-
 | Daily forecast                                               | Hourly forecast                                        | Info screen |
 | ------------------------------------------------------------ | ------------------------------------------------------ | ----------- |
 | ![daily-forecast-screenshot](screenshots/PiWeatherRock-Daily.png) |![hourly-forecast-screenshot](screenshots/PiWeatherRock-Hourly.png)| ![info-screenshot](screenshots/PiWeatherRock-Info.png) |             |
@@ -10,27 +9,16 @@ _Designed with a 3.5" 480x320 TFT display in mind_
 ## Introduction
 
 PiWeatherRock is an internet-connected weather station. Its purpose is to
-display local weather condtions. It was created with the goal of having a
+display local weather conditions. It was created with the goal of having a
 simple way to check the weather before taking our dogs out for a walk. The end
 result is a modern version of a weather rock.
 
-Right now all data is pulled from Dark Sky. A future interation
+Right now all data is pulled from Dark Sky. A future iteration
 will also incorporate data from sensors connected to a battery powered Arduino.
-
-_Note:_ A previous version pulled data from Weather Underground. IBM bought
-Weather Undergrund and decided they were too cool to continue to let
-developers use their api at all for free. To quote their site as of
-2018-09-03:
-
->To improve our services and enhance our relationship with our users, we will no longer provide free weather API keys as part of our program.
-
-I cannot wrap my head around how this is supposed to "enhance our relationship
-with our users."
-
 
 ## Usage
 
-The first thing you need to do to run this applicaiton is go to
+The first thing you need to do to run this application is go to
 https://darksky.net/dev and get an API key. You can make up to 1,000 API calls
 per day without paying or even providing payment info. After getting a key,
 copy `config.py.sample` to `config.py` and fill in values for your setup. In
@@ -40,20 +28,22 @@ apps.
 
 Once you have your config file in place, you will need to install dependencies.
 
-_Note:_ Anywhere you see `pip` or `python` you should be able to substitute the
-Python 3 versions without issue (aka `pip3` and `python3`).
+_Note:_ Anywhere you see `pip3` or `python3` you should may be able to substitute
+the Python 2 versions but I am no longer testing for this as Python 2 is finally
+going EoL.
 
 ```bash
-sudo apt-get install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev \
+sudo apt install python3-pip
+sudo apt install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev \
 libsdl-mixer1.2-dev libjpeg-dev libportmidi-dev libtimedate-perl
-pip install -r requirements.txt
+pip3 install -U -r requirements.txt
 ```
 
-Now you should be able to run `python weather.py` to start the program. While
+Now you should be able to run `python3 weather.py` to start the program. While
 its running there are some keyboard shortcuts to see additional information:
 
 * __w__: Displays the main weather screen
-* __i__: Displays an info screen which contains some additiional info
+* __i__: Displays an info screen which contains some additional info
   information
 * __q__: Quits the program
 
@@ -61,7 +51,7 @@ its running there are some keyboard shortcuts to see additional information:
 
 ### Weather.py - A PyGame-based weather data/forecast display
 
-* The buld of this project originated with the code written by Jim Kemp and
+* The bulk of this project originated with the code written by Jim Kemp and
   published at
   http://www.instructables.com/id/Raspberry-Pi-Internet-Weather-Station/.
 * Jim Kemp's version pulled from weather.com via pywapi but that doesn't seem

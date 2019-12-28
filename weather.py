@@ -68,6 +68,74 @@ def deg_to_compass(degrees):
 
 
 """
+https://darksky.net/dev/docs has lists out what each
+unit is. The method below is just a codified version
+of what is on that page.
+"""
+
+
+def units_decoder(units):
+    si_dict = {
+        'nearestStormDistance': 'Kilometers',
+        'precipIntensity': 'Millimeters per hour',
+        'precipIntensityMax': 'Millimeters per hour',
+        'precipAccumulation': 'Centimeters',
+        'temperature': 'Degrees Celsius',
+        'temperatureMin': 'Degrees Celsius',
+        'temperatureMax': 'Degrees Celsius',
+        'apparentTemperature': 'Degrees Celsius',
+        'dewPoint': 'Degrees Celsius',
+        'windSpeed': 'Meters per second',
+        'windGust': 'Meters per second',
+        'pressure': 'Hectopascals',
+        'visibility': 'Kilometers',
+    }
+    ca_dict = si_dict.copy()
+    ca_dict['windSpeed'] = 'Kilometers per hour'
+    ca_dict['windGust'] = 'Kilometers per hour'
+    uk2_dict = si_dict.copy()
+    uk2_dict['nearestStormDistance'] = 'Miles'
+    uk2_dict['visibility'] = 'Miles'
+    uk2_dict['windSpeed'] = 'Miles per hour'
+    uk2_dict['windGust'] = 'Miles per hour'
+    us_dict = {
+        'nearestStormDistance': 'Miles',
+        'precipIntensity': 'Inches per hour',
+        'precipIntensityMax': 'Inches per hour',
+        'precipAccumulation': 'Inches',
+        'temperature': 'Degrees Fahrenheit',
+        'temperatureMin': 'Degrees Fahrenheit',
+        'temperatureMax': 'Degrees Fahrenheit',
+        'apparentTemperature': 'Degrees Fahrenheit',
+        'dewPoint': 'Degrees Fahrenheit',
+        'windSpeed': 'Miles per hour',
+        'windGust': 'Miles per hour',
+        'pressure': 'Millibars',
+        'visibility': 'Miles',
+    }
+    switcher = {
+        'ca': ca_dict,
+        'uk2': uk2_dict,
+        'us': us_dict,
+        'si': si_dict,
+    }
+    return switcher.get(units, "Invalid unit name")
+
+
+def get_abbreviation(phrase):
+    abbreviation = ''.join(item[0].lower() for item in phrase.split())
+    return abbreviation
+
+
+def get_windspeed_abbreviation(unit=config.UNITS):
+    return get_abbreviation(units_decoder(unit)['windSpeed'])
+
+
+def get_temperature_letter(unit=config.UNITS):
+    return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
+
+
+"""
 https://darksky.net/dev/docs has this to say about icons:
 icon optional
 A machine-readable text summary of this data point, suitable for selecting an
@@ -199,7 +267,8 @@ class my_display:
                 self.weather = forecast(config.DS_API_KEY,
                                         config.LAT,
                                         config.LON,
-                                        exclude='minutely')
+                                        exclude='minutely',
+                                        units=config.UNITS)
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
@@ -399,7 +468,8 @@ class my_display:
         except AttributeError:
             wind_direction = ''
         wind_txt = wind_direction + str(
-            int(round(self.weather.windSpeed))) + ' mph'
+            int(round(self.weather.windSpeed))) + \
+            ' ' + get_windspeed_abbreviation()
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
@@ -455,7 +525,8 @@ class my_display:
         except AttributeError:
             wind_direction = ''
         wind_txt = wind_direction + str(
-            int(round(self.weather.windSpeed))) + ' mph'
+            int(round(self.weather.windSpeed))) + \
+            ' ' + get_windspeed_abbreviation()
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
@@ -515,10 +586,13 @@ class my_display:
             font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
         degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
         (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
+        degree_letter = outside_temp_font.render(get_temperature_letter(), True, text_color)
         x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x) / 2
         self.screen.blit(txt, (x, self.ymax * 0.20))
         x = x + (txt_x * 1.02)
         self.screen.blit(degree_txt, (x, self.ymax * 0.2))
+        x = x + (rendered_am_pm_x * 1.02)
+        self.screen.blit(degree_letter, (x, self.ymax * 0.2))
 
     def disp_time_date(self, font_name, text_color):
         # Time & Date
@@ -831,8 +905,9 @@ while running:
              delta_seconds_til_dark) = daylight(my_disp.weather)
 
             # Extra info display.
-            my_disp.disp_info(inDaylight, dayHrs, dayMins, seconds_til_daylight,
-                             delta_seconds_til_dark)
+            my_disp.disp_info(inDaylight, dayHrs, dayMins,
+                              seconds_til_daylight,
+                              delta_seconds_til_dark)
         # Refresh the weather data once per minute.
         if int(seconds) == 0:
             try:
