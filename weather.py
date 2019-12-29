@@ -581,13 +581,14 @@ class my_display:
         txt = outside_temp_font.render(
             str(int(round(self.weather.temperature))), True, text_color)
         (txt_x, txt_y) = txt.get_size()
-        # Show degree F symbol using magic unicode char in a smaller font size.
         degree_font = pygame.font.SysFont(
             font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
         degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
         (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
         degree_letter = outside_temp_font.render(get_temperature_letter(), True, text_color)
-        x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x) / 2
+        (degree_letter_x, degree_letter_y) = degree_letter.get_size()
+        # Position text
+        x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x + degree_letter_x) / 2
         self.screen.blit(txt, (x, self.ymax * 0.20))
         x = x + (txt_x * 1.02)
         self.screen.blit(degree_txt, (x, self.ymax * 0.2))
