@@ -244,7 +244,10 @@ class my_display:
         if config.FULLSCREEN:
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
-            self.icon_size = '256'
+            if (self.xmax <= 1024):
+                self.icon_size = '64'
+            else:
+                self.icon_size = '256'
         else:
             self.xmax = 480 - 35
             self.ymax = 320 - 5
