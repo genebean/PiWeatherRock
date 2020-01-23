@@ -5,6 +5,8 @@
 | ![daily-forecast-screenshot](screenshots/us-daily.png) | ![hourly-forecast-screenshot](screenshots/us-hourly.png) | ![info-screenshot](screenshots/us-info.png) |
 
 - [Introduction](#introduction)
+- [Installation](#installation)
+  - [Optional Steps](#optional-steps)
 - [Usage](#usage)
 - [Non-US units](#non-us-units)
 - [Influence and Credit](#influence-and-credit)
@@ -18,21 +20,57 @@ PiWeatherRock is an internet-connected weather station. Its purpose is to displa
 
 Right now all data is pulled from Dark Sky. A future iteration will also incorporate data from sensors connected to a battery powered Arduino.
 
-## Usage
+## Installation
 
-The first thing you need to do to run this application is go to https://darksky.net/dev and get an API key. You can make up to 1,000 API calls per day without paying or even providing payment info. After getting a key, copy `config.py.sample` to `config.py` and fill in values for your setup. In addition to your API key you will also need your latitude and longitude. https://gps-coordinates.org/ seems to work well for this as do some cell phone apps.
+> This is based on the assumption that you are using Raspbian 10 (buster). Though the code works on other platforms, the setup process has been tailored for this operating system.
 
-Once you have your config file in place, you will need to install dependencies:
+Before continuing, run `sudo raspi-config` and select `Boot Options` > `Desktop / CLI` > `Desktop Autologin`. Reboot if prompted.
+
+After that, clone this repository to your to your home directory:
 
 ```bash
-sudo apt install git vim python3-pip libsdl1.2-dev \
-libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-mixer1.2-dev \
-libjpeg-dev libportmidi-dev libtimedate-perl
-
-pip3 install -U -r requirements.txt
+git clone https://github.com/genebean/PiWeatherRock.git /home/pi/PiWeatherRock
 ```
 
-Now you should be able to run `python3 weather.py` to start the program. While its running there are some keyboard shortcuts to see additional information:
+Once you have cloned the repository, `cd` into it and create your initial config file:
+
+```bash
+cd /home/pi/PiWeatherRock
+cp config.py.sample config.py
+```
+
+The next thing you need to do is go to https://darksky.net/dev and get an API key. You can make up to 1,000 API calls per day without paying, or even providing payment info.
+
+In addition to your API key, you will also need your latitude and longitude. https://gps-coordinates.org/ seems to work well for this but I prefer to use the compass app on my iPhone.
+
+After getting a key and your location information, edit `config.py` and adjust the values based on your preferences.
+
+With the config file edited you are ready to run the install script by providing it with the name you'd like your Pi to have. For example, to name your Pi `mylittlepi` you'd do this:
+
+```bash
+sudo ./install.sh mylittlepi
+```
+
+This will execute the [install.sh](install.sh) from this repository which will do some initial prep work and then use Puppet to configure everything else by applying [setup.pp](setup.pp).
+
+When this finishes you will have a new systemd service named [PiWeatherRock.service](PiWeatherRock.service) that automatically starts up. You can check the status of the service by running `sudo systemctl status PiWeatherRock`.
+
+### Optional Steps
+
+[setup.pp](setup.pp) contains some extra info that is commented out if you are not using the stock GUI.
+
+Running the command below will tell puppet to keep things in line every 30 minutes. See https://crontab.guru/ for examples of how you could adjust the interval.
+
+```bash
+puppet resource cron 'run puppet' \
+ensure=present \
+command='/usr/bin/sudo /usr/bin/puppet apply /home/pi/PiWeatherRock/setup.pp' \
+minute='*/30'
+```
+
+## Usage
+
+While the service is running there are some keyboard shortcuts to see additional information. These can be used from a keyboard plugged into the Pi or via VNC. VNC is available via IP or the name you set earlier (ex: `mylittlepi` is available via `mylittlepi.local`).
 
 - __w__: Displays the main weather screen
 - __i__: Displays an info screen which contains some additional info information

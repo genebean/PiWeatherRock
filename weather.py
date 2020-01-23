@@ -39,6 +39,7 @@ __version__ = "0.0.12"
 import datetime
 import os
 import platform
+import signal
 import sys
 import syslog
 import time
@@ -56,6 +57,13 @@ import config
 MODE = 'd'  # Default to weather mode.
 MOUSE_X, MOUSE_Y = 0, 0
 UNICODE_DEGREE = u'\xb0'
+
+
+def exit_gracefully(signum, frame):
+    sys.exit(0)
+
+
+signal.signal(signal.SIGTERM, exit_gracefully)
 
 
 def deg_to_compass(degrees):

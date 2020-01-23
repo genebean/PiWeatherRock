@@ -1,0 +1,17 @@
+# this file is managed by Puppet
+[Unit]
+Description=PiWeatherRock Service
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/PiWeatherRock
+Environment='DISPLAY=:0'
+ExecStart=/usr/bin/python3 /home/pi/PiWeatherRock/weather.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
