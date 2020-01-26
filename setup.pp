@@ -9,7 +9,6 @@ $main_packages = [
   'git',
   'libgl1-mesa-dri',
   'lightdm',
-  'realvnc-vnc-server',
   'tmux',
   'x11-xserver-utils',
   'xserver-xorg',
@@ -32,6 +31,22 @@ package { [ $main_packages, $piweatherrock_packages, ]:
   install_options => [
     '--no-install-recommends',
   ],
+}
+
+unless $facts['os']['hardware'] == 'x86_64' {
+  $non_x86_packages = [ 'realvnc-vnc-server', ]
+  package { $non_x86_packages:
+    ensure          => latest,
+    install_options => [
+      '--no-install-recommends',
+    ],
+  }
+
+  service { 'vncserver-x11-serviced':
+    ensure  => running,
+    enable  => true,
+    require => Package['realvnc-vnc-server'],
+  }
 }
 
 # if using Raspbian Lite uncomment the bit below for a minimal desktop and terminal
@@ -70,33 +85,27 @@ exec { 'enable display-setup-script':
   unless  => "grep -e '^display-setup-script' /etc/lightdm/lightdm.conf",
 }
 
-service { 'vncserver-x11-serviced':
-  ensure  => running,
-  enable  => true,
-  require => Package[$main_packages],
-}
-
 vcsrepo { '/home/pi/PiWeatherRock':
   ensure   => latest,
   provider => git,
   source   => 'https://github.com/genebean/PiWeatherRock.git',
 }
 
-python::requirements { '/home/pi/PiWeatherRock/requirements.txt':
-  virtualenv   => '/home/pi/PiWeatherRock',
+$python_packages = [
+  'darkskylib',
+  'pygame',
+  'pyserial',
+  'requests',
+]
+
+python::pip { $python_packages:
   pip_provider => 'pip3',
-  owner        => 'pi',
-  group        => 'pi',
-  cwd          => '/home/pi/PiWeatherRock',
-  require      => [
-    Package[ $main_packages, $piweatherrock_packages, ],
-    Vcsrepo['/home/pi/PiWeatherRock'],
-  ],
+  require      => Package[ $main_packages, $piweatherrock_packages, ],
 }
 
 systemd::unit_file { 'PiWeatherRock.service':
   source  => 'file:///home/pi/PiWeatherRock/PiWeatherRock.service',
-  require => Python::Requirements['/home/pi/PiWeatherRock/requirements.txt'],
+  require => Python::Pip[$python_packages],
   notify  => Service['PiWeatherRock.service'],
 }
 
@@ -105,8 +114,9 @@ service {'PiWeatherRock.service':
   enable    => true,
   require   => Systemd::Unit_file['PiWeatherRock.service'],
   subscribe => [
-    File['/home/pi/bin/xhost.sh'],
     Exec['enable display-setup-script'],
+    File['/home/pi/bin/xhost.sh'],
+    Python::Pip[$python_packages],
     Vcsrepo['/home/pi/PiWeatherRock'],
   ],
 }
