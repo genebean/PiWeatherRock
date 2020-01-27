@@ -13,8 +13,8 @@
 - [Usage](#usage)
 - [Non-US units](#non-us-units)
 - [Troubleshooting](#troubleshooting)
-	- [Git permission denied](#git-permission-denied)
-	- [Starting fresh](#starting-fresh)
+  - [Git permission denied](#git-permission-denied)
+  - [Starting fresh](#starting-fresh)
 - [Support](#support)
   - [Chat](#chat)
   - [GitHub Issues](#github-issues)
@@ -97,7 +97,8 @@ Notice: Applied catalog in 115.65 seconds
 
 While the service is running there are some keyboard shortcuts to see additional information. These can be used from a keyboard plugged into the Pi or via VNC. VNC is available via IP or the name you set earlier (ex: `mylittlepi` is available via `mylittlepi.local`).
 
-- __w__: Displays the main weather screen
+- __d__: Displays the daily weather screen
+- __h__: Displays the hourly weather screen
 - __i__: Displays an info screen which contains some additional info information
 - __q__: Quits the program
 
