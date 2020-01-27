@@ -1,5 +1,7 @@
 # PiWeatherRock - Displays local weather on a Raspberry Pi (or a TV)
 
+[![Gitter](https://badges.gitter.im/PiWeatherRock/community.svg)](https://gitter.im/PiWeatherRock/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 | Daily forecast                                         | Hourly forecast                                          | Info screen                                 |
 |--------------------------------------------------------|----------------------------------------------------------|---------------------------------------------|
 | ![daily-forecast-screenshot](screenshots/us-daily.png) | ![hourly-forecast-screenshot](screenshots/us-hourly.png) | ![info-screenshot](screenshots/us-info.png) |
@@ -9,6 +11,9 @@
   - [Optional Steps](#optional-steps)
 - [Usage](#usage)
 - [Non-US units](#non-us-units)
+- [Support](#support)
+  - [Chat](#chat)
+  - [GitHub Issues](#github-issues)
 - [Influence and Credit](#influence-and-credit)
   - [Weather.py - A PyGame-based weather data/forecast display](#weatherpy---a-pygame-based-weather-dataforecast-display)
   - [Icons](#icons)
@@ -85,6 +90,16 @@ Dark Sky supports four sets of units for forecasts: `ca`, `si`, `uk2`, and `us`.
 | CA    | ![daily-forecast-screenshot](screenshots/ca-daily.png)  | ![hourly-forecast-screenshot](screenshots/ca-hourly.png)  |
 | SI    | ![daily-forecast-screenshot](screenshots/si-daily.png)  | ![hourly-forecast-screenshot](screenshots/si-hourly.png)  |
 | UK2   | ![daily-forecast-screenshot](screenshots/uk2-daily.png) | ![hourly-forecast-screenshot](screenshots/uk2-hourly.png) |
+
+## Support
+
+### Chat
+
+Want to chat with other PiWeatherRock users? We have a Gitter Room which you can join at [gitter.im/PiWeatherRock/community](https://gitter.im/PiWeatherRock/community).
+
+### GitHub Issues
+
+I try to keep an eye on the issues in the repo. Feel free to file a bug report of a feature request.
 
 ## Influence and Credit
 
