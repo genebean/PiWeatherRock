@@ -9,6 +9,7 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
   - [Optional Steps](#optional-steps)
+- [Updates](#updates)
 - [Usage](#usage)
 - [Non-US units](#non-us-units)
 - [Support](#support)
@@ -71,6 +72,28 @@ puppet resource cron 'run puppet' \
 ensure=present \
 command='/usr/bin/sudo /usr/bin/puppet apply /home/pi/PiWeatherRock/setup.pp' \
 minute='*/30'
+```
+
+## Updates
+
+If you already have this project cloned to your computer or Pi then just run these commands:
+
+```bash
+pi@rock:~/PiWeatherRock $ git pull
+# you should see some output from git here if there are any updates
+
+pi@rock:~/PiWeatherRock $ sudo puppet apply setup.pp
+# below is a sample of the type of output you may see
+Notice: Compiled catalog for rock in environment production in 0.81 seconds
+Notice: /Stage[main]/Main/Python::Pip[darkskylib]/Exec[pip_install_darkskylib]/returns: executed successfully
+Notice: /Stage[main]/Main/Service[PiWeatherRock.service]: Triggered 'refresh' from 1 event
+Notice: Applied catalog in 115.65 seconds
+```
+
+If the `git` command above says `error: cannot open .git/FETCH_HEAD: Permission denied` run this to fix things and then repeat the steps above:
+
+```bash
+sudo chown -R pi:pi /home/pi/PiWeatherRock
 ```
 
 ## Usage
