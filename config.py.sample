@@ -21,7 +21,7 @@ UNITS = 'us'
 
 # Full screen is for when this is running on a TV or
 # similar device with a much higher resolution.
-FULLSCREEN = False
+FULLSCREEN = True
 
 # If the weather icons are overlapping the text try adjusting
 # this value. Negative values raise the icon.
