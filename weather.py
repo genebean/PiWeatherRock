@@ -865,7 +865,7 @@ while RUNNING:
                 PERIODIC_INFO_ACTIVATION = 0
 
     # Automatically switch back to weather display after a couple minutes.
-    if MODE != 'd' and MODE != 'h':
+    if MODE not in ('d', 'h'):
         PERIODIC_INFO_ACTIVATION = 0
         NON_WEATHER_TIMEOUT += 1
         # Five minute timeout at 100ms loop rate.
