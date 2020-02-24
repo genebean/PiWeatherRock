@@ -186,9 +186,9 @@ def icon_mapping(icon, size):
 # Helper function to which takes seconds and returns (hours, minutes).
 # ###########################################################################
 def stot(sec):
-    min = sec.seconds // 60
-    hrs = min // 60
-    return (hrs, min % 60)
+    mins = sec.seconds // 60
+    hrs = mins // 60
+    return (hrs, mins % 60)
 
 
 ###############################################################################
