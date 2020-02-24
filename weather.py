@@ -249,7 +249,7 @@ class MyDisplay:
         if config.FULLSCREEN:
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
-            if (self.xmax <= 1024):
+            if self.xmax <= 1024:
                 self.icon_size = '64'
             else:
                 self.icon_size = '256'
@@ -269,7 +269,7 @@ class MyDisplay:
         "Destructor to make sure pygame shuts down, etc."
 
     def get_forecast(self):
-        if ((time.time() - self.last_update_check) > config.DS_CHECK_INTERVAL):
+        if (time.time() - self.last_update_check) > config.DS_CHECK_INTERVAL:
             self.last_update_check = time.time()
             try:
                 self.weather = forecast(config.DS_API_KEY,
