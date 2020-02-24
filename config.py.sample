@@ -19,6 +19,12 @@ LON = -84.3880
 # Valid values are: 'ca', 'si', uk2', and 'us'
 UNITS = 'us'
 
+# Set the language the information from Dark Sky's API
+# is returned in. Units are not changed by this; they rely
+# on the setting above named UNITS. See the `lang` section of
+# https://darksky.net/dev/docs
+LANG = 'en'
+
 # Full screen is for when this is running on a TV or
 # similar device with a much higher resolution.
 FULLSCREEN = True

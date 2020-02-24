@@ -279,7 +279,8 @@ class my_display:
                                         config.LAT,
                                         config.LON,
                                         exclude='minutely',
-                                        units=config.UNITS)
+                                        units=config.UNITS,
+                                        lang=config.LANG)
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
