@@ -880,12 +880,10 @@ while RUNNING:
         if PERIODIC_INFO_ACTIVATION > (config.INFO_SCREEN_DELAY * 10):
             MODE = 'i'
             syslog.syslog("Switched to info mode")
-        elif (
-              PERIODIC_INFO_ACTIVATION % (config.DH_PAUSE * 10)) == 0 and
+        elif (PERIODIC_INFO_ACTIVATION % (config.DH_PAUSE * 10)) == 0 and
               MODE == 'd'):
             MODE = 'h'
-        elif (
-              PERIODIC_INFO_ACTIVATION % (config.DH_PAUSE * 10)) == 0 and
+        elif (PERIODIC_INFO_ACTIVATION % (config.DH_PAUSE * 10)) == 0 and
               MODE == 'h'):
             MODE = 'd'
 
@@ -950,4 +948,3 @@ while RUNNING:
 
 
 pygame.quit()
-
