@@ -887,7 +887,6 @@ while RUNNING:
             syslog.syslog("Switching to info mode")
         elif (PERIODIC_INFO_ACTIVATION % (((config.DAILY_PAUSE * D_COUNT) +
               (config.HOURLY_PAUSE * H_COUNT)) * 10)) == 0:
-            syslog.syslog("Time: " + str(PERIODIC_INFO_ACTIVATION / 10))
             if MODE == 'd':
                 syslog.syslog("Switching to HOURLY")
                 MODE = 'h'
