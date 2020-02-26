@@ -32,3 +32,13 @@ FULLSCREEN = True
 # If the weather icons are overlapping the text try adjusting
 # this value. Negative values raise the icon.
 LARGE_ICON_OFFSET = -23.5
+
+# Number of seconds to pause on the Daily and Hourly weather screens.
+DH_PAUSE = 60 # 1 minute
+
+# Number of seconds to pause on the Info screen.
+INFO_SCREEN_PAUSE = 300 # 5 minutes
+
+# Number of seconds between showing the info screen.
+INFO_SCREEN_DELAY = 900 # 15 minutes
+

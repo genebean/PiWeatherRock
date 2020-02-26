@@ -868,21 +868,25 @@ while RUNNING:
     if MODE not in ('d', 'h'):
         PERIODIC_INFO_ACTIVATION = 0
         NON_WEATHER_TIMEOUT += 1
-        # Five minute timeout at 100ms loop rate.
-        if NON_WEATHER_TIMEOUT > 3000:
+        # Default in config.py.sample: pause for 5 minutes on info screen
+        if NON_WEATHER_TIMEOUT > (config.INFO_SCREEN_PAUSE * 10):
             MODE = 'd'
             syslog.syslog("Switched to weather mode")
     else:
         NON_WEATHER_TIMEOUT = 0
         PERIODIC_INFO_ACTIVATION += 1
-        CURR_MIN_INT = int(datetime.datetime.now().strftime("%M"))
-        # 15 minute timeout at 100ms loop rate
-        if PERIODIC_INFO_ACTIVATION > 9000:
+        # Default in config.py.sample: flip between 2 weather screens
+        # for 15 minutes before showing info screen.
+        if PERIODIC_INFO_ACTIVATION > (config.INFO_SCREEN_DELAY * 10):
             MODE = 'i'
             syslog.syslog("Switched to info mode")
-        elif PERIODIC_INFO_ACTIVATION > 600 and CURR_MIN_INT % 2 == 0:
+        elif (
+              PERIODIC_INFO_ACTIVATION % (config.DH_PAUSE * 10)) == 0 and
+              MODE == 'd'):
             MODE = 'h'
-        elif PERIODIC_INFO_ACTIVATION > 600:
+        elif (
+              PERIODIC_INFO_ACTIVATION % (config.DH_PAUSE * 10)) == 0 and
+              MODE == 'h'):
             MODE = 'd'
 
     # Daily Weather Display Mode
@@ -946,3 +950,4 @@ while RUNNING:
 
 
 pygame.quit()
+
