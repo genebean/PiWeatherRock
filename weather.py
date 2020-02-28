@@ -54,9 +54,12 @@ import requests
 import config
 
 # globals
-MODE = 'd'  # Default to weather mode.
 MOUSE_X, MOUSE_Y = 0, 0
 UNICODE_DEGREE = u'\xb0'
+
+MODE = 'd'  # Default to weather mode. Showing daily weather first.
+D_COUNT = 1
+H_COUNT = 0
 
 
 def exit_gracefully(signum, frame):
@@ -139,7 +142,6 @@ def get_windspeed_abbreviation(unit=config.UNITS):
 
 def get_temperature_letter(unit=config.UNITS):
     return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
-
 
 
 def icon_mapping(icon, size):
@@ -868,22 +870,31 @@ while RUNNING:
     if MODE not in ('d', 'h'):
         PERIODIC_INFO_ACTIVATION = 0
         NON_WEATHER_TIMEOUT += 1
-        # Five minute timeout at 100ms loop rate.
-        if NON_WEATHER_TIMEOUT > 3000:
+        D_COUNT = 0
+        H_COUNT = 0
+        # Default in config.py.sample: pause for 5 minutes on info screen.
+        if NON_WEATHER_TIMEOUT > (config.INFO_SCREEN_PAUSE * 10):
             MODE = 'd'
-            syslog.syslog("Switched to weather mode")
+            D_COUNT = 1
+            syslog.syslog("Switching to weather mode")
     else:
         NON_WEATHER_TIMEOUT = 0
         PERIODIC_INFO_ACTIVATION += 1
-        CURR_MIN_INT = int(datetime.datetime.now().strftime("%M"))
-        # 15 minute timeout at 100ms loop rate
-        if PERIODIC_INFO_ACTIVATION > 9000:
+        # Default in config.py.sample: flip between 2 weather screens
+        # for 15 minutes before showing info screen.
+        if PERIODIC_INFO_ACTIVATION > (config.INFO_SCREEN_DELAY * 10):
             MODE = 'i'
-            syslog.syslog("Switched to info mode")
-        elif PERIODIC_INFO_ACTIVATION > 600 and CURR_MIN_INT % 2 == 0:
-            MODE = 'h'
-        elif PERIODIC_INFO_ACTIVATION > 600:
-            MODE = 'd'
+            syslog.syslog("Switching to info mode")
+        elif (PERIODIC_INFO_ACTIVATION % (((config.DAILY_PAUSE * D_COUNT) +
+              (config.HOURLY_PAUSE * H_COUNT)) * 10)) == 0:
+            if MODE == 'd':
+                syslog.syslog("Switching to HOURLY")
+                MODE = 'h'
+                H_COUNT += 1
+            else:
+                syslog.syslog("Switching to DAILY")
+                MODE = 'd'
+                D_COUNT += 1
 
     # Daily Weather Display Mode
     if MODE == 'd':
