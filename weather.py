@@ -847,6 +847,8 @@ while RUNNING:
             # On 'd' key, set mode to 'weather'.
             elif event.key == pygame.K_d:
                 MODE = 'd'
+                D_COUNT = 1
+                H_COUNT = 0
                 NON_WEATHER_TIMEOUT = 0
                 PERIODIC_INFO_ACTIVATION = 0
 
@@ -857,12 +859,16 @@ while RUNNING:
             # On 'i' key, set mode to 'info'.
             elif event.key == pygame.K_i:
                 MODE = 'i'
+                D_COUNT = 0
+                H_COUNT = 0
                 NON_WEATHER_TIMEOUT = 0
                 PERIODIC_INFO_ACTIVATION = 0
 
             # on 'h' key, set mode to 'hourly'
             elif event.key == pygame.K_h:
                 MODE = 'h'
+                D_COUNT = 0
+                H_COUNT = 1
                 NON_WEATHER_TIMEOUT = 0
                 PERIODIC_INFO_ACTIVATION = 0
 
