@@ -33,15 +33,6 @@ FULLSCREEN = True
 # this value. Negative values raise the icon.
 LARGE_ICON_OFFSET = -23.5
 
-# Number of seconds to pause on the Daily weather screen.
-DAILY_PAUSE = 60 # 1 minute
-
-# Number of seconds to pause on the Hourly weather screen. 
-HOURLY_PAUSE = 60 # 1 minute
-
-# Number of seconds to pause on the Info screen.
-INFO_SCREEN_PAUSE = 300 # 5 minutes
-
-# Number of seconds between showing the info screen.
-INFO_SCREEN_DELAY = 900 # 15 minutes
-
+# Comma separated list of plugins to display. Default behavior is to switch
+# beteen daily and hourly weather. Will be shown in the order below.
+PLUGINS = ['daily','hourly']
