@@ -1,0 +1,2 @@
+# Number of seconds to show hourly weather screen. Default is 60.
+PAUSE = 60

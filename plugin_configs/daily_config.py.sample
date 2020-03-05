@@ -1,0 +1,2 @@
+# Number of seconds to show daily weather screen. Default is 60.
+PAUSE = 60
