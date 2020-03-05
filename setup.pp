@@ -96,6 +96,7 @@ $python_packages = [
   'pygame',
   'pyserial',
   'requests',
+  'pynanosvg',
 ]
 
 python::pip { $python_packages:
