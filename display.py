@@ -65,7 +65,7 @@ for plugin in config.PLUGINS:
     screen_info[plugin]['count'] = 0
     screen_info[plugin]['pause'] = eval(plugin + '_config.PAUSE')
     screen_info[plugin]['last_update_time'] = 0
-mode = 'daily'  # Default to weather mode. Showing daily weather first.
+mode = config.PLUGINS[0]  # Default to first plugin mode. Default is 'daily'.
 reset_counter(mode, screen_info)  # Update screen count variables
 running = True             # Stay running while True
 seconds = 0                # Seconds placeholder to pace display.
@@ -151,7 +151,7 @@ class MyDisplay:
         self.time_date_small_y_position = 18
         self.start_time = round(time.time())
 
-    def disp_time_date(self, font_name, text_color):
+    def disp_time_date(self, font_name, text_color, text):
         # Time & Date
         time_date_font = pygame.font.SysFont(
             font_name, int(self.ymax * self.time_date_text_height), bold=1)
@@ -208,7 +208,7 @@ syslog.syslog('Retreiving intial weather data')
 screen_info['daily']['last_update_time'] = my_disp.get_forecast(0)
 screen_info['hourly']['last_update_time'] = screen_info[
     'daily']['last_update_time']
-if screen_info['daily']['last_update_time'] is False:
+if not screen_info['daily']['last_update_time']:
     print('Error: no data from darksky.net.')
     running = False
 syslog.syslog('Successfully retreived intial weather data.')
@@ -219,7 +219,7 @@ for plugin in config.PLUGINS:
         syslog.syslog('Retreiving intial %s data' % plugin)
         last_update_time = eval(f"my_disp.get_{plugin}(0)")
         screen_info[plugin]['last_update_time'] = last_update_time
-        if isinstance(last_update_time, int):
+        if last_update_time:
             syslog.syslog('Successfully retreived intial %s data' % plugin)
         else:
             syslog.syslog(
@@ -286,25 +286,20 @@ while running:
             mode = new_screen
             screen_info[mode]['count'] += 1
 
-    try:
-        if mode == 'daily' or mode == 'hourly' or mode == 'info':
-            eval(f"my_disp.disp_{mode}"
-                 f"(screen_info['daily']['last_update_time'])")
-            last_update_time = eval(f"my_disp.get_{mode}"
-                                    f"(screen_info['daily']"
-                                    f"['last_update_time'])")
-            screen_info['daily']['last_update_time'] = last_update_time
-            screen_info['hourly']['last_update_time'] = last_update_time
-        else:
-            eval(f"my_disp.disp_{mode}"
-                 f"(screen_info[mode]['last_update_time'])")
-            last_update_time = eval(
-                f"my_disp.get_{mode}(screen_info[mode]['last_update_time'])")
-            screen_info[mode]['last_update_time'] = last_update_time
-    except ValueError:  # includes simplejson.decoder.JSONDecodeError
-        print("Decoding JSON has failed", sys.exc_info()[0])
-    except BaseException:
-        print("Unexpected error:", sys.exc_info()[0])
+    if mode == 'daily' or mode == 'hourly' or mode == 'info':
+        eval(f"my_disp.disp_{mode}"
+                f"(screen_info['daily']['last_update_time'])")
+        last_update_time = eval(f"my_disp.get_{mode}"
+                                f"(screen_info['daily']"
+                                f"['last_update_time'])")
+        screen_info['daily']['last_update_time'] = last_update_time
+        screen_info['hourly']['last_update_time'] = last_update_time
+    else:
+        eval(f"my_disp.disp_{mode}"
+                f"(screen_info[mode]['last_update_time'])")
+        last_update_time = eval(
+            f"my_disp.get_{mode}(screen_info[mode]['last_update_time'])")
+        screen_info[mode]['last_update_time'] = last_update_time
 
     # Loop timer.
     pygame.time.wait(1000)
