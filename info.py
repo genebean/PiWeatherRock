@@ -49,7 +49,7 @@ from weather import *
 
 class Info:
     def get_info(self, last_update_time):
-        return get_forecast(last_update_time)
+        return self.get_forecast(last_update_time)
 
     def sPrint(self, text, font, x, line_number, text_color):
         rendered_font = font.render(text, True, text_color)
