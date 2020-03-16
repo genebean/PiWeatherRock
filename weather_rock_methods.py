@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # BEGIN LICENSE
-# Copyright (c) 2014 Jim Kemp <kemp.jim@gmail.com>
-# Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -26,15 +24,10 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 # END LICENSE
 
-""" Fetches weather reports from Dark Sky for displaying on a screen. """
+""" Functions to help PiWeatherRock run efficiently. """
 
-__version__ = "0.0.13"
+__version__ = "0.0.12"
 
-###############################################################################
-#   Raspberry Pi Weather Display
-#   Original By: Jim Kemp          10/25/2014
-#   Modified By: Gene Liverman    12/30/2017 & multiple times since
-###############################################################################
 
 # third party imports
 from svg import Parser, Rasterizer
