@@ -28,11 +28,14 @@
 
 __version__ = "0.0.12"
 
+###############################################################################
+#   Raspberry Pi Weather Display Config Page Plugin
+#   Original By: github user: metaMMA          2020-03-15
+###############################################################################
 
 # standard imports
 import os
 import json
-import time
 
 # third-party imports
 import cherrypy
