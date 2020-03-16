@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css?family=Nunito:300,400,700");
+
+body {
+    padding: 5vw 10vw;
+    font-size: 18px;
+    font-family: "Nunito", sans-serif;
+    background-color: #151515;
+}
+
+.c-toggle {
+    --baseSize: 12px;
+
+    label {
+        font-size: calc(var(--baseSize) * 1.75);
+        margin: 0 .5em 0;
+        cursor: pointer;
+    }
+
+    input[type="radio"] {
+        display: inline-block;
+        margin-right: -2px;
+        width: 50%;
+        height: 100%;
+        opacity: 0;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+
+        &:focus ~ .c-toggle__switcher {
+            border: 3px solid hsla(333, 40%, 45%, 1);
+            top: -2px;
+        }
+    }
+}
+
+.c-toggle__wrapper {
+    font-size: var(--baseSize);
+    display: inline-block;
+    vertical-align: middle;
+    width: 7em;
+    height: 3.5em;
+    border-radius: 3.5em; /* = height */
+    border: 1px solid #ddd;
+    position: relative; // create positioning context for ::after
+}
+.c-toggle__switcher {
+    // the toggle
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 100%;
+    width: 50%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: hsla(333, 60%, 60%, 1);
+    transition: all 0.1s ease-out;
+    z-index: 2;
+}
+
+.c-toggle__background {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    border-radius: 3.5em;
+    background-color: #eee;
+    transition: all 0.1s ease-out;
+}
+
+#dark:checked ~ .c-toggle__switcher {
+    right: 0;
+    left: 50%;
+}
+
+#dark:checked ~ .c-toggle__background {
+    background-color: #333;
+}
+
+
+
+a {
+    display: block;
+    margin: 2em 0;
+    padding: .5em;
+
+    &:focus {
+        outline: 3px solid;
+    }
+}
+
+/* support Windows High Contrast Mode. Credit: Adrian Roselli https://twitter.com/aardrian/status/1021372139990134785 */
+@media screen and (-ms-high-contrast: active) {
+  .c-toggle__switcher {
+    background-color: windowText;
+  }
+}
+
+
+fieldset {
+    border: none;
+}
