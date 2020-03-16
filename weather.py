@@ -39,7 +39,7 @@ __version__ = "0.0.12"
 # standard imports
 import time
 import datetime
-import syslog
+import sys
 
 # third party imports
 from darksky import forecast
@@ -47,86 +47,11 @@ import requests
 import pygame
 
 # local imports
-import config
 from weather_rock_methods import *
 
 # global variable
 UNICODE_DEGREE = u'\xb0'
-
-
-def deg_to_compass(degrees):
-    val = int((degrees/22.5)+.5)
-    dirs = ["N", "NNE", "NE", "ENE",
-            "E", "ESE", "SE", "SSE",
-            "S", "SSW", "SW", "WSW",
-            "W", "WNW", "NW", "NNW"]
-    return dirs[(val % 16)]
-
-
-def units_decoder(units):
-    """
-    https://darksky.net/dev/docs has lists out what each
-    unit is. The method below is just a codified version
-    of what is on that page.
-    """
-    si_dict = {
-        'nearestStormDistance': 'Kilometers',
-        'precipIntensity': 'Millimeters per hour',
-        'precipIntensityMax': 'Millimeters per hour',
-        'precipAccumulation': 'Centimeters',
-        'temperature': 'Degrees Celsius',
-        'temperatureMin': 'Degrees Celsius',
-        'temperatureMax': 'Degrees Celsius',
-        'apparentTemperature': 'Degrees Celsius',
-        'dewPoint': 'Degrees Celsius',
-        'windSpeed': 'Meters per second',
-        'windGust': 'Meters per second',
-        'pressure': 'Hectopascals',
-        'visibility': 'Kilometers',
-    }
-    ca_dict = si_dict.copy()
-    ca_dict['windSpeed'] = 'Kilometers per hour'
-    ca_dict['windGust'] = 'Kilometers per hour'
-    uk2_dict = si_dict.copy()
-    uk2_dict['nearestStormDistance'] = 'Miles'
-    uk2_dict['visibility'] = 'Miles'
-    uk2_dict['windSpeed'] = 'Miles per hour'
-    uk2_dict['windGust'] = 'Miles per hour'
-    us_dict = {
-        'nearestStormDistance': 'Miles',
-        'precipIntensity': 'Inches per hour',
-        'precipIntensityMax': 'Inches per hour',
-        'precipAccumulation': 'Inches',
-        'temperature': 'Degrees Fahrenheit',
-        'temperatureMin': 'Degrees Fahrenheit',
-        'temperatureMax': 'Degrees Fahrenheit',
-        'apparentTemperature': 'Degrees Fahrenheit',
-        'dewPoint': 'Degrees Fahrenheit',
-        'windSpeed': 'Miles per hour',
-        'windGust': 'Miles per hour',
-        'pressure': 'Millibars',
-        'visibility': 'Miles',
-    }
-    switcher = {
-        'ca': ca_dict,
-        'uk2': uk2_dict,
-        'us': us_dict,
-        'si': si_dict,
-    }
-    return switcher.get(units, "Invalid unit name")
-
-
-def get_abbreviation(phrase):
-    abbreviation = ''.join(item[0].lower() for item in phrase.split())
-    return abbreviation
-
-
-def get_windspeed_abbreviation(unit=config.UNITS):
-    return get_abbreviation(units_decoder(unit)['windSpeed'])
-
-
-def get_temperature_letter(unit=config.UNITS):
-    return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
+log = get_logger()
 
 
 def icon_mapping(icon, size):
@@ -166,21 +91,27 @@ def icon_mapping(icon, size):
     else:
         icon_path = 'icons/{}/unknown.png'.format(size)
 
-    # print(icon_path)
     return icon_path
 
 
 class Weather:
-    def get_forecast(self, last_update_time):
-        if (time.time() - last_update_time) > config.DS_CHECK_INTERVAL:
-            syslog.syslog("Fetching update from DarkSky")
+    def postpone(self, config, last_update_time):
+        last_update_time += 300
+        config["plugins"]["daily"]["last_update_time"] = last_update_time
+        config["plugins"]["hourly"]["last_update_time"] = last_update_time
+
+    def get_forecast(self, config):
+        last_update_time = config["plugins"]["daily"]["last_update_time"]
+
+        if (time.time() - last_update_time) > int(config["update_freq"]):
+            log.info("Fetching update from DarkSky")
             try:
-                self.weather = forecast(config.DS_API_KEY,
-                                        config.LAT,
-                                        config.LON,
+                self.weather = forecast(config["api_key"],
+                                        config["lat"],
+                                        config["lon"],
                                         exclude='minutely',
-                                        units=config.UNITS,
-                                        lang=config.LANG)
+                                        units=config["units"],
+                                        lang=config["lang"])
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
@@ -222,16 +153,104 @@ class Weather:
                             self.take_umbrella = True
                             break
 
-            except requests.exceptions.RequestException as e:
-                print('Request exception: ' + str(e))
-                return False
-            except AttributeError as e:
-                print('Attribute error: ' + str(e))
-                return False
-            return round(time.time())  # new last_update_time
-        return last_update_time
+                last_update_time = round(time.time())
+                config["plugins"]["daily"]["last_update_time"] = (
+                    last_update_time)
+                config["plugins"]["hourly"]["last_update_time"] = (
+                    last_update_time)
 
-    def display_conditions_line(self, label, cond, is_temp, multiplier=None):
+            except requests.exceptions.RequestException as e:
+                log.debug('Request exception: %s' % e)
+                if last_update_time != 0:
+                    # If weather data has been retrieved at least once already.
+                    self.postpone(config, last_update_time)
+            except AttributeError as e:
+                log.debug('Attribute error: %s' % e)
+                if last_update_time != 0:
+                    self.postpone(config, last_update_time)
+            except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                log.debug("Decoding JSON has failed: %s" % sys.exc_info()[0])
+                if last_update_time != 0:
+                    self.postpone(config, last_update_time)
+            except BaseException:
+                log.debug("Unexpected error: %s" % sys.exc_info()[0])
+                if last_update_time != 0:
+                    self.postpone(config, last_update_time)
+
+    def deg_to_compass(self, degrees):
+        val = int((degrees/22.5)+.5)
+        dirs = ["N", "NNE", "NE", "ENE",
+                "E", "ESE", "SE", "SSE",
+                "S", "SSW", "SW", "WSW",
+                "W", "WNW", "NW", "NNW"]
+        return dirs[(val % 16)]
+
+    def units_decoder(self, units):
+        """
+        https://darksky.net/dev/docs has lists out what each
+        unit is. The method below is just a codified version
+        of what is on that page.
+        """
+        si_dict = {
+            'nearestStormDistance': 'Kilometers',
+            'precipIntensity': 'Millimeters per hour',
+            'precipIntensityMax': 'Millimeters per hour',
+            'precipAccumulation': 'Centimeters',
+            'temperature': 'Degrees Celsius',
+            'temperatureMin': 'Degrees Celsius',
+            'temperatureMax': 'Degrees Celsius',
+            'apparentTemperature': 'Degrees Celsius',
+            'dewPoint': 'Degrees Celsius',
+            'windSpeed': 'Meters per second',
+            'windGust': 'Meters per second',
+            'pressure': 'Hectopascals',
+            'visibility': 'Kilometers',
+        }
+        ca_dict = si_dict.copy()
+        ca_dict['windSpeed'] = 'Kilometers per hour'
+        ca_dict['windGust'] = 'Kilometers per hour'
+        uk2_dict = si_dict.copy()
+        uk2_dict['nearestStormDistance'] = 'Miles'
+        uk2_dict['visibility'] = 'Miles'
+        uk2_dict['windSpeed'] = 'Miles per hour'
+        uk2_dict['windGust'] = 'Miles per hour'
+        us_dict = {
+            'nearestStormDistance': 'Miles',
+            'precipIntensity': 'Inches per hour',
+            'precipIntensityMax': 'Inches per hour',
+            'precipAccumulation': 'Inches',
+            'temperature': 'Degrees Fahrenheit',
+            'temperatureMin': 'Degrees Fahrenheit',
+            'temperatureMax': 'Degrees Fahrenheit',
+            'apparentTemperature': 'Degrees Fahrenheit',
+            'dewPoint': 'Degrees Fahrenheit',
+            'windSpeed': 'Miles per hour',
+            'windGust': 'Miles per hour',
+            'pressure': 'Millibars',
+            'visibility': 'Miles',
+        }
+        switcher = {
+            'ca': ca_dict,
+            'uk2': uk2_dict,
+            'us': us_dict,
+            'si': si_dict,
+        }
+        return switcher.get(units, "Invalid unit name")
+
+    def get_abbreviation(self, phrase):
+        abbreviation = ''.join(item[0].lower() for item in phrase.split())
+        return abbreviation
+
+    def get_windspeed_abbreviation(self, config):
+        return self.get_abbreviation(
+            self.units_decoder(config["units"])['windSpeed'])
+
+    def get_temperature_letter(self, config):
+        return self.units_decoder(
+            config["units"])['temperature'].split(' ')[-1][0].upper()
+
+    def display_conditions_line(
+            self, config, label, cond, is_temp, multiplier=None):
         y_start_position = 0.17
         line_spacing_gap = 0.065
         conditions_text_height = 0.05
@@ -267,15 +286,15 @@ class Weather:
             self.screen.blit(degree_txt, (
                 self.xmax * second_column_x_start_position + txt_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
-            degree_letter = conditions_font.render(get_temperature_letter(),
-                                                   True, text_color)
+            degree_letter = conditions_font.render(
+                self.get_temperature_letter(config), True, text_color)
             degree_letter_x = degree_letter.get_size()[0]
             self.screen.blit(degree_letter, (
                 self.xmax * second_column_x_start_position +
                 txt_x + degree_letter_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
 
-    def display_subwindow(self, data, day, c_times):
+    def display_subwindow(self, config, data, day, c_times):
         subwindow_centers = 0.125
         subwindows_y_start_position = 0.530
         line_spacing_gap = 0.065
@@ -301,20 +320,18 @@ class Weather:
                 UNICODE_DEGREE +
                 ' / ' +
                 str(int(round(data.temperatureLow))) +
-                UNICODE_DEGREE + get_temperature_letter(),
+                UNICODE_DEGREE + self.get_temperature_letter(config),
                 True, text_color)
         else:
             txt = forecast_font.render(
                 str(int(round(data.temperature))) +
-                UNICODE_DEGREE + get_temperature_letter(),
+                UNICODE_DEGREE + self.get_temperature_letter(config),
                 True, text_color)
         (txt_x, txt_y) = txt.get_size()
         self.screen.blit(txt, (self.xmax *
                                (subwindow_centers * c_times) - txt_x / 2,
                                self.ymax * (subwindows_y_start_position +
                                             line_spacing_gap * 5)))
-        # rtxt = forecast_font.render('Rain:', True, lc)
-        # self.screen.blit(rtxt, (ro,self.ymax*(wy+gp*5)))
         rptxt = rpfont.render(
             str(int(round(data.precipProbability * 100))) + '%',
             True, text_color)
@@ -330,7 +347,7 @@ class Weather:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = config.LARGE_ICON_OFFSET
+            icon_y_offset = float(config["icon_offset"])
 
         self.screen.blit(icon, (self.xmax *
                                 (subwindow_centers * c_times) -
@@ -367,7 +384,7 @@ class Weather:
             self.xmax * x_start_position,
             self.ymax * y_start_position))
 
-    def disp_current_temp(self, font_name, text_color):
+    def disp_current_temp(self, config, font_name, text_color):
         # Outside Temp
         outside_temp_font = pygame.font.SysFont(
             font_name, int(self.ymax * (0.5 - 0.15) * 0.6), bold=1)
@@ -378,8 +395,8 @@ class Weather:
             font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
         degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
         (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
-        degree_letter = outside_temp_font.render(get_temperature_letter(),
-                                                 True, text_color)
+        degree_letter = outside_temp_font.render(
+            self.get_temperature_letter(config), True, text_color)
         (degree_letter_x, degree_letter_y) = degree_letter.get_size()
         # Position text
         x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x +

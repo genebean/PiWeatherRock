@@ -1,105 +1,277 @@
-@import url("https://fonts.googleapis.com/css?family=Nunito:300,400,700");
+.page_title {
+    position: absolute;
+    width: 72vw;
+    left: 14vw;
+    top: 112px;
+    font-size: 3vw;
+    text-align: center;
+    color: #fff;
+    font-family: 'FreeSans', 'bold';
+    font-weight: bold;
+}
+
+a:link {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+#lcloud{
+    width: 256;
+    position: relative;
+    float:left;
+    display: inline;
+}
+
+#rcloud {
+    width: 256;
+    float:right;
+    position: relative;
+    display: inline;
+}
+
+#scroller * {
+    /* don't allow the children of the scrollable element to be selected as an anchor node */
+    overflow-anchor: none;
+}
+
+#anchor {
+    /* allow the final child to be selected as an anchor node */
+    overflow-anchor: auto;
+
+    /* anchor nodes are required to have non-zero area */
+    height: 1px;
+}
+
+.refresh {
+    display: inline-block;
+    position: relative;
+    left: 30vw;
+}
+
+.log {
+    width: 75vw;
+    position: relative;
+    left: 120px;
+    top: 180px;
+    
+}
+
+.pad {
+    height: 1em;
+}
+
+.settings {
+    position: relative;
+    width: 50vw;
+    left: 20vw;
+    color: #007fff;
+    font-size: 32px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+#toggle {
+    font-size: 24px;
+    color: #007fff;
+    text-align: center;
+    position: relative;
+    padding-top: 180px;
+}
+
+.plugin_toggle {
+    position:relative;
+    top: -8px;
+    font-size: 24px;
+    color: #007fff;
+    display: inline-block;
+}
+
+#start_toggle {
+    color: #007fff;
+    text-align: center;
+    position: relative;
+    left: -1em;
+}
+
+.left {
+    position: relative;
+    top: 0.85em;
+    padding: 0.25em;
+    display: inline;
+    color: #C0C0C0;
+}
+
+.right {
+    position: relative;
+    top: 0.85em;
+    padding: 0.25em;
+    display: inline;
+}
 
 body {
-    padding: 5vw 10vw;
-    font-size: 18px;
-    font-family: "Nunito", sans-serif;
-    background-color: #151515;
+    font-size: 24px;
+    color: #fff;
+    background-color: #111;
+}
+.myDiv {
+    position: relative;
+    z-index: 1;
 }
 
-.c-toggle {
-    --baseSize: 12px;
-
-    label {
-        font-size: calc(var(--baseSize) * 1.75);
-        margin: 0 .5em 0;
-        cursor: pointer;
-    }
-
-    input[type="radio"] {
-        display: inline-block;
-        margin-right: -2px;
-        width: 50%;
-        height: 100%;
-        opacity: 0;
-        position: relative;
-        z-index: 1;
-        cursor: pointer;
-
-        &:focus ~ .c-toggle__switcher {
-            border: 3px solid hsla(333, 40%, 45%, 1);
-            top: -2px;
-        }
-    }
-}
-
-.c-toggle__wrapper {
-    font-size: var(--baseSize);
-    display: inline-block;
-    vertical-align: middle;
-    width: 7em;
-    height: 3.5em;
-    border-radius: 3.5em; /* = height */
-    border: 1px solid #ddd;
-    position: relative; // create positioning context for ::after
-}
-.c-toggle__switcher {
-    // the toggle
-    display: block;
+.myDiv .bg {
     position: absolute;
+    z-index: -1;
     top: 0;
+    bottom: 0;
     left: 0;
-    right: 100%;
-    width: 50%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: hsla(333, 60%, 60%, 1);
-    transition: all 0.1s ease-out;
-    z-index: 2;
-}
-
-.c-toggle__background {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
+    right: 0;
+    background: url('bg.png');
+    opacity: .1;
     width: 100%;
     height: 100%;
-    z-index: 0;
-    border-radius: 3.5em;
-    background-color: #eee;
-    transition: all 0.1s ease-out;
-}
-
-#dark:checked ~ .c-toggle__switcher {
-    right: 0;
-    left: 50%;
-}
-
-#dark:checked ~ .c-toggle__background {
-    background-color: #333;
-}
-
-
-
-a {
-    display: block;
-    margin: 2em 0;
-    padding: .5em;
-
-    &:focus {
-        outline: 3px solid;
     }
+
+.var {
+    position: relative;
+    width: 50vw;
+    padding-left: 20vw;
+    display: inline-block;
+
+}
+.opt {
+    position: relative;
+    float: right;
+    width: 15vw;
+    left: -25vw;
+    margin-right: -4em;
+    display: inline-block;
 }
 
-/* support Windows High Contrast Mode. Credit: Adrian Roselli https://twitter.com/aardrian/status/1021372139990134785 */
-@media screen and (-ms-high-contrast: active) {
-  .c-toggle__switcher {
-    background-color: windowText;
-  }
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 2.75em;
+  height: 1.5em;
 }
 
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
-fieldset {
-    border: none;
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.25em;
+  width: 1.25em;
+  top: 0.125em;
+  left: 0.125em;
+  background-color: #444;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(1.25em);
+  -ms-transform: translateX(1.25em);
+  transform: translateX(1.25em);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 1.25em;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+ /* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 400px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+.submit_div {
+    position: relative;
+    width: 50vw;
+    display: inline-block;
+}
+
+.submit {
+    display: inline-block;
+    position: relative;
+    width: 10vw;
+    left: 22vw;
 }

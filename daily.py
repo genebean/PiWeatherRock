@@ -37,67 +37,67 @@ __version__ = "0.0.12"
 ###############################################################################
 
 # local imports
-from weather import *
+import datetime
 
 
-class Daily(Weather):
-    def get_daily(self, last_update_time):
-        new_last_update_time = self.get_forecast(last_update_time)
-        return new_last_update_time
+def update(my_disp, config):
+    my_disp.get_forecast(config)
 
-    def disp_daily(self, last_update_time):
-        # Fill the screen with black
-        self.screen.fill((0, 0, 0))
-        xmin = 10
-        lines = 5
-        line_color = (255, 255, 255)
-        text_color = (255, 255, 255)
-        font_name = "freesans"
 
-        self.draw_screen_border(line_color, xmin, lines)
-        self.disp_time_date(font_name, text_color)
-        self.disp_current_temp(font_name, text_color)
-        self.disp_summary()
-        self.display_conditions_line(
-            'Feels Like:', int(round(self.weather.apparentTemperature)),
-            True)
+def disp(my_disp, config):
+    # Fill the screen with black
+    my_disp.screen.fill((0, 0, 0))
+    xmin = 10
+    lines = 5
+    line_color = (255, 255, 255)
+    text_color = (255, 255, 255)
+    font_name = "freesans"
 
-        try:
-            wind_bearing = self.weather.windBearing
-            wind_direction = deg_to_compass(wind_bearing) + ' @ '
-        except AttributeError:
-            wind_direction = ''
-        wind_txt = wind_direction + str(
-            int(round(self.weather.windSpeed))) + \
-            ' ' + get_windspeed_abbreviation()
-        self.display_conditions_line(
-            'Wind:', wind_txt, False, 1)
+    my_disp.draw_screen_border(line_color, xmin, lines)
+    my_disp.disp_header(font_name, text_color, 'time-date')
+    my_disp.disp_current_temp(config, font_name, text_color)
+    my_disp.disp_summary()
+    my_disp.display_conditions_line(config,
+                                    'Feels Like:',
+                                    int(round(
+                                        my_disp.weather.apparentTemperature)),
+                                    True)
 
-        self.display_conditions_line(
-            'Humidity:', str(int(round((self.weather.humidity * 100)))) + '%',
-            False, 2)
+    try:
+        wind_bearing = my_disp.weather.windBearing
+        wind_direction = my_disp.deg_to_compass(wind_bearing) + ' @ '
+    except AttributeError:
+        wind_direction = ''
+    wind_txt = wind_direction + str(
+        int(round(my_disp.weather.windSpeed))) + \
+        ' ' + my_disp.get_windspeed_abbreviation(config)
+    my_disp.display_conditions_line(config,
+                                    'Wind:', wind_txt, False, 1)
 
-        # Skipping multiplier 3 (line 4)
+    my_disp.display_conditions_line(config,
+                                    'Humidity:', str(int(round(
+                                        (my_disp.weather.humidity * 100
+                                         )))) + '%', False, 2)
 
-        if self.take_umbrella:
-            umbrella_txt = 'Grab your umbrella!'
-        else:
-            umbrella_txt = 'No umbrella needed today.'
-        self.disp_umbrella_info(umbrella_txt)
+    # Skipping multiplier 3 (line 4)
 
-        # Today
-        today = self.weather.daily[0]
-        today_string = "Today"
-        multiplier = 1
-        self.display_subwindow(today, today_string, multiplier)
+    if my_disp.take_umbrella:
+        umbrella_txt = 'Grab your umbrella!'
+    else:
+        umbrella_txt = 'No umbrella needed today.'
+    my_disp.disp_umbrella_info(umbrella_txt)
 
-        # counts from 0 to 2
-        for future_day in range(3):
-            this_day = self.weather.daily[future_day + 1]
-            this_day_no = datetime.datetime.fromtimestamp(this_day.time)
-            this_day_string = this_day_no.strftime("%A")
-            multiplier += 2
-            self.display_subwindow(this_day, this_day_string, multiplier)
+    # Today
+    today = my_disp.weather.daily[0]
+    today_string = "Today"
+    multiplier = 1
+    my_disp.display_subwindow(config, today, today_string, multiplier)
 
-        # Update the display
-        pygame.display.update()
+    # counts from 0 to 2
+    for future_day in range(3):
+        this_day = my_disp.weather.daily[future_day + 1]
+        this_day_no = datetime.datetime.fromtimestamp(this_day.time)
+        this_day_string = this_day_no.strftime("%A")
+        multiplier += 2
+        my_disp.display_subwindow(config,
+                                  this_day, this_day_string, multiplier)

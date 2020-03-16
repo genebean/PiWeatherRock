@@ -39,6 +39,26 @@ __version__ = "0.0.13"
 # third party imports
 from svg import Parser, Rasterizer
 import pygame
+import json
+import logging
+
+
+def get_logger():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    lvl_str = f"logging.{config['log_level']}"
+    logging.basicConfig(
+        filename='.log',
+        level=eval(lvl_str),
+        format='%(asctime)s %(levelname)s %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+    )
+    log = logging.getLogger()
+
+    return log
+
+
+log = get_logger()
 
 
 # The following method (load_svg) was written by github user "zgoda".
@@ -74,25 +94,26 @@ def load_svg(filename, scale=None, size=None, clip_from=None, fit_to=None):
     req_w = int(w * scale)
     req_h = int(h * scale)
     buff = rast.rasterize(svg, req_w, req_h, scale, tx, ty)
-    image = pygame.image.frombuffer(buff, (req_w, req_h), 'RGBA')
+    image = pygame.image.frombuffer(buff, (req_w, req_h), "RGBA")
     return image
 
 
 # Method to keep track of how many times a screen has been shown.
-def reset_counter(mode, screen_info):
-    for screen in screen_info.keys():
-        if mode == screen:
-            screen_info[screen]['count'] = 1
-        else:
-            screen_info[screen]['count'] = 0
+def reset_counter(mode, config):
+    for plugin in config["plugins"].keys():
+        if config["plugins"][plugin]["enabled"] == "yes":
+            if plugin == mode:
+                config["plugins"][plugin]["count"] = 1
+            else:
+                config["plugins"][plugin]["count"] = 0
 
 
-def time_to_switch(screen_info):
+def time_to_switch(config):
     # Calculate time to switch.
     switch_time = 0
-    for screen in screen_info.keys():
-        switch_time += (screen_info[screen]['count'] *
-                        screen_info[screen]['pause'])
+    for plugin in config["plugins"].keys():
+        switch_time += (int(config["plugins"][plugin]["count"]) *
+                        int(config["plugins"][plugin]["pause"]))
     return switch_time
 
 
@@ -102,3 +123,17 @@ def stot(sec):
     mins = sec.seconds // 60
     hrs = mins // 60
     return (hrs, mins % 60)
+
+
+def load_config():
+    log.info("Reloading most recent configuration info.")
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    for plugin in config["plugins"].keys():
+        config["plugins"][plugin]["count"] = 0
+        config["plugins"][plugin]["last_update_time"] = 0
+    if config["plugins"]["daily"]["enabled"] == "yes":
+        default = "daily"
+    else:
+        default = "hourly"
+    return config, default

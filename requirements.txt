@@ -3,3 +3,4 @@ pygame
 pyserial
 requests
 pynanosvg
+cherrypy
