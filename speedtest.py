@@ -28,6 +28,10 @@
 
 __version__ = "0.0.12"
 
+###############################################################################
+#   Raspberry Pi Weather Display Speedtest Plugin
+#   Original By: github user: metaMMA          2020-03-15
+###############################################################################
 
 # standard imports
 import datetime
