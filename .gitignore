@@ -2,3 +2,6 @@
 config.json
 *.pyc
 *.swp
+speedtest/
+rss/
+screenshots/
