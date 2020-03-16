@@ -34,7 +34,7 @@ from svg import Parser, Rasterizer
 import pygame
 import json
 import logging
-
+import logging.handlers
 
 def get_logger():
     with open("config.json", "r") as f:
@@ -47,6 +47,9 @@ def get_logger():
         datefmt='%Y-%m-%d %H:%M:%S',
     )
     log = logging.getLogger()
+    handler = logging.handlers.RotatingFileHandler(
+              ".log", maxBytes=500000, backupCount=3)
+    log.addHandler(handler)
 
     return log
 
