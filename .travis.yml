@@ -5,6 +5,4 @@ install:
   - pip install -r requirements.txt
   - pip install pylint
 script:
-  - pylint config.py.sample
-  - pylint weather.py
-
+  - pylint display.py
