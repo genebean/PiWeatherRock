@@ -32,14 +32,16 @@
         <script>
             // Open .lock file to check run status
             function load_lock(callback) {
+                var ms = Date.now();
                 var xobj = new XMLHttpRequest();
-                xobj.overrideMimeType("text/xml");
-                xobj.open('GET', '.lock', true);
                 xobj.onreadystatechange = function () {
                       if (xobj.readyState == 4 && xobj.status == "200") {
+                        alert(xobj.readyState + " " + xobj.status);
                         callback(xobj.responseText);
-                      }
+                        alert("lock = " + xobj.responseText);
+                      };
                 };
+                xobj.open('GET', '.lock?dummy='+ms, true);
                 xobj.send(null);
              }
         </script>
@@ -47,8 +49,9 @@
             // Prevent loading config.json from cache
             function loadJSON(callback) {
                 var xobj = new XMLHttpRequest();
+                var ms = Date.now();
                 xobj.overrideMimeType("application/json");
-                xobj.open('GET', 'config.json', true);
+                xobj.open('GET', 'config.json?dummy='+ms, true);
                 xobj.onreadystatechange = function () {
                       if (xobj.readyState == 4 && xobj.status == "200") {
                         callback(xobj.responseText);
@@ -135,12 +138,6 @@
                         var url = "upload";
                         xhr.open("POST", url, true);
                         xhr.setRequestHeader("Content-Type", "application/json");
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === 4 && xhr.status === 200) {
-                                var json = JSON.parse(xhr.responseText);
-                                console.log(json.email + ", " + json.password);
-                            }
-                        };
                         var data = JSON.stringify(myObj);
                         xhr.send(data);
                         alert("Update successful.")
