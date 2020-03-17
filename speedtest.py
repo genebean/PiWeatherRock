@@ -49,13 +49,11 @@ import pygame
 # local imports
 from weather_rock_methods import *
 
-config, default = load_config()
-speedtest_config = config["plugins"]["speedtest"]
-log = get_logger()
 
-
-def update(my_disp, config):
-    last_update_time = config["plugins"]["speedtest"]["last_update_time"]
+def update(my_disp):
+    log = my_disp.log
+    speedtest_config = my_disp.config["plugins"]["speedtest"]
+    last_update_time = speedtest_config["last_update_time"]
     # Determine if this is the first time fetching new speedtest results.
     initial = False
     if last_update_time == 0:
@@ -79,13 +77,13 @@ def update(my_disp, config):
             try:
                 subprocess.call(["sh",
                                 "./scripts/speedtest.sh"])
-                config["plugins"]["speedtest"]["last_update_time"] = round(
+                my_disp.config["plugins"]["speedtest"]["last_update_time"] = round(
                     time.time())
             except:
                 log.info("Error performing speedtest")
                 if not initial:
                     log.info("Will try again in 5 minutes.")
-                    config["plugins"]["speedtest"]["last_update_time"] = (
+                    my_disp.config["plugins"]["speedtest"]["last_update_time"] = (
                         round(time.time()) + 300)
     else:
         if initial:
@@ -95,10 +93,10 @@ def update(my_disp, config):
             list_of_files.sort(key=os.path.getctime)
             try:
                 if os.stat(list_of_files[-1:][0]).st_size > 0:
-                    config["plugins"]["speedtest"]["last_update_time"] = round(
+                    my_disp.config["plugins"]["speedtest"]["last_update_time"] = round(
                         time.time())
                 elif os.stat(list_of_files[-2:][0]).st_size > 0:
-                    config["plugins"]["speedtest"]["last_update_time"] = round(
+                    my_disp.config["plugins"]["speedtest"]["last_update_time"] = round(
                         time.time())
                 else:
                     log.info('No speedtest results found.')
@@ -107,8 +105,8 @@ def update(my_disp, config):
 
     if not initial:
         # Move or remove old test results
-        src = 'speedtest/queue/'
-        dst = 'speedtest/archive/'
+        src = os.getcwd() + '/speedtest/queue/'
+        dst = os.getcwd() + '/speedtest/archive/'
         file_list = glob.glob(src + "*.json")
         file_list.sort(key=os.path.getctime)
         keep = file_list[-3:]  # always keep 3 most recent results in queue
@@ -123,7 +121,8 @@ def update(my_disp, config):
                         os.remove(src_fname)
 
 
-def disp(my_disp, config):
+def disp(my_disp):
+    speedtest_config = my_disp.config["plugins"]["speedtest"]
     # Fill the screen with black
     my_disp.screen.fill((0, 0, 0))
     xmin = 10

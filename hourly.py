@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # BEGIN LICENSE
-# Copyright (c) 2014 Jim Kemp <kemp.jim@gmail.com>
-# Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -31,20 +29,19 @@
 __version__ = "0.0.12"
 
 ###############################################################################
-#   Raspberry Pi Weather Display
-#   Original By: Jim Kemp          10/25/2014
-#   Modified By: Gene Liverman    12/30/2017 & multiple times since
+#   Raspberry Pi Weather Display Hourly Plugn
+#   Original By: Gene Liverman    12/30/2017 & multiple times since
 ###############################################################################
 
 # local imports
 import datetime
 
 
-def update(my_disp, config):
-    my_disp.get_forecast(config)
+def update(my_disp):
+    my_disp.get_forecast()
 
 
-def disp(my_disp, config):
+def disp(my_disp):
     # Fill the screen with black
     my_disp.screen.fill((0, 0, 0))
     xmin = 10
@@ -55,10 +52,9 @@ def disp(my_disp, config):
 
     my_disp.draw_screen_border(line_color, xmin, lines)
     my_disp.disp_header(font_name, text_color, 'time-date')
-    my_disp.disp_current_temp(config, font_name, text_color)
+    my_disp.disp_current_temp(font_name, text_color)
     my_disp.disp_summary()
-    my_disp.display_conditions_line(config,
-                                    'Feels Like:', int(round(
+    my_disp.display_conditions_line('Feels Like:', int(round(
                                         my_disp.weather.apparentTemperature)),
                                     True)
 
@@ -67,13 +63,11 @@ def disp(my_disp, config):
         wind_direction = my_disp.deg_to_compass(wind_bearing) + ' @ '
     except AttributeError:
         wind_direction = ''
-    wind_txt = wind_direction + str(
-        int(round(my_disp.weather.windSpeed))) + \
-        ' ' + my_disp.get_windspeed_abbreviation(config)
-    my_disp.display_conditions_line(config, 'Wind:', wind_txt, False, 1)
+    wind_txt = (wind_direction + str(int(round(my_disp.weather.windSpeed))) +
+                " " + my_disp.get_windspeed_abbreviation())
+    my_disp.display_conditions_line('Wind:', wind_txt, False, 1)
 
-    my_disp.display_conditions_line(config,
-                                    'Humidity:', str(int(round((
+    my_disp.display_conditions_line('Humidity:', str(int(round((
                                         my_disp.weather.humidity * 100)))) +
                                     '%', False, 2)
 
@@ -97,7 +91,7 @@ def disp(my_disp, config):
         this_hour.time).strftime("%I"))
     this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
     multiplier = 1
-    my_disp.display_subwindow(config, this_hour, this_hour_string, multiplier)
+    my_disp.display_subwindow(this_hour, this_hour_string, multiplier)
 
     # counts from 0 to 2
     for future_hour in range(3):
@@ -112,5 +106,4 @@ def disp(my_disp, config):
             this_hour.time).strftime("%I"))
         this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
         multiplier += 2
-        my_disp.display_subwindow(config,
-                                  this_hour, this_hour_string, multiplier)
+        my_disp.display_subwindow(this_hour, this_hour_string, multiplier)

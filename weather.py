@@ -51,7 +51,6 @@ from weather_rock_methods import *
 
 # global variable
 UNICODE_DEGREE = u'\xb0'
-log = get_logger()
 
 
 def icon_mapping(icon, size):
@@ -95,23 +94,23 @@ def icon_mapping(icon, size):
 
 
 class Weather:
-    def postpone(self, config, last_update_time):
+    def postpone(self, last_update_time):
         last_update_time += 300
-        config["plugins"]["daily"]["last_update_time"] = last_update_time
-        config["plugins"]["hourly"]["last_update_time"] = last_update_time
+        self.config["plugins"]["daily"]["last_update_time"] = last_update_time
+        self.config["plugins"]["hourly"]["last_update_time"] = last_update_time
 
-    def get_forecast(self, config):
-        last_update_time = config["plugins"]["daily"]["last_update_time"]
+    def get_forecast(self):
+        last_update_time = self.config["plugins"]["daily"]["last_update_time"]
 
-        if (time.time() - last_update_time) > int(config["update_freq"]):
-            log.info("Fetching update from DarkSky")
+        if (time.time() - last_update_time) > int(self.config["update_freq"]):
+            self.log.info("Fetching update from DarkSky")
             try:
-                self.weather = forecast(config["api_key"],
-                                        config["lat"],
-                                        config["lon"],
+                self.weather = forecast(self.config["api_key"],
+                                        self.config["lat"],
+                                        self.config["lon"],
                                         exclude='minutely',
-                                        units=config["units"],
-                                        lang=config["lang"])
+                                        units=self.config["units"],
+                                        lang=self.config["lang"])
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
@@ -154,28 +153,28 @@ class Weather:
                             break
 
                 last_update_time = round(time.time())
-                config["plugins"]["daily"]["last_update_time"] = (
+                self.config["plugins"]["daily"]["last_update_time"] = (
                     last_update_time)
-                config["plugins"]["hourly"]["last_update_time"] = (
+                self.config["plugins"]["hourly"]["last_update_time"] = (
                     last_update_time)
 
             except requests.exceptions.RequestException as e:
-                log.debug('Request exception: %s' % e)
+                self.log.debug('Request exception: %s' % e)
                 if last_update_time != 0:
                     # If weather data has been retrieved at least once already.
-                    self.postpone(config, last_update_time)
+                    self.postpone(last_update_time)
             except AttributeError as e:
-                log.debug('Attribute error: %s' % e)
+                self.log.debug('Attribute error: %s' % e)
                 if last_update_time != 0:
-                    self.postpone(config, last_update_time)
+                    self.postpone(last_update_time)
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                log.debug("Decoding JSON has failed: %s" % sys.exc_info()[0])
+                self.log.debug("Decoding JSON has failed: %s" % sys.exc_info()[0])
                 if last_update_time != 0:
-                    self.postpone(config, last_update_time)
+                    self.postpone(last_update_time)
             except BaseException:
-                log.debug("Unexpected error: %s" % sys.exc_info()[0])
+                self.log.debug("Unexpected error: %s" % sys.exc_info()[0])
                 if last_update_time != 0:
-                    self.postpone(config, last_update_time)
+                    self.postpone(last_update_time)
 
     def deg_to_compass(self, degrees):
         val = int((degrees/22.5)+.5)
@@ -241,16 +240,16 @@ class Weather:
         abbreviation = ''.join(item[0].lower() for item in phrase.split())
         return abbreviation
 
-    def get_windspeed_abbreviation(self, config):
+    def get_windspeed_abbreviation(self):
         return self.get_abbreviation(
-            self.units_decoder(config["units"])['windSpeed'])
+            self.units_decoder(self.config["units"])['windSpeed'])
 
-    def get_temperature_letter(self, config):
+    def get_temperature_letter(self):
         return self.units_decoder(
-            config["units"])['temperature'].split(' ')[-1][0].upper()
+            self.config["units"])['temperature'].split(' ')[-1][0].upper()
 
     def display_conditions_line(
-            self, config, label, cond, is_temp, multiplier=None):
+            self, label, cond, is_temp, multiplier=None):
         y_start_position = 0.17
         line_spacing_gap = 0.065
         conditions_text_height = 0.05
@@ -287,14 +286,14 @@ class Weather:
                 self.xmax * second_column_x_start_position + txt_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
             degree_letter = conditions_font.render(
-                self.get_temperature_letter(config), True, text_color)
+                self.get_temperature_letter(), True, text_color)
             degree_letter_x = degree_letter.get_size()[0]
             self.screen.blit(degree_letter, (
                 self.xmax * second_column_x_start_position +
                 txt_x + degree_letter_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
 
-    def display_subwindow(self, config, data, day, c_times):
+    def display_subwindow(self, data, day, c_times):
         subwindow_centers = 0.125
         subwindows_y_start_position = 0.530
         line_spacing_gap = 0.065
@@ -320,12 +319,12 @@ class Weather:
                 UNICODE_DEGREE +
                 ' / ' +
                 str(int(round(data.temperatureLow))) +
-                UNICODE_DEGREE + self.get_temperature_letter(config),
+                UNICODE_DEGREE + self.get_temperature_letter(),
                 True, text_color)
         else:
             txt = forecast_font.render(
                 str(int(round(data.temperature))) +
-                UNICODE_DEGREE + self.get_temperature_letter(config),
+                UNICODE_DEGREE + self.get_temperature_letter(),
                 True, text_color)
         (txt_x, txt_y) = txt.get_size()
         self.screen.blit(txt, (self.xmax *
@@ -347,7 +346,7 @@ class Weather:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = float(config["icon_offset"])
+            icon_y_offset = float(self.config["icon_offset"])
 
         self.screen.blit(icon, (self.xmax *
                                 (subwindow_centers * c_times) -
@@ -384,7 +383,7 @@ class Weather:
             self.xmax * x_start_position,
             self.ymax * y_start_position))
 
-    def disp_current_temp(self, config, font_name, text_color):
+    def disp_current_temp(self, font_name, text_color):
         # Outside Temp
         outside_temp_font = pygame.font.SysFont(
             font_name, int(self.ymax * (0.5 - 0.15) * 0.6), bold=1)
@@ -396,7 +395,7 @@ class Weather:
         degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
         (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
         degree_letter = outside_temp_font.render(
-            self.get_temperature_letter(config), True, text_color)
+            self.get_temperature_letter(), True, text_color)
         (degree_letter_x, degree_letter_y) = degree_letter.get_size()
         # Position text
         x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x +

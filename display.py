@@ -53,9 +53,7 @@ import daily
 import hourly
 import info
 import speedtest
-#import rss
-
-log = get_logger()
+import rss
 
 
 def lock_check():
@@ -63,12 +61,10 @@ def lock_check():
         with open(".lock", "r") as f:
             val = f.read()
         if val.strip() == "1":
-            log.info("Lock file has instructed the application to run.")
             return True
         else:
             return False
     else:
-        log.info("Creating lock file and listening for orders to run.")
         with open(".lock", "w") as f:
             f.write("0")
         return False
@@ -87,19 +83,21 @@ class MyDisplay(weather.Weather):
 
     ####################################################################
     def __init__(self):
+        self.config, self.default = load_config()
+        self.log = get_logger()
         "Ininitializes a new pygame screen using the framebuffer"
         if platform.system() == 'Darwin':
             pygame.display.init()
             driver = pygame.display.get_driver()
             print('Using the {0} driver.'.format(driver))
-            log.debug('Using the {0} driver.'.format(driver))
+            self.log.debug('Using the {0} driver.'.format(driver))
         else:
             # Based on "Python GUI in Linux frame buffer"
             # http://www.karoltomala.com/blog/?p=679
             # archived at https://web.archive.org/
             disp_no = os.getenv("DISPLAY")
             if disp_no:
-                log.debug("X Display = {0}".format(disp_no))
+                self.log.debug("X Display = {0}".format(disp_no))
 
             # Check which frame buffer drivers are available
             # Start with fbcon since directfb hangs with composite output
@@ -112,7 +110,7 @@ class MyDisplay(weather.Weather):
                 try:
                     pygame.display.init()
                 except pygame.error:
-                    log.debug('Driver: {0} failed.'.format(driver))
+                    self.log.debug('Driver: {0} failed.'.format(driver))
                     continue
                 found = True
                 break
@@ -122,7 +120,7 @@ class MyDisplay(weather.Weather):
 
         size = (pygame.display.Info().current_w,
                 pygame.display.Info().current_h)
-        log.debug("Framebuffer Size: %d x %d" % (size[0], size[1]))
+        self.log.debug("Framebuffer Size: %d x %d" % (size[0], size[1]))
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
         # Clear the screen to start
         self.screen.fill((0, 0, 0))
@@ -132,7 +130,7 @@ class MyDisplay(weather.Weather):
         pygame.mouse.set_visible(0)
         pygame.display.update()
 
-        if config["fullscreen"] == "yes":
+        if self.config["fullscreen"] == "yes":
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
             if self.xmax <= 1024:
@@ -201,48 +199,47 @@ class MyDisplay(weather.Weather):
             os.mkdir(save_dir)
         timestamp = time.strftime("%Y-%m-%dT%H.%M.%S", time.localtime())
         pygame.image.save(self.screen, f"{save_dir}{timestamp}.jpeg")
-        log.info("Screen capture complete.")
+        self.log.info("Screen capture complete.")
 
 
 while True:
     running = lock_check()
     if running:
-        log.info("Received signal to begin running.")
-        config, default = load_config()
-        mode = default
-        reset_counter(mode, config)  # Update screen count variables
+        my_disp = MyDisplay()
+        my_disp.log.info("Received signal to begin running.")
+        mode = my_disp.default
+        reset_counter(mode, my_disp)  # Update screen count variables
         info_screen_time_count = 0  # Seconds showing info screen
         non_info_screen_time_count = 0  # Seconds showing non-info screen
-        my_disp = MyDisplay()
     else:
-
         pygame.quit()
         continue
 
     # Loads data from darksky.net into class variables.
-    log.info('Retreiving intial weather data')
-    my_disp.get_forecast(config)
+    my_disp.log.info('Retreiving intial weather data')
+    my_disp.get_forecast()
 
-    if not config["plugins"]['daily']['last_update_time']:
-        log.info('Error: no data from darksky.net.')
+    if not my_disp.config["plugins"]['daily']['last_update_time']:
+        my_disp.log.info('Error: no data from darksky.net.')
         running = False
     else:
-        log.info('Successfully retreived intial weather data.')
+        my_disp.log.info('Successfully retreived intial weather data.')
 
     active_screens = []
     # Fetch initial data for other plugins
-    for plugin in config["plugins"].keys():
-        if config["plugins"][plugin]["enabled"] == "yes":
+    for plugin in my_disp.config["plugins"].keys():
+        if my_disp.config["plugins"][plugin]["enabled"] == "yes":
             active_screens.append(plugin)
             if plugin != "daily" and plugin != "hourly":
-                log.info("Retreiving intial %s data" % plugin)
-                eval(f"{plugin}.update(my_disp, config)")
+                my_disp.log.info("Retreiving intial %s data" % plugin)
+                eval(f"{plugin}.update(my_disp)")
                 last_update_time = (
-                    config["plugins"][plugin]["last_update_time"])
+                    my_disp.config["plugins"][plugin]["last_update_time"])
                 if last_update_time:
-                    log.info("Successfully retreived intial %s data" % plugin)
+                    my_disp.log.info(
+                        "Successfully retreived intial %s data" % plugin)
                 else:
-                    log.info(
+                    my_disp.log.info(
                         "Error retreiving intial %s data. It will be disabled."
                         % plugin)
                     active_screens.remove(plugin)
@@ -252,7 +249,7 @@ while True:
         with open(".lock", "r") as f:
             val = f.read()
         if val.strip() == "0":
-            log.info(
+            my_disp.log.info(
                 "Lock file has instructed the application to wait and listen.")
             running = False
             break
@@ -277,48 +274,48 @@ while True:
                     # on 'h' key, set mode to 'hourly' weather mode
                     elif event.key == pygame.K_h:
                         mode = 'hourly'
-                    reset_counter(mode, config)
+                    reset_counter(mode, my_disp)
                     info_screen_time_count = 0
                     non_info_screen_time_count = 0
 
-        if mode not in config["plugins"].keys():
+        if mode not in my_disp.config["plugins"].keys():
             # Start counting the seconds that info screen is shown.
             non_info_screen_time_count = 0
             info_screen_time_count += 1
             # Switch to default plugin screen, after 'info_pause' seconds.
-            if info_screen_time_count > int(config["info_pause"]):
-                mode = default
-                reset_counter(mode, config)
-                log.info(
+            if info_screen_time_count > int(my_disp.config["info_pause"]):
+                mode = my_disp.default
+                reset_counter(mode, my_disp)
+                my_disp.log.info(
                     "Switched from INFO to %s "
                     "after showing INFO for %s seconds"
-                    % (default.upper(), info_screen_time_count))
+                    % (my_disp.default.upper(), info_screen_time_count))
         else:
             # Start counting the seconds that plugin screens are shown.
             info_screen_time_count = 0
             non_info_screen_time_count += 1
             # Update / Refresh the switching time after each second.
-            switch_time = time_to_switch(config)
+            switch_time = time_to_switch(my_disp)
 
             # Check to see if it's time to switch to info screen
-            if non_info_screen_time_count > int(config["info_delay"]):
+            if non_info_screen_time_count > int(my_disp.config["info_delay"]):
                 mode = 'info'
-                log.info("Switched to INFO screen at %s seconds"
-                         % non_info_screen_time_count)
+                my_disp.log.info("Switched to INFO screen at %s seconds"
+                                 % non_info_screen_time_count)
             elif (non_info_screen_time_count % switch_time) == 0:
                 new_screen = active_screens[((active_screens.index(mode) + 1) %
                                              len(active_screens))]
-                log.info(
+                my_disp.log.info(
                     "Switched from %s to %s at %s seconds" % (
                         '{:10}'.format(mode.upper()),
                         '{:10}'.format(new_screen.upper()),
                         '{:>4}'.format(non_info_screen_time_count)))
                 mode = new_screen
-                config["plugins"][mode]['count'] += 1
+                my_disp.config["plugins"][mode]['count'] += 1
         # Update the display and check for updates.
-        eval(f"{mode}.disp(my_disp, config)")
+        eval(f"{mode}.disp(my_disp)")
         pygame.display.update()
-        eval(f"{mode}.update(my_disp, config)")
+        eval(f"{mode}.update(my_disp)")
 
         # Loop timer.
         pygame.time.wait(1000)

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # BEGIN LICENSE
+# Copyright (c) 2014 Jim Kemp <kemp.jim@gmail.com>
+# Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -36,25 +38,23 @@ import json
 import logging
 import logging.handlers
 
+
 def get_logger():
     with open("config.json", "r") as f:
         config = json.load(f)
     lvl_str = f"logging.{config['log_level']}"
-    logging.basicConfig(
-        filename='.log',
-        level=eval(lvl_str),
-        format='%(asctime)s %(levelname)s %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
-    )
     log = logging.getLogger()
+    log.setLevel(eval(lvl_str))
+    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
+        datefmt='%Y-%m-%d %H:%M:%S')
     handler = logging.handlers.RotatingFileHandler(
               ".log", maxBytes=500000, backupCount=3)
+    if (log.hasHandlers()):
+        log.handlers.clear()
+    handler.setFormatter(formatter)
     log.addHandler(handler)
 
     return log
-
-
-log = get_logger()
 
 
 # The following method (load_svg) was written by github user "zgoda".
@@ -95,21 +95,21 @@ def load_svg(filename, scale=None, size=None, clip_from=None, fit_to=None):
 
 
 # Method to keep track of how many times a screen has been shown.
-def reset_counter(mode, config):
-    for plugin in config["plugins"].keys():
-        if config["plugins"][plugin]["enabled"] == "yes":
+def reset_counter(mode, my_disp):
+    for plugin in my_disp.config["plugins"].keys():
+        if my_disp.config["plugins"][plugin]["enabled"] == "yes":
             if plugin == mode:
-                config["plugins"][plugin]["count"] = 1
+                my_disp.config["plugins"][plugin]["count"] = 1
             else:
-                config["plugins"][plugin]["count"] = 0
+                my_disp.config["plugins"][plugin]["count"] = 0
 
 
-def time_to_switch(config):
+def time_to_switch(my_disp):
     # Calculate time to switch.
     switch_time = 0
-    for plugin in config["plugins"].keys():
-        switch_time += (int(config["plugins"][plugin]["count"]) *
-                        int(config["plugins"][plugin]["pause"]))
+    for plugin in my_disp.config["plugins"].keys():
+        switch_time += (int(my_disp.config["plugins"][plugin]["count"]) *
+                        int(my_disp.config["plugins"][plugin]["pause"]))
     return switch_time
 
 
@@ -122,7 +122,6 @@ def stot(sec):
 
 
 def load_config():
-    log.info("Reloading most recent configuration info.")
     with open("config.json", "r") as f:
         config = json.load(f)
     for plugin in config["plugins"].keys():

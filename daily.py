@@ -40,11 +40,11 @@ __version__ = "0.0.12"
 import datetime
 
 
-def update(my_disp, config):
-    my_disp.get_forecast(config)
+def update(my_disp):
+    my_disp.get_forecast()
 
 
-def disp(my_disp, config):
+def disp(my_disp):
     # Fill the screen with black
     my_disp.screen.fill((0, 0, 0))
     xmin = 10
@@ -55,10 +55,9 @@ def disp(my_disp, config):
 
     my_disp.draw_screen_border(line_color, xmin, lines)
     my_disp.disp_header(font_name, text_color, 'time-date')
-    my_disp.disp_current_temp(config, font_name, text_color)
+    my_disp.disp_current_temp(font_name, text_color)
     my_disp.disp_summary()
-    my_disp.display_conditions_line(config,
-                                    'Feels Like:',
+    my_disp.display_conditions_line('Feels Like:',
                                     int(round(
                                         my_disp.weather.apparentTemperature)),
                                     True)
@@ -68,14 +67,11 @@ def disp(my_disp, config):
         wind_direction = my_disp.deg_to_compass(wind_bearing) + ' @ '
     except AttributeError:
         wind_direction = ''
-    wind_txt = wind_direction + str(
-        int(round(my_disp.weather.windSpeed))) + \
-        ' ' + my_disp.get_windspeed_abbreviation(config)
-    my_disp.display_conditions_line(config,
-                                    'Wind:', wind_txt, False, 1)
+    wind_txt = (wind_direction + str(int(round(my_disp.weather.windSpeed))) +
+                " " + my_disp.get_windspeed_abbreviation())
+    my_disp.display_conditions_line('Wind:', wind_txt, False, 1)
 
-    my_disp.display_conditions_line(config,
-                                    'Humidity:', str(int(round(
+    my_disp.display_conditions_line('Humidity:', str(int(round(
                                         (my_disp.weather.humidity * 100
                                          )))) + '%', False, 2)
 
@@ -91,7 +87,7 @@ def disp(my_disp, config):
     today = my_disp.weather.daily[0]
     today_string = "Today"
     multiplier = 1
-    my_disp.display_subwindow(config, today, today_string, multiplier)
+    my_disp.display_subwindow(today, today_string, multiplier)
 
     # counts from 0 to 2
     for future_day in range(3):
@@ -99,5 +95,4 @@ def disp(my_disp, config):
         this_day_no = datetime.datetime.fromtimestamp(this_day.time)
         this_day_string = this_day_no.strftime("%A")
         multiplier += 2
-        my_disp.display_subwindow(config,
-                                  this_day, this_day_string, multiplier)
+        my_disp.display_subwindow(this_day, this_day_string, multiplier)

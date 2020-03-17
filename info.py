@@ -44,8 +44,8 @@ import pygame
 from weather_rock_methods import *
 
 
-def update(my_disp, config):
-    return my_disp.get_forecast(config)
+def update(my_disp):
+    return my_disp.get_forecast()
 
 
 def sPrint(my_disp, text, font, x, line_number, text_color):
@@ -53,7 +53,7 @@ def sPrint(my_disp, text, font, x, line_number, text_color):
     my_disp.screen.blit(rendered_font, (x, my_disp.ymax * 0.075 * line_number))
 
 
-def disp(my_disp, config):
+def disp(my_disp):
     (in_daylight, day_hrs, day_mins, seconds_til_daylight,
         delta_seconds_til_dark) = my_disp.daylight(my_disp.weather)
     # Fill the screen with black
@@ -128,5 +128,5 @@ def disp(my_disp, config):
 
     text = "    %s" % time.strftime(
         "%I:%M:%S %p %Z on %a. %d %b %Y ",
-        time.localtime(config["plugins"]["daily"]["last_update_time"]))
+        time.localtime(my_disp.config["plugins"]["daily"]["last_update_time"]))
     sPrint(my_disp, text, small_font, my_disp.xmax * 0.05, 11, text_color)
