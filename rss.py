@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # BEGIN LICENSE
-# Copyright (c) 2014 Jim Kemp <kemp.jim@gmail.com>
-# Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -26,14 +24,13 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 # END LICENSE
 
-""" Fetches weather reports from Dark Sky for displaying on a screen. """
+""" Fetches RSS data for displaying on a screen. """
 
 __version__ = "0.0.12"
 
 ###############################################################################
-#   Raspberry Pi Weather Display
-#   Original By: Jim Kemp          10/25/2014
-#   Modified By: Gene Liverman    12/30/2017 & multiple times since
+#   Raspberry Pi Weather Display RSS Plugin
+#   Original By: GitHub user metaMMA          2020-03-15
 ###############################################################################
 
 # standard imports
@@ -53,7 +50,7 @@ def update(my_disp):
     rss_config = my_disp.config["plugins"]["rss"]
 
     initial = False
-    if last_update_time == 0:
+    if rss_config["last_update_time"] == 0:
         initial = True
         # Make sure the rss directory exists.
         os.makedirs(
@@ -67,40 +64,48 @@ def update(my_disp):
             if rss_config[f"feed{x}"].strip():
                 feed_list.append(rss_config[f"feed{x}"])
         feed_dict = {}
-        try:
-            for feed in feed_list:
-                feed_dict[feed] = feedparser.parse(feed)
-        except:  # Find Exception
-            log.info('Error accessing feed: %s.' % feed)
-            if not initial:
-                log.info("Will try again in 5 minutes.")
-                my_disp.config["plugins"]["rss"]["last_update_time"] = (round(time.time()) + 300)
-        item_dict = {}
-        for x in range(slot_count):
-            item_dict[x] = {}
-
-        available_items = 0
+        error_count = 0
         for feed in feed_list:
-            available_items += len(feed_dict[feed]['entries'])
-        if available_items < slot_count:
-            slot_count = available_items
-        added_items = 0
-        loop = -1
-        while True:
-            loop +=1
+            feed_dict[feed] = feedparser.parse(feed)
+            if len(feed_dict[feed]['entries']) == 0:
+                my_disp.log.info('Error accessing feed: %s.' % feed)
+                error_count += 1
+        if initial and error_count == len(feed_list):
+            my_disp.log.info("Error accessing all RSS feeds.")
+        elif error_count == len(feed_list):
+            my_disp.log.info("Error accessing all RSS feeds. "
+                             "Will try again in 5 minutes.")
+            my_disp.config["plugins"]["rss"]["last_update_time"] = (
+                round(time.time()) + 300)
+        else:
+            item_dict = {}
+            for x in range(slot_count):
+                item_dict[x] = {}
+
+            available_items = 0
             for feed in feed_list:
-                try:
-                    item_dict[added_items] = feed_dict[feed]['entries'][loop]['title']
-                except IndexError:
-                    continue
-                added_items += 1
+                available_items += len(feed_dict[feed]['entries'])
+            if available_items < slot_count:
+                slot_count = available_items
+            added_items = 0
+            loop = -1
+            while True:
+                loop += 1
+                for feed in feed_list:
+                    try:
+                        item_dict[added_items] = (
+                            feed_dict[feed]['entries'][loop]['title'])
+                    except IndexError:
+                        continue
+                    added_items += 1
+                    if added_items >= slot_count:
+                        break
                 if added_items >= slot_count:
                     break
-            if added_items >= slot_count:
-                break
-        with open(f"rss/{round(time.time())}.json", 'w') as f:
-            json.dump(item_dict, f)
-        my_disp.config["plugins"]["rss"]["last_update_time"] = round(time.time())
+            with open(f"rss/{round(time.time())}.json", 'w') as f:
+                json.dump(item_dict, f)
+            my_disp.config["plugins"]["rss"]["last_update_time"] = (
+                round(time.time()))
 
     # Remove old RSS info
     rss_dir = os.getcwd() + '/rss/'
@@ -112,9 +117,11 @@ def update(my_disp):
         if full_path not in keep and os.path.exists(full_path):
             os.remove(full_path)
 
-def disp_rss(self, last_update_time):
+
+def disp(my_disp):
+    rss_config = my_disp.config["plugins"]["rss"]
     # Fill the screen with black
-    self.screen.fill((0, 0, 0))
+    my_disp.screen.fill((0, 0, 0))
 
     # Get stored RSS info
     list_of_files = glob.glob('rss/*.json')
@@ -143,29 +150,30 @@ def disp_rss(self, last_update_time):
     if header:
         col_height = 0.75
         col_start = 0.2
-        self.disp_header('freesans', (255, 255, 255), header) # change def name and tweak to accept 'time-date', other string or FALSE
+        my_disp.disp_header('freesans', (255, 255, 255), header)
         # Bottom of top box
-        pygame.draw.line(self.screen, line_color, (xmin, self.ymax * 0.15),
-                        (self.xmax, self.ymax * 0.15), lines)
+        pygame.draw.line(my_disp.screen, line_color,
+                         (xmin, my_disp.ymax * 0.15),
+                         (my_disp.xmax, my_disp.ymax * 0.15), lines)
     else:
         col_height = 0.9
         col_start = 0.05
     # Top
-    pygame.draw.line(self.screen, line_color, (xmin, 0), (self.xmax, 0),
-                        lines)
+    pygame.draw.line(my_disp.screen, line_color, (xmin, 0), (my_disp.xmax, 0),
+                     lines)
     # Left
-    pygame.draw.line(self.screen, line_color, (xmin, 0),
-                        (xmin, self.ymax), lines)
+    pygame.draw.line(my_disp.screen, line_color, (xmin, 0),
+                     (xmin, my_disp.ymax), lines)
     # Bottom
-    pygame.draw.line(self.screen, line_color, (xmin, self.ymax),
-                        (self.xmax, self.ymax), lines)
+    pygame.draw.line(my_disp.screen, line_color, (xmin, my_disp.ymax),
+                     (my_disp.xmax, my_disp.ymax), lines)
     # Right
-    pygame.draw.line(self.screen, line_color, (self.xmax, 0),
-                        (self.xmax, self.ymax + 2), lines)
+    pygame.draw.line(my_disp.screen, line_color, (my_disp.xmax, 0),
+                     (my_disp.xmax, my_disp.ymax + 2), lines)
     slot_height = (col_height / int(rss_config["rows"]))
-    font = pygame.font.SysFont(font_name, int(slot_height * 0.9 * self.ymax), bold=1)
+    font = pygame.font.SysFont(font_name,
+                               int(slot_height * 0.9 * my_disp.ymax), bold=1)
 
-    item_rendered = 0
     slot_width = 0.9 / int(rss_config["cols"])
 
     filled_count = 0
@@ -182,27 +190,36 @@ def disp_rss(self, last_update_time):
         rendered_text = font.render(item_title, True, text_color)
         (text_x, text_y) = rendered_text.get_size()
         new_title2 = False
-        if text_x > self.xmax * slot_width:
+        if text_x > my_disp.xmax * slot_width:
             char_space = text_x / len(item_title)
-            char_limit = math.floor((self.xmax * slot_width) / char_space)
+            char_limit = math.floor((my_disp.xmax * slot_width) / char_space)
             if rss_config["wrap_text"] == "yes":
-                it = re.finditer(r"(?<![A-Za-z])'(?![A-Za-z])|[\"\- ]", item_title[:char_limit])
+                it = re.finditer(
+                                 r"(?<![A-Za-z])'(?![A-Za-z])|[\"\- ]",
+                                 item_title[:char_limit])
                 break_points = [m.start(0) for m in it]
                 new_title = item_title[:break_points[-1]]
                 new_title2 = item_title[break_points[-1]:]
                 if len(new_title2) > (char_limit - 2):
                     new_title2 = "  " + new_title2[:char_limit - 5] + "..."
-                else: new_title2 = "  " + new_title2[:char_limit]
+                else:
+                    new_title2 = "  " + new_title2[:char_limit]
             else:
                 new_title = item_title[:char_limit - 3] + "..."
                 new_title2 = False
             rendered_text = font.render(new_title, True, text_color)
-        self.screen.blit(rendered_text, (int(self.xmax * (0.05 + col * slot_width)), int(self.ymax * (col_start + row * slot_height))))
+        my_disp.screen.blit(
+            rendered_text, (int(my_disp.xmax * (0.05 + col * slot_width)),
+                            int(my_disp.ymax *
+                                (col_start + row * slot_height))))
         row += 1
         filled_count += 1
         if new_title2:
             rendered_text = font.render(new_title2, True, text_color)
-            self.screen.blit(rendered_text, (int(self.xmax * (0.05 + col * slot_width)), int(self.ymax * (col_start + row * slot_height))))
+            my_disp.screen.blit(
+                rendered_text, (int(my_disp.xmax * (0.05 + col * slot_width)),
+                                int(my_disp.ymax *
+                                    (col_start + row * slot_height))))
             row += 1
             filled_count += 1
         if row >= int(rss_config["rows"]):
