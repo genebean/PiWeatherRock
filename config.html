@@ -36,9 +36,7 @@
                 var xobj = new XMLHttpRequest();
                 xobj.onreadystatechange = function () {
                       if (xobj.readyState == 4 && xobj.status == "200") {
-                        alert(xobj.readyState + " " + xobj.status);
                         callback(xobj.responseText);
-                        alert("lock = " + xobj.responseText);
                       };
                 };
                 xobj.open('GET', '.lock?dummy='+ms, true);
