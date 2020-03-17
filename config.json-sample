@@ -1,0 +1,99 @@
+{
+    "api_key": "SAMPLE_API_KEY",
+    "lat": "0.112358",
+    "lon": "0.246810",
+    "units": "us",
+    "lang": "en",
+    "fullscreen": "yes",
+    "icon_offset": "-23.5",
+    "update_freq": "300",
+    "info_pause": "300",
+    "info_delay": "900",
+    "log_level": "INFO",
+    "plugins": {
+        "daily": {
+            "enabled": "yes",
+            "pause": "60"
+        },
+        "hourly": {
+            "enabled": "yes",
+            "pause": "60"
+        },
+        "speedtest": {
+            "enabled": "no",
+            "pause": "15",
+            "dl_speed": "1000",
+            "ul_speed": "1000",
+            "red_cutoff": "75",
+            "yellow_cutoff": "90",
+            "archive": "no",
+            "show_percentage": "no",
+            "show_mbps": "yes",
+            "local_test": "no",
+            "update_freq": "900"
+        },
+        "rss": {
+            "enabled": "no",
+            "pause": "15",
+            "update_freq": "600",
+            "wrap_text": "no",
+            "cols": "1",
+            "rows": "12",
+            "show_header": "yes",
+            "header_type": "time",
+            "custom_header": "The is My Custom Header",
+            "feeds": {
+                "1": {
+                    "enabled": "no",
+                    "name": "Linux Journal",
+                    "url": "https://www.linuxjournal.com/node/feed"
+                },
+                "2": {
+                    "enabled": "no",
+                    "name": "Linux Security",
+                    "url": "https://linuxsecurity.com/linuxsecurity_hybrid.xml"
+                },
+                "3": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "4": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "5": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "6": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "7": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "8": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "9": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                },
+                "10": {
+                    "enabled": "no",
+                    "name": "",
+                    "url": ""
+                }
+            }
+        }
+    }
+}

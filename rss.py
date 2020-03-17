@@ -61,8 +61,8 @@ def update(my_disp):
         slot_count = int(rss_config["cols"]) * int(rss_config["rows"])
         feed_list = []
         for x in range(10):
-            if rss_config[f"feed{x}"].strip():
-                feed_list.append(rss_config[f"feed{x}"])
+            if rss_config["feeds"][f"{x+1}"]["enabled"] == "yes":
+                feed_list.append(rss_config["feeds"][f"{x+1}"]["url"])
         feed_dict = {}
         error_count = 0
         for feed in feed_list:

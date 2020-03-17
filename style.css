@@ -145,12 +145,21 @@ body {
     display: inline-block;
 
 }
+
 .opt {
     position: relative;
     float: right;
     width: 15vw;
     left: -25vw;
     margin-right: -4em;
+    display: inline-block;
+}
+
+.extra {
+    position: relative;
+    float: right;
+    width: 15vw;
+    left: 10vw;
     display: inline-block;
 }
 

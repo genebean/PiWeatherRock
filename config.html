@@ -89,7 +89,7 @@
                     var myObj = JSON.parse(response);
                     Object.keys(myObj).forEach(function(key) {
                         // Load all non-plugin config values
-                        if (typeof(myObj[key]) != "object") {
+                        if (key != "plugins") {
                             if (task == "load") {
                                 var i;
                                 document.getElementById(key).value = myObj[key];
@@ -98,9 +98,9 @@
                             };
                         } else {
                             // Load all plugin config values
-                            plugin =  myObj[key];
-                            Object.keys(plugin).forEach(function(key2) {
-                                plugin_var = plugin[key2];
+                            plugins =  myObj[key];
+                            Object.keys(plugins).forEach(function(key2) {
+                                plugin_var = plugins[key2];
                                 Object.keys(plugin_var).forEach(function(key3) {
                                     if (task == "load") {
                                         if (key3 == "enabled") {
@@ -111,6 +111,17 @@
                                                 document.getElementById(key2).checked = false;
                                                 hide(key2, key2 + "_config");
                                             };
+                                        } else if (key3 == "feeds"){
+                                            feeds = myObj["plugins"]["rss"]["feeds"];
+                                            Object.keys(feeds).forEach(function(key4) {
+                                                document.getElementById("rss_feed" + key4 + "_name").value = myObj[key][key2][key3][key4]["name"];
+                                                document.getElementById("rss_feed" + key4).value = myObj[key][key2][key3][key4]["url"];
+                                                if (myObj[key][key2][key3][key4]["enabled"] == "yes") {
+                                                    document.getElementById("rss_feed" + key4 + "_on").checked = true;
+                                                } else {
+                                                    document.getElementById("rss_feed" + key4 + "_on").checked == false;
+                                                }
+                                            });
                                         } else {
                                             document.getElementById(key2 + "_" + key3).value = myObj[key][key2][key3];
                                         };
@@ -122,7 +133,18 @@
                                             } else {
                                                 myObj[key][key2][key3] = "no";
                                             };
-                                        } else {
+                                        } else if (key3 == "feeds"){
+                                            feeds = myObj["plugins"]["rss"]["feeds"];
+                                            Object.keys(feeds).forEach(function(key4) {
+                                                myObj[key][key2][key3][key4]["name"] = document.getElementById("rss_feed" + key4 + "_name").value;
+                                                myObj[key][key2][key3][key4]["url"] = document.getElementById("rss_feed" + key4).value;
+                                                if (document.getElementById("rss_feed" + key4 + "_on").checked == true) {
+                                                    myObj[key][key2][key3][key4]["enabled"] = "yes";
+                                                } else {
+                                                    myObj[key][key2][key3][key4]["enabled"] = "no";
+                                                }
+                                            });
+                                        } else { // Load all other plugin variables
                                             myObj[key][key2][key3] = document.getElementById(key2 + "_" + key3).value;
                                         };
                                     };
@@ -521,58 +543,77 @@
                         <div class="tooltip">RSS Feeds:
                             <span class="tooltiptext">Feeds listed below, that are enabled by clicking the checkbox, will be combined into one feed for display.</span>
                         </div>
+                        <div class="opt">
+                            <div class="tooltip">Feed Name:
+                                <span class="tooltiptext">Name of feed. For user reference only.</span>
+                            </div>
+                        </div>
+                        <div class="extra">
+                            <div class="tooltip">Feed URL:
+                                <span class="tooltiptext">Feed URL.</span>
+                            </div>
+                        </div>
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed0">   Feed 1:
-                        <input type="form" id="rss_feed0" class="opt">
+                        <input type="checkbox" id="rss_feed1_on">   Feed 1:
+                        <input type="form" id="rss_feed1_name" class="opt">
+                        <input type="form" id="rss_feed1" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed1">   Feed 2:
-                        <input type="form" id="rss_feed1" class="opt">
-                    </div>
-                    <p></p>
-                        <div class="var">
-                        <input type="checkbox" id="efeed2">   Feed 3:
-                        <input type="form" id="rss_feed2" class="opt">
+                        <input type="checkbox" id="rss_feed2_on">   Feed 2:
+                        <input type="form" id="rss_feed2_name" class="opt">
+                        <input type="form" id="rss_feed2" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed3">   Feed 4:
-                        <input type="form" id="rss_feed3" class="opt">
+                        <input type="checkbox" id="rss_feed3_on">   Feed 3:
+                        <input type="form" id="rss_feed3_name" class="opt">
+                        <input type="form" id="rss_feed3" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed4">   Feed 5:
-                        <input type="form" id="rss_feed4" class="opt">
+                        <input type="checkbox" id="rss_feed4_on">   Feed 4:
+                        <input type="form" id="rss_feed4_name" class="opt">
+                        <input type="form" id="rss_feed4" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed5">   Feed 6:
-                        <input type="form" id="rss_feed5" class="opt">
+                        <input type="checkbox" id="rss_feed5_on">   Feed 5:
+                        <input type="form" id="rss_feed5_name" class="opt">
+                        <input type="form" id="rss_feed5" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed6">   Feed 7:
-                        <input type="form" id="rss_feed6" class="opt">
+                        <input type="checkbox" id="rss_feed6_on">   Feed 6:
+                        <input type="form" id="rss_feed6_name" class="opt">
+                        <input type="form" id="rss_feed6" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed7">   Feed 8:
-                        <input type="form" id="rss_feed7" class="opt">
+                        <input type="checkbox" id="rss_feed7_on">   Feed 7:
+                        <input type="form" id="rss_feed7_name" class="opt">
+                        <input type="form" id="rss_feed7" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed8">   Feed 9:
-                        <input type="form" id="rss_feed8" class="opt">
+                        <input type="checkbox" id="rss_feed8_on">   Feed 8:
+                        <input type="form" id="rss_feed8_name" class="opt">
+                        <input type="form" id="rss_feed8" class="extra">
                     </div>
                     <p></p>
                     <div class="var">
-                        <input type="checkbox" id="efeed9">   Feed 10:
-                        <input type="form" id="rss_feed9" class="opt">
+                        <input type="checkbox" id="rss_feed9_on">   Feed 9:
+                        <input type="form" id="rss_feed9_name" class="opt">
+                        <input type="form" id="rss_feed9" class="extra">
                     </div>
-
+                    <p></p>
+                    <div class="var">
+                        <input type="checkbox" id="rss_feed10_on">   Feed 10:
+                        <input type="form" id="rss_feed10_name" class="opt">
+                        <input type="form" id="rss_feed10" class="extra">
+                    </div>
                     <p></p>
 
                 </div>
