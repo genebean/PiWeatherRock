@@ -98,6 +98,7 @@ $python_packages = [
   'requests',
   'pynanosvg',
   'cherrypy',
+  'speedtest-cli',
 ]
 
 python::pip { $python_packages:
