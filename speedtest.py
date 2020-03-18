@@ -206,12 +206,12 @@ def disp(my_disp):
     st_dir = 'icons/speedtest/'
     dl_percent_float = (dl / int(speedtest_config["dl_speed"])) * 100
     dl_percent = math.floor(dl_percent_float / 5) * 5
-    if int(speedtest_config["red_cutoff"]) >= dl_percent:
+    if int(speedtest_config["red_cutoff"]) > dl_percent:
         if dl_percent == 0:
             dl_img = f"{st_dir}red/5.svg"
         else:
             dl_img = f"{st_dir}red/{dl_percent}.svg"
-    elif int(speedtest_config["yellow_cutoff"]) >= dl_percent:
+    elif int(speedtest_config["yellow_cutoff"]) > dl_percent:
         dl_img = f"{st_dir}yellow/{dl_percent}.svg"
     elif dl_percent >= 125:
         dl_img = f"{st_dir}green/125.svg"
@@ -221,11 +221,11 @@ def disp(my_disp):
     # Determine which upload dial image to show
     ul_percent_float = (ul / int(speedtest_config["ul_speed"])) * 100
     ul_percent = math.floor(ul_percent_float / 5) * 5
-    if int(speedtest_config["red_cutoff"]) >= ul_percent:
+    if int(speedtest_config["red_cutoff"]) > ul_percent:
         ul_img = f"{st_dir}red/{ul_percent}.svg"
         if ul_percent == 0:
             ul_img = f"{st_dir}red/5.svg"
-    elif int(speedtest_config["yellow_cutoff"]) >= ul_percent:
+    elif int(speedtest_config["yellow_cutoff"]) > ul_percent:
         ul_img = f"{st_dir}yellow/{ul_percent}.svg"
     elif ul_percent >= 125:
         ul_img = f"{st_dir}green/125.svg"
