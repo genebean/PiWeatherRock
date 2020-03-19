@@ -314,26 +314,24 @@ class Weather:
                                self.ymax * (subwindows_y_start_position +
                                             line_spacing_gap * 0)))
         if hasattr(data, 'temperatureLow'):
-            txt = forecast_font.render(
-                str(int(round(data.temperatureHigh))) +
-                UNICODE_DEGREE +
-                ' / ' +
-                str(int(round(data.temperatureLow))) +
-                UNICODE_DEGREE + self.get_temperature_letter(),
-                True, text_color)
+            txt = forecast_font.render(f"{int(round(data.temperatureHigh))}"
+                                       f"{UNICODE_DEGREE} / "
+                                       f"{int(round(data.temperatureLow))}"
+                                       f"{UNICODE_DEGREE}"
+                                       f"{self.get_temperature_letter()}",
+                                       True, text_color)
         else:
-            txt = forecast_font.render(
-                str(int(round(data.temperature))) +
-                UNICODE_DEGREE + self.get_temperature_letter(),
-                True, text_color)
+            txt = forecast_font.render(f"{int(round(data.temperature))}"
+                                       f"{UNICODE_DEGREE}"
+                                       f"{self.get_temperature_letter()}",
+                                       True, text_color)
         (txt_x, txt_y) = txt.get_size()
         self.screen.blit(txt, (self.xmax *
                                (subwindow_centers * c_times) - txt_x / 2,
                                self.ymax * (subwindows_y_start_position +
                                             line_spacing_gap * 5)))
-        rptxt = rpfont.render(
-            str(int(round(data.precipProbability * 100))) + '%',
-            True, text_color)
+        rptxt = rpfont.render(f"{int(round(data.precipProbability * 100))}%",
+                              True, text_color)
         (txt_x, txt_y) = rptxt.get_size()
         self.screen.blit(rptxt, (self.xmax *
                                  (subwindow_centers * c_times) - txt_x / 2,
@@ -388,7 +386,7 @@ class Weather:
         outside_temp_font = pygame.font.SysFont(
             font_name, int(self.ymax * (0.5 - 0.15) * 0.6), bold=1)
         txt = outside_temp_font.render(
-            str(int(round(self.weather.temperature))), True, text_color)
+            f"{int(round(self.weather.temperature))}", True, text_color)
         (txt_x, txt_y) = txt.get_size()
         degree_font = pygame.font.SysFont(
             font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
