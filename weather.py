@@ -52,7 +52,7 @@ import pygame
 import requests
 
 with open("config.json", "r") as f:
-    config = json.load(f)
+    CONFIG = json.load(f)
 
 # globals
 MOUSE_X, MOUSE_Y = 0, 0
@@ -137,11 +137,11 @@ def get_abbreviation(phrase):
     return abbreviation
 
 
-def get_windspeed_abbreviation(unit=config["units"]):
+def get_windspeed_abbreviation(unit=CONFIG["units"]):
     return get_abbreviation(units_decoder(unit)['windSpeed'])
 
 
-def get_temperature_letter(unit=config["units"]):
+def get_temperature_letter(unit=CONFIG["units"]):
     return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
 
 
@@ -249,7 +249,7 @@ class MyDisplay:
         # for fontname in pygame.font.get_fonts():
         #        print(fontname)
 
-        if config["fullscreen"] == "yes":
+        if CONFIG["fullscreen"] == "yes":
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
             if self.xmax <= 1024:
@@ -272,15 +272,15 @@ class MyDisplay:
         "Destructor to make sure pygame shuts down, etc."
 
     def get_forecast(self):
-        if (time.time() - self.last_update_check) > int(config["update_freq"]):
+        if (time.time() - self.last_update_check) > int(CONFIG["update_freq"]):
             self.last_update_check = time.time()
             try:
-                self.weather = forecast(config["api_key"],
-                                        config["lat"],
-                                        config["lon"],
+                self.weather = forecast(CONFIG["api_key"],
+                                        CONFIG["lat"],
+                                        CONFIG["lon"],
                                         exclude='minutely',
-                                        units=config["units"],
-                                        lang=config["lang"])
+                                        units=CONFIG["units"],
+                                        lang=CONFIG["lang"])
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
@@ -429,7 +429,7 @@ class MyDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = int(config["icon_offset"])
+            icon_y_offset = int(CONFIG["icon_offset"])
 
         self.screen.blit(icon, (self.xmax *
                                 (subwindow_centers * c_times) -
@@ -880,7 +880,7 @@ while RUNNING:
         D_COUNT = 0
         H_COUNT = 0
         # Default in config.py.sample: pause for 5 minutes on info screen.
-        if NON_WEATHER_TIMEOUT > (int(config["info_pause"]) * 10):
+        if NON_WEATHER_TIMEOUT > (int(CONFIG["info_pause"]) * 10):
             MODE = 'd'
             D_COUNT = 1
             syslog.syslog("Switching to weather mode")
@@ -889,11 +889,11 @@ while RUNNING:
         PERIODIC_INFO_ACTIVATION += 1
         # Default is to flip between 2 weather screens
         # for 15 minutes before showing info screen.
-        if PERIODIC_INFO_ACTIVATION > (int(config["info_delay"]) * 10):
+        if PERIODIC_INFO_ACTIVATION > (int(CONFIG["info_delay"]) * 10):
             MODE = 'i'
             syslog.syslog("Switching to info mode")
-        elif (PERIODIC_INFO_ACTIVATION % (((int(config["plugins"]["daily"]["pause"]) * D_COUNT) +
-              (int(config["plugins"]["hourly"]["pause"]) * H_COUNT)) * 10)) == 0:
+        elif (PERIODIC_INFO_ACTIVATION % (((int(CONFIG["plugins"]["daily"]["pause"]) * D_COUNT) +
+              (int(CONFIG["plugins"]["hourly"]["pause"]) * H_COUNT)) * 10)) == 0:
             if MODE == 'd':
                 syslog.syslog("Switching to HOURLY")
                 MODE = 'h'
