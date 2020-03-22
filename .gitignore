@@ -1,4 +1,5 @@
 .vscode/
 config.py
+config.json
 *.pyc
 *.swp
