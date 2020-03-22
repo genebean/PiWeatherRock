@@ -715,11 +715,11 @@ class MyDisplay:
         small_font = pygame.font.SysFont(
             font_name, int(self.ymax * time_height_small), bold=1)
 
-        hours_and_minites = time.strftime("%I:%M", time.localtime())
+        hours_and_minutes = time.strftime("%I:%M", time.localtime())
         am_pm = time.strftime(" %p", time.localtime())
 
         rendered_hours_and_minutes = regular_font.render(
-            hours_and_minites, True, text_color)
+            hours_and_minutes, True, text_color)
         (tx1, ty1) = rendered_hours_and_minutes.get_size()
         rendered_am_pm = small_font.render(am_pm, True, text_color)
         (tx2, ty2) = rendered_am_pm.get_size()
