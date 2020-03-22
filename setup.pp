@@ -104,6 +104,12 @@ python::pip { $python_packages:
   require      => Package[ $main_packages, $piweatherrock_packages, ],
 }
 
+# Run upgrade script to import current config values to new config file
+exec { 'import config':
+  path    => '/bin:/usr/bin',
+  command => "python3 /home/pi/PiWeatherRock/scripts/upgrade.py",
+}
+
 systemd::unit_file { 'PiWeatherRock.service':
   source  => 'file:///home/pi/PiWeatherRock/PiWeatherRock.service',
   require => Python::Pip[$python_packages],
