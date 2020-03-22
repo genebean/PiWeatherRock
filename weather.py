@@ -28,7 +28,7 @@
 
 """ Fetches weather reports from Dark Sky for displaying on a screen. """
 
-__version__ = "0.0.12"
+__version__ = "0.0.13"
 
 ###############################################################################
 #   Raspberry Pi Weather Display
