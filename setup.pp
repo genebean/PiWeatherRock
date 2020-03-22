@@ -96,11 +96,21 @@ $python_packages = [
   'pygame',
   'pyserial',
   'requests',
+  'cherrypy',
 ]
 
 python::pip { $python_packages:
   pip_provider => 'pip3',
   require      => Package[ $main_packages, $piweatherrock_packages, ],
+}
+
+# Run upgrade script to import current config values to new config file
+exec { 'import config':
+  user    => 'pi',
+  path    => '/bin:/usr/bin',
+  command => 'python3 /home/pi/PiWeatherRock/scripts/upgrade.py',
+  unless  => 'grep "0.0.13" config.json',
+  notify  => Service['PiWeatherRock.service'],
 }
 
 systemd::unit_file { 'PiWeatherRock.service':
@@ -113,6 +123,24 @@ service {'PiWeatherRock.service':
   ensure    => running,
   enable    => true,
   require   => Systemd::Unit_file['PiWeatherRock.service'],
+  subscribe => [
+    Exec['enable display-setup-script'],
+    File['/home/pi/bin/xhost.sh'],
+    Python::Pip[$python_packages],
+    Vcsrepo['/home/pi/PiWeatherRock'],
+  ],
+}
+
+systemd::unit_file { 'PiWeatherRockConfig.service':
+  source  => 'file:///home/pi/PiWeatherRock/PiWeatherRockConfig.service',
+  require => Python::Pip[$python_packages],
+  notify  => Service['PiWeatherRockConfig.service'],
+}
+
+service {'PiWeatherRockConfig.service':
+  ensure    => running,
+  enable    => true,
+  require   => Systemd::Unit_file['PiWeatherRockConfig.service'],
   subscribe => [
     Exec['enable display-setup-script'],
     File['/home/pi/bin/xhost.sh'],
