@@ -96,6 +96,7 @@ $python_packages = [
   'pygame',
   'pyserial',
   'requests',
+  'cherrypy',
 ]
 
 python::pip { $python_packages:
@@ -113,6 +114,24 @@ service {'PiWeatherRock.service':
   ensure    => running,
   enable    => true,
   require   => Systemd::Unit_file['PiWeatherRock.service'],
+  subscribe => [
+    Exec['enable display-setup-script'],
+    File['/home/pi/bin/xhost.sh'],
+    Python::Pip[$python_packages],
+    Vcsrepo['/home/pi/PiWeatherRock'],
+  ],
+}
+
+systemd::unit_file { 'PiWeatherRockConfig.service':
+  source  => 'file:///home/pi/PiWeatherRock/PiWeatherRockConfig.service',
+  require => Python::Pip[$python_packages],
+  notify  => Service['PiWeatherRockConfig.service'],
+}
+
+service {'PiWeatherRockConfig.service':
+  ensure    => running,
+  enable    => true,
+  require   => Systemd::Unit_file['PiWeatherRockConfig.service'],
   subscribe => [
     Exec['enable display-setup-script'],
     File['/home/pi/bin/xhost.sh'],
