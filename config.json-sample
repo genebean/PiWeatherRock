@@ -1,0 +1,23 @@
+{
+    "version": "0.0.13",
+    "api_key": "API_KEY_HERE",
+    "lat": "0.112358",
+    "lon": "0.246810",
+    "units": "us",
+    "lang": "en",
+    "fullscreen": "yes",
+    "icon_offset": "-23.5",
+    "update_freq": "300",
+    "info_pause": "300",
+    "info_delay": "900",
+    "plugins": {
+        "daily": {
+            "enabled": "yes",
+            "pause": "60"
+        },
+        "hourly": {
+            "enabled": "yes",
+            "pause": "60"
+        }
+    }
+}
