@@ -892,8 +892,10 @@ while RUNNING:
         if PERIODIC_INFO_ACTIVATION > (int(CONFIG["info_delay"]) * 10):
             MODE = 'i'
             syslog.syslog("Switching to info mode")
-        elif (PERIODIC_INFO_ACTIVATION % (((int(CONFIG["plugins"]["daily"]["pause"]) * D_COUNT) +
-              (int(CONFIG["plugins"]["hourly"]["pause"]) * H_COUNT)) * 10)) == 0:
+        elif (PERIODIC_INFO_ACTIVATION % (
+                ((int(CONFIG["plugins"]["daily"]["pause"]) * D_COUNT)
+                 + (int(CONFIG["plugins"]["hourly"]["pause"]) * H_COUNT))
+                * 10)) == 0:
             if MODE == 'd':
                 syslog.syslog("Switching to HOURLY")
                 MODE = 'h'
