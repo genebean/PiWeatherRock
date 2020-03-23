@@ -1,657 +1,657 @@
 <html>
-    <head>
-        <script>
-            // *****Unused in this version*****
-            // Run the start or stop method from config_webpage.py depending on slider position.
-            function startstop() {
-                var xhr = new XMLHttpRequest();
-                if (document.getElementById('start').checked == false) {
-                    xhr.open('GET', 'stop', true);
-                    xhr.onload = function () {
-                      console.log(xhr.responseURL);
-                    };
-                    xhr.send(null);
+  <head>
+    <script>
+      // *****Unused in this version*****
+      // Run the start or stop method from config_webpage.py depending on slider position.
+      function startstop() {
+        var xhr = new XMLHttpRequest();
+        if (document.getElementById('start').checked == false) {
+          xhr.open('GET', 'stop', true);
+          xhr.onload = function () {
+            console.log(xhr.responseURL);
+          };
+          xhr.send(null);
+        } else {
+          xhr.open('GET', 'start', true);
+          xhr.onload = function () {
+            console.log(xhr.responseURL);
+          };
+          xhr.send(null);
+        }
+      }
+    </script>
+    <script>
+      // Save the new values from the page to config.json
+      function save(content, fileName, contentType) {
+        var a = document.createElement("a");
+        var file = new Blob([JSON.stringify(content)], {type: contentType});
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+      }
+    </script>
+    <script>
+      // *****Unused in this version*****
+      // Open .lock file to check run status
+      function load_lock(callback) {
+        var ms = Date.now();
+        var xobj = new XMLHttpRequest();
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == "200") {
+            callback(xobj.responseText);
+            };
+        };
+        xobj.open('GET', '.lock?dummy='+ms, true);
+        xobj.send(null);
+       }
+    </script>
+    <script>
+      // Prevent loading config.json from cache
+      function loadJSON(callback) {
+        var xobj = new XMLHttpRequest();
+        var ms = Date.now();
+        xobj.overrideMimeType("application/json");
+        xobj.open('GET', 'config.json?dummy='+ms, true);
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == "200") {
+            callback(xobj.responseText);
+            }
+        };
+        xobj.send(null);
+       }
+    </script>
+    <script>
+      // Hide or show sections depending on checkbox check-status.
+      function hide(check, item) {
+        // Get the checkbox
+        var checkBox = document.getElementById(check);
+        // Get the output text
+        var text = document.getElementById(item);
+
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked == true){
+        text.style.display = "block";
+        } else {
+        text.style.display = "none";
+        };
+      }
+    </script>
+    <script>
+      // Determined checkbox check-status and form values from config.json
+      function config_helper(task) {
+        hide("advanced", "advanced_config");
+        // ***** load_lock() is unused in this version*****
+        //load_lock(function(response) {
+        //  if (response == "0") {
+        //    document.getElementById('start').checked = false;
+        //  } else {
+        //    document.getElementById('start').checked = true;
+        //  };
+        //});
+        loadJSON(function(response) {
+          var myObj = JSON.parse(response);
+          Object.keys(myObj).forEach(function(key) {
+            // Load all non-plugin config values
+            if (key != "plugins") {
+              if (task == "load") {
+                if (key == "version") {
+                  document.getElementById("version").innerHTML = "v" + myObj[key];
                 } else {
-                    xhr.open('GET', 'start', true);
-                    xhr.onload = function () {
-                      console.log(xhr.responseURL);
-                    };
-                    xhr.send(null);
-                }
-            }
-        </script>
-        <script>
-            // Save the new values from the page to config.json
-            function save(content, fileName, contentType) {
-                var a = document.createElement("a");
-                var file = new Blob([JSON.stringify(content)], {type: contentType});
-                a.href = URL.createObjectURL(file);
-                a.download = fileName;
-                a.click();
-            }
-        </script>
-        <script>
-            // *****Unused in this version*****
-            // Open .lock file to check run status
-            function load_lock(callback) {
-                var ms = Date.now();
-                var xobj = new XMLHttpRequest();
-                xobj.onreadystatechange = function () {
-                      if (xobj.readyState == 4 && xobj.status == "200") {
-                        callback(xobj.responseText);
-                      };
+                  document.getElementById(key).value = myObj[key];
                 };
-                xobj.open('GET', '.lock?dummy='+ms, true);
-                xobj.send(null);
-             }
-        </script>
-        <script>
-            // Prevent loading config.json from cache
-            function loadJSON(callback) {
-                var xobj = new XMLHttpRequest();
-                var ms = Date.now();
-                xobj.overrideMimeType("application/json");
-                xobj.open('GET', 'config.json?dummy='+ms, true);
-                xobj.onreadystatechange = function () {
-                      if (xobj.readyState == 4 && xobj.status == "200") {
-                        callback(xobj.responseText);
-                      }
-                };
-                xobj.send(null);
-             }
-        </script>
-        <script>
-            // Hide or show sections depending on checkbox check-status.
-            function hide(check, item) {
-              // Get the checkbox
-              var checkBox = document.getElementById(check);
-              // Get the output text
-              var text = document.getElementById(item);
-
-              // If the checkbox is checked, display the output text
-              if (checkBox.checked == true){
-                text.style.display = "block";
               } else {
-                text.style.display = "none";
+                if (key != "version") {
+                  myObj[key] = document.getElementById(key).value;
+                };
               };
-            }
-        </script>
-        <script>
-            // Determined checkbox check-status and form values from config.json
-            function config_helper(task) {
-                hide("advanced", "advanced_config");
-                // ***** load_lock() is unused in this version*****
-                //load_lock(function(response) {
-                //    if (response == "0") {
-                //        document.getElementById('start').checked = false;
-                //    } else {
-                //        document.getElementById('start').checked = true;
-                //    };
-                //});
-                loadJSON(function(response) {
-                    var myObj = JSON.parse(response);
-                    Object.keys(myObj).forEach(function(key) {
-                        // Load all non-plugin config values
-                        if (key != "plugins") {
-                            if (task == "load") {
-                                if (key == "version") {
-                                    document.getElementById("version").innerHTML = "v" + myObj[key];
-                                } else {
-                                    document.getElementById(key).value = myObj[key];
-                                };
-                            } else {
-                                if (key != "version") {
-                                    myObj[key] = document.getElementById(key).value;
-                                };
-                            };
+            } else {
+              // Load all plugin config values
+              plugins =  myObj[key];
+              Object.keys(plugins).forEach(function(key2) {
+                plugin_var = plugins[key2];
+                Object.keys(plugin_var).forEach(function(key3) {
+                  if (task == "load") {
+                    if (key3 == "enabled") {
+                      if (myObj[key][key2][key3] == "yes") {
+                        document.getElementById(key2).checked = true;
+                        hide(key2, key2 + "_config");
+                      } else {
+                        document.getElementById(key2).checked = false;
+                        hide(key2, key2 + "_config");
+                      };
+                    } else if (key3 == "feeds"){ // *****Unused in this version*****
+                      feeds = myObj["plugins"]["rss"]["feeds"];
+                      Object.keys(feeds).forEach(function(key4) {
+                        document.getElementById("rss_feed" + key4 + "_name").value = myObj[key][key2][key3][key4]["name"];
+                        document.getElementById("rss_feed" + key4).value = myObj[key][key2][key3][key4]["url"];
+                        if (myObj[key][key2][key3][key4]["enabled"] == "yes") {
+                          document.getElementById("rss_feed" + key4 + "_on").checked = true;
                         } else {
-                            // Load all plugin config values
-                            plugins =  myObj[key];
-                            Object.keys(plugins).forEach(function(key2) {
-                                plugin_var = plugins[key2];
-                                Object.keys(plugin_var).forEach(function(key3) {
-                                    if (task == "load") {
-                                        if (key3 == "enabled") {
-                                            if (myObj[key][key2][key3] == "yes") {
-                                                document.getElementById(key2).checked = true;
-                                                hide(key2, key2 + "_config");
-                                            } else {
-                                                document.getElementById(key2).checked = false;
-                                                hide(key2, key2 + "_config");
-                                            };
-                                        } else if (key3 == "feeds"){ // *****Unused in this version*****
-                                            feeds = myObj["plugins"]["rss"]["feeds"];
-                                            Object.keys(feeds).forEach(function(key4) {
-                                                document.getElementById("rss_feed" + key4 + "_name").value = myObj[key][key2][key3][key4]["name"];
-                                                document.getElementById("rss_feed" + key4).value = myObj[key][key2][key3][key4]["url"];
-                                                if (myObj[key][key2][key3][key4]["enabled"] == "yes") {
-                                                    document.getElementById("rss_feed" + key4 + "_on").checked = true;
-                                                } else {
-                                                    document.getElementById("rss_feed" + key4 + "_on").checked == false;
-                                                }
-                                            });
-                                        } else {
-                                            document.getElementById(key2 + "_" + key3).value = myObj[key][key2][key3];
-                                        };
-                                    } else {
-                                        // If checkbox is checked, make sure plugins are enabled in json file
-                                        if (key3 == "enabled") {
-                                            if (document.getElementById(key2).checked == true) {
-                                                myObj[key][key2][key3] = "yes";
-                                            } else {
-                                                myObj[key][key2][key3] = "no";
-                                            };
-                                        } else if (key3 == "feeds"){ // *****Unused in this version*****
-                                            feeds = myObj["plugins"]["rss"]["feeds"];
-                                            Object.keys(feeds).forEach(function(key4) {
-                                                myObj[key][key2][key3][key4]["name"] = document.getElementById("rss_feed" + key4 + "_name").value;
-                                                myObj[key][key2][key3][key4]["url"] = document.getElementById("rss_feed" + key4).value;
-                                                if (document.getElementById("rss_feed" + key4 + "_on").checked == true) {
-                                                    myObj[key][key2][key3][key4]["enabled"] = "yes";
-                                                } else {
-                                                    myObj[key][key2][key3][key4]["enabled"] = "no";
-                                                }
-                                            });
-                                        } else { // Save all other plugin variables
-                                            myObj[key][key2][key3] = document.getElementById(key2 + "_" + key3).value;
-                                        };
-                                    };
-                                });
-                            });
-                        };
-                    });
-                    // Save all new config values to config.json
-                    if (task == "save") {
-                        var xhr = new XMLHttpRequest();
-                        var url = "upload";
-                        xhr.open("POST", url, true);
-                        xhr.setRequestHeader("Content-Type", "application/json");
-                        var data = JSON.stringify(myObj);
-                        xhr.send(data);
-                        alert("Update successful.") // Figure out error checking before alerting "success"
+                          document.getElementById("rss_feed" + key4 + "_on").checked == false;
+                        }
+                      });
+                    } else {
+                      document.getElementById(key2 + "_" + key3).value = myObj[key][key2][key3];
                     };
+                  } else {
+                    // If checkbox is checked, make sure plugins are enabled in json file
+                    if (key3 == "enabled") {
+                      if (document.getElementById(key2).checked == true) {
+                        myObj[key][key2][key3] = "yes";
+                      } else {
+                        myObj[key][key2][key3] = "no";
+                      };
+                    } else if (key3 == "feeds"){ // *****Unused in this version*****
+                      feeds = myObj["plugins"]["rss"]["feeds"];
+                      Object.keys(feeds).forEach(function(key4) {
+                        myObj[key][key2][key3][key4]["name"] = document.getElementById("rss_feed" + key4 + "_name").value;
+                        myObj[key][key2][key3][key4]["url"] = document.getElementById("rss_feed" + key4).value;
+                        if (document.getElementById("rss_feed" + key4 + "_on").checked == true) {
+                          myObj[key][key2][key3][key4]["enabled"] = "yes";
+                        } else {
+                          myObj[key][key2][key3][key4]["enabled"] = "no";
+                        }
+                      });
+                    } else { // Save all other plugin variables
+                      myObj[key][key2][key3] = document.getElementById(key2 + "_" + key3).value;
+                    };
+                  };
                 });
-            }
-        </script>
-        <title>PiWeatherRock Configuration</title>
-        <link rel="stylesheet" href="style.css" type="text/css" />
-    </head>
-    <body onload="config_helper('load')">
-        <div class="myDiv">
-        <div class="bg"></div>
-            <div id="lcloud"><img src="chancetstorms.png" height="256" width="256"></div>
-            <div id="rcloud"><img src="chancetstorms.png" height="256" width="256"></div>
-            <div class="page_title">PiWeatherRock Configuration Page</div>
-            <div id="version"></div>
-            <p class="pad"></p>
-<!--***** unused in this version            <div id="start_toggle">
-                <div class="left">Stop</div>
-                <label class="switch">
-                    <input type="checkbox" id="start" onclick="startstop()">
-                    <span class="slider round"></span>
-                </label>
-                <div class="right">Start</div>
-            </div>
--->            
-            <!-- Rounded switch -->
-            <div id="toggle">
-                <div class="left">Basic</div>
-                <label class="switch">
-                    <input type="checkbox" id="advanced" onclick="hide('advanced', 'advanced_config')">
-                    <span class="slider round"></span>
-                </label>
-                <div class="right">Advanced</div>
-            </div>
-            <p></p>
-            <p></p>
-            <div class="settings">Basic Settings</div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip"><a href="https://darksky.net/dev" target="_blank">API Key</a>:
-                    <span class="tooltiptext">This is your Dark Sky API key. Click the link and sign-up for free to retrieve it.</span>
-                </div>
-                <input type="form" id="api_key" class="opt">
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Latitude</a>:
-                    <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
-                </div>
-                <input type="form" id="lat" class="opt">
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Longitude</a>:
-                    <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
-                </div>
-                <input type="form" id="lon" class="opt">
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Units</a>:
-                    <span class="tooltiptext">Information about units can be found by clicking the link, and searching for "units" section.</span>
-                </div>
-                <select id="units" class="opt">
-                    <option value="si">S. I.</option>
-                    <option value="ca">Canada</option>
-                    <option value="uk2">U. K.</option>
-                    <option value="us">U. S.</option>
-                </select>
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Language</a>:
-                    <span class="tooltiptext">Information about languages can be found by clicking the link, and searching for "languages" section.</span>
-                </div>
-                <select id="lang" class="opt">
-                    <option value="ar">Arabic</option>
-                    <option value="az">Azerbaijani</option>
-                    <option value="be">Belarusian</option>
-                    <option value="bg">Bulgarian</option>
-                    <option value="bn">Bengali</option>
-                    <option value="bs">Bosnian</option>
-                    <option value="ca">Catalan</option>
-                    <option value="cs">Czech</option>
-                    <option value="da">Danish</option>
-                    <option value="de">German</option>
-                    <option value="el">Greek</option>
-                    <option value="en">English</option>
-                    <option value="eo">Esperanto</option>
-                    <option value="es">Spanish</option>
-                    <option value="et">Estonian</option>
-                    <option value="fi">Finnish</option>
-                    <option value="fr">French</option>
-                    <option value="he">Hebrew</option>
-                    <option value="hi">Hindi</option>
-                    <option value="hr">Croatian</option>
-                    <option value="hu">Hungarian</option>
-                    <option value="id">Indonesian</option>
-                    <option value="is">Icelandic</option>
-                    <option value="it">Italian</option>
-                    <option value="ja">Japanese</option>
-                    <option value="ka">Georgian</option>
-                    <option value="kn">Kannada</option>
-                    <option value="ko">Korean</option>
-                    <option value="kw">Cornish</option>
-                    <option value="lv">Latvian</option>
-                    <option value="ml">Malayam</option>
-                    <option value="mr">Marathi</option>
-                    <option value="nb">Norwegian Bokmål</option>
-                    <option value="nl">Dutch</option>
-                    <option value="pa">Punjabi</option>
-                    <option value="pl">Polish</option>
-                    <option value="pt">Portuguese</option>
-                    <option value="ro">Romanian</option>
-                    <option value="ru">Russian</option>
-                    <option value="sk">Slovak</option>
-                    <option value="sl">Slovenian</option>
-                    <option value="sr">Serbian</option>
-                    <option value="sv">Swedish</option>
-                    <option value="ta">Tamil</option>
-                    <option value="te">Telugu</option>
-                    <option value="tet">Tetum</option>
-                    <option value="tr">Turkish</option>
-                    <option value="uk">Ukrainian</option>
-                    <option value="ur">Urdu</option>
-                    <option value="x-pig-latin">Igpay Atinlay</option>
-                    <option value="zh">Simplified Chinese</option>
-                    <option value="zh-tw">Traditional Chinese</option>
-                </select>
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip">Fullscreen:
-                    <span class="tooltiptext">Use fullscreen when running on a TV or similar device with a higher resolution.</span>
-                </div>
-                <select id="fullscreen" class="opt">
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip">Icon Offset:
-                    <span class="tooltiptext">If the weather icons are overlapping the text, try adjusting this value. Negative values raise the icon.</span>
-                </div>
-                <input type="form" id="icon_offset" class="opt" value="-23.5">
-            </div>
-            <p></p>
-            <div class="var">
-                <div class="tooltip">Frequency:
-                    <span class="tooltiptext">Number of seconds between API calls. Free Dark Sky access only allows for 1,000 calls/day (every 86.4 seconds).</span>
-                </div>
-                <input type="form" id="update_freq" class="opt" value="600">
-            </div>        
-            <p class="pad"></p>
-            <div id="advanced_config" style="display:none">
-                <div class="settings">Weather Info</div>
-                <p></p>
-                <div class="var">
-                    <div class="tooltip">Pause:
-                        <span class="tooltiptext">The number of seconds to show the "weather info" screen.</span>
-                    </div>
-                <input type="form" id="info_pause" class="opt" value="300">
-                </div>
-                <p></p>
-                <div class="var">
-                    <div class="tooltip">Delay:
-                        <span class="tooltiptext">The number of seconds to wait before showing the "weather info" screen.</span>
-                    </div>
-                <input type="form" id="info_delay" class="opt" value="900">
-                </div>
-                <p class="pad"></p>
-                <div class="settings">Daily Weather</div>
-                <div class="plugin_toggle">
-                    <div class="left">Off</div>
-                    <label class="switch">
-                        <input type="checkbox" id="daily" onclick="hide('daily', 'daily_config')">
-                        <span class="slider round"></span>
-                    </label>
-                    <div class="right">On</div>
-                </div>
-                <p></p>
-                <div id="daily_config" style="display:none">
-                    <div class="var">
-                        <div class="tooltip">Pause:
-                            <span class="tooltiptext">The number of seconds to show the "daily weather" screen.</span>
-                        </div>
-                    <input type="form" id="daily_pause" class="opt" value="60">
-                    </div>
-                </div>
-                <p class="pad"></p>
-                <div class="settings">Hourly Weather</div>
-                <div class="plugin_toggle">
-                    <div class="left">Off</div>
-                    <label class="switch">
-                        <input type="checkbox" id="hourly" onclick="hide('hourly','hourly_config')">
-                        <span class="slider round"></span>
-                    </label>
-                    <div class="right">On</div>
-
-                </div>
-                <p></p>
-                <div id="hourly_config" style="display:none">
-                    <div class="var">
-                        <div class="tooltip">Pause:
-                            <span class="tooltiptext">The number of seconds to show the "hourly weather" screen.</span>
-                        </div>
-                    <input type="form" id="hourly_pause" class="opt" value="60">
-                    </div>
-                </div>
-                <p class="pad"></p>
-<!--- *** unused in this version               
-                <div class="settings">Speedtest</div>
-                <div class="plugin_toggle">
-                    <div class="left">Off</div>
-                    <label class="switch">
-                        <input type="checkbox" id="speedtest" onclick="hide('speedtest','speedtest_config')">
-                        <span class="slider round"></span>
-                    </label>
-                    <div class="right">On</div>
-                </div>
-                <p></p>
-                <div id="speedtest_config" style="display:none">
-                    <div class="var">
-                        <div class="tooltip">Pause:
-                            <span class="tooltiptext">The number of seconds to show the "speedtest" screen.</span>
-                        </div>
-                    <input type="form" id="speedtest_pause" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip"><a href="https://www.maketecheasier.com/megabits-vs-megabytes-whats-the-difference/" target="_blank">DL Speed</a>:
-                            <span class="tooltiptext">The download speed (in Mb/s) that you are promised to be provided by your ISP. Click the link for more information about megabits per second vs. megabytes per second.</span>
-                        </div>
-                    <input type="form" id="speedtest_dl_speed" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip"><a href="https://www.maketecheasier.com/megabits-vs-megabytes-whats-the-difference/" target="_blank">UL Speed</a>:
-                            <span class="tooltiptext">The upload speed (in Mb/s) that you are promised to be provided by your ISP. Click the link for more information about megabits per second vs. megabytes per second.</span>
-                        </div>
-                    <input type="form" id="speedtest_ul_speed" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Red %:
-                            <span class="tooltiptext">If speedtest is at or below this percentage, show the dial as red.</span>
-                        </div>
-                    <input type="form" id="speedtest_red_cutoff" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Yellow %:
-                            <span class="tooltiptext">If speedtest is at or below this percentage (but above the Red %), show the dial as yellow.</span>
-                        </div>
-                    <input type="form" id="speedtest_yellow_cutoff" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Archive:
-                            <span class="tooltiptext">Old results are deleted from ~/PiWeatherRock/speedtest/queue/. Choosing to archive will move old results to ~/PiWeatherRock/speedtest/archive/ instead.</span>
-                        </div>
-                    <select id="speedtest_archive" class="opt">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Show %:
-                            <span class="tooltiptext">Show the percentage of promised speeds near bottom-right corner of each dial.</span>
-                        </div>
-                    <select id="speedtest_show_percentage" class="opt">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Show Mb/s:
-                            <span class="tooltiptext">Show the the label "Mb/s" under the actual speed, in the center of the dial.</span>
-                        </div>
-                    <select id="speedtest_show_mbps" class="opt">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip"><a href="https://piweatherrock.technicalissues.us/docs/" target="_blank">Test on Pi</a>:
-                            <span class="tooltiptext">Perform the speedtest on the Pi. Click the link to read about important considerations when performing speedtests on a Pi.</span>
-                        </div>
-                    <select id="speedtest_local_test" class="opt">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Frequency:
-                            <span class="tooltiptext">Number of seconds between running speedtest on Pi.</span>
-                        </div>
-                    <input type="form" id="speedtest_update_freq" class="opt">
-                    </div>
-                </div>
-                <p class="pad"></p>
-                <div class="settings">RSS</div>
-                <div class="plugin_toggle">
-                    <div class="left">Off</div>
-                    <label class="switch">
-                        <input type="checkbox" id="rss" onclick="hide('rss','rss_config')">
-                        <span class="slider round"></span>
-                    </label>
-                    <div class="right">On</div>
-
-                </div>
-                <p></p>
-                <div id="rss_config" style="display:none">
-                    <div class="var">
-                        <div class="tooltip">Pause:
-                            <span class="tooltiptext">The number of seconds to show the "rss" screen.</span>
-                        </div>
-                        <input type="form" id="rss_pause" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Frequency:
-                            <span class="tooltiptext">Number of seconds between checking for new RSS items.</span>
-                        </div>
-                        <input type="form" id="rss_update_freq" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Wrap Text:
-                            <span class="tooltiptext">If the text is longer than the column, wrap the text to a second row.</span>
-                        </div>
-                        <select id="rss_wrap_text" class="opt">
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Columns:
-                            <span class="tooltiptext">Split the RSS screen into this many columns.</span>
-                        </div>
-                        <input type="form" id="rss_cols" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Rows:
-                            <span class="tooltiptext">Split the RSS screen into this many rows.</span>
-                        </div>
-                        <input type="form" id="rss_rows" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Show Header:
-                            <span class="tooltiptext">Show a header at the top of the RSS screen.</span>
-                        </div>
-                        <select id="rss_show_header" class="opt">
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Header Type:
-                            <span class="tooltiptext">Choose the type of header to show (if applicable).</span>
-                        </div>
-                        <select id="rss_header_type" class="opt">
-                            <option value="custom">Custom</option>
-                            <option value="time">Date & Time</option>
-                        </select>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">Custom Header:
-                            <span class="tooltiptext">The text to show as the RSS screen header (if applicable).</span>
-                        </div>
-                        <input type="form" id="rss_custom_header" class="opt">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <div class="tooltip">RSS Feeds:
-                            <span class="tooltiptext">Feeds listed below, that are enabled by clicking the checkbox, will be combined into one feed for display.</span>
-                        </div>
-                        <div class="opt">
-                            <div class="tooltip">Feed Name:
-                                <span class="tooltiptext">Name of feed. For user reference only.</span>
-                            </div>
-                        </div>
-                        <div class="extra">
-                            <div class="tooltip">Feed URL:
-                                <span class="tooltiptext">Feed URL.</span>
-                            </div>
-                        </div>
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed1_on">   Feed 1:
-                        <input type="form" id="rss_feed1_name" class="opt">
-                        <input type="form" id="rss_feed1" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed2_on">   Feed 2:
-                        <input type="form" id="rss_feed2_name" class="opt">
-                        <input type="form" id="rss_feed2" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed3_on">   Feed 3:
-                        <input type="form" id="rss_feed3_name" class="opt">
-                        <input type="form" id="rss_feed3" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed4_on">   Feed 4:
-                        <input type="form" id="rss_feed4_name" class="opt">
-                        <input type="form" id="rss_feed4" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed5_on">   Feed 5:
-                        <input type="form" id="rss_feed5_name" class="opt">
-                        <input type="form" id="rss_feed5" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed6_on">   Feed 6:
-                        <input type="form" id="rss_feed6_name" class="opt">
-                        <input type="form" id="rss_feed6" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed7_on">   Feed 7:
-                        <input type="form" id="rss_feed7_name" class="opt">
-                        <input type="form" id="rss_feed7" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed8_on">   Feed 8:
-                        <input type="form" id="rss_feed8_name" class="opt">
-                        <input type="form" id="rss_feed8" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed9_on">   Feed 9:
-                        <input type="form" id="rss_feed9_name" class="opt">
-                        <input type="form" id="rss_feed9" class="extra">
-                    </div>
-                    <p></p>
-                    <div class="var">
-                        <input type="checkbox" id="rss_feed10_on">   Feed 10:
-                        <input type="form" id="rss_feed10_name" class="opt">
-                        <input type="form" id="rss_feed10" class="extra">
-                    </div>
-                    <p></p>
-
-                </div>
-                <p class="pad"></p>
-                <div class="settings">Log</div>
-                <p></p>
-                <div class="var">
-                    <div class="tooltip">Log Level:
-                        <span class="tooltiptext">Change this to 'DEBUG', if you need to troubleshoot issues.</span>
-                    </div>
-                    <select id="log_level" class="opt">
-                        <option value="INFO">INFO</option>
-                        <option value="DEBUG">DEBUG</option>
-                    </select>
-                </div>
-                <p></p>
-                <div class="var">
-                    <div class="tooltip"><a href="log">Go to Log ></a>
-                        <span class="tooltiptext">Click this link to show the log.</span>
-                    </div>
-                </div>
--->
-            </div>
-            <br><br>
-            <div class="submit"><input type="submit" id="update" value="Update" class="submit" onclick="config_helper('save')"></div>
-            <br><br><br><br>
+              });
+            };
+          });
+          // Save all new config values to config.json
+          if (task == "save") {
+            var xhr = new XMLHttpRequest();
+            var url = "upload";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            var data = JSON.stringify(myObj);
+            xhr.send(data);
+            alert("Update successful.") // Figure out error checking before alerting "success"
+          };
+        });
+      }
+    </script>
+    <title>PiWeatherRock Configuration</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body onload="config_helper('load')">
+    <div class="myDiv">
+    <div class="bg"></div>
+      <div id="lcloud"><img src="chancetstorms.png" height="256" width="256"></div>
+      <div id="rcloud"><img src="chancetstorms.png" height="256" width="256"></div>
+      <div class="page_title">PiWeatherRock Configuration Page</div>
+      <div id="version"></div>
+      <p class="pad"></p>
+<!--***** unused in this version      <div id="start_toggle">
+        <div class="left">Stop</div>
+        <label class="switch">
+          <input type="checkbox" id="start" onclick="startstop()">
+          <span class="slider round"></span>
+        </label>
+        <div class="right">Start</div>
+      </div>
+-->      
+      <!-- Rounded switch -->
+      <div id="toggle">
+        <div class="left">Basic</div>
+        <label class="switch">
+          <input type="checkbox" id="advanced" onclick="hide('advanced', 'advanced_config')">
+          <span class="slider round"></span>
+        </label>
+        <div class="right">Advanced</div>
+      </div>
+      <p></p>
+      <p></p>
+      <div class="settings">Basic Settings</div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip"><a href="https://darksky.net/dev" target="_blank">API Key</a>:
+          <span class="tooltiptext">This is your Dark Sky API key. Click the link and sign-up for free to retrieve it.</span>
         </div>
-    </body>
+        <input type="form" id="api_key" class="opt">
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Latitude</a>:
+          <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
+        </div>
+        <input type="form" id="lat" class="opt">
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Longitude</a>:
+          <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
+        </div>
+        <input type="form" id="lon" class="opt">
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Units</a>:
+          <span class="tooltiptext">Information about units can be found by clicking the link, and searching for "units" section.</span>
+        </div>
+        <select id="units" class="opt">
+          <option value="si">S. I.</option>
+          <option value="ca">Canada</option>
+          <option value="uk2">U. K.</option>
+          <option value="us">U. S.</option>
+        </select>
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Language</a>:
+          <span class="tooltiptext">Information about languages can be found by clicking the link, and searching for "languages" section.</span>
+        </div>
+        <select id="lang" class="opt">
+          <option value="ar">Arabic</option>
+          <option value="az">Azerbaijani</option>
+          <option value="be">Belarusian</option>
+          <option value="bg">Bulgarian</option>
+          <option value="bn">Bengali</option>
+          <option value="bs">Bosnian</option>
+          <option value="ca">Catalan</option>
+          <option value="cs">Czech</option>
+          <option value="da">Danish</option>
+          <option value="de">German</option>
+          <option value="el">Greek</option>
+          <option value="en">English</option>
+          <option value="eo">Esperanto</option>
+          <option value="es">Spanish</option>
+          <option value="et">Estonian</option>
+          <option value="fi">Finnish</option>
+          <option value="fr">French</option>
+          <option value="he">Hebrew</option>
+          <option value="hi">Hindi</option>
+          <option value="hr">Croatian</option>
+          <option value="hu">Hungarian</option>
+          <option value="id">Indonesian</option>
+          <option value="is">Icelandic</option>
+          <option value="it">Italian</option>
+          <option value="ja">Japanese</option>
+          <option value="ka">Georgian</option>
+          <option value="kn">Kannada</option>
+          <option value="ko">Korean</option>
+          <option value="kw">Cornish</option>
+          <option value="lv">Latvian</option>
+          <option value="ml">Malayam</option>
+          <option value="mr">Marathi</option>
+          <option value="nb">Norwegian Bokmål</option>
+          <option value="nl">Dutch</option>
+          <option value="pa">Punjabi</option>
+          <option value="pl">Polish</option>
+          <option value="pt">Portuguese</option>
+          <option value="ro">Romanian</option>
+          <option value="ru">Russian</option>
+          <option value="sk">Slovak</option>
+          <option value="sl">Slovenian</option>
+          <option value="sr">Serbian</option>
+          <option value="sv">Swedish</option>
+          <option value="ta">Tamil</option>
+          <option value="te">Telugu</option>
+          <option value="tet">Tetum</option>
+          <option value="tr">Turkish</option>
+          <option value="uk">Ukrainian</option>
+          <option value="ur">Urdu</option>
+          <option value="x-pig-latin">Igpay Atinlay</option>
+          <option value="zh">Simplified Chinese</option>
+          <option value="zh-tw">Traditional Chinese</option>
+        </select>
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip">Fullscreen:
+          <span class="tooltiptext">Use fullscreen when running on a TV or similar device with a higher resolution.</span>
+        </div>
+        <select id="fullscreen" class="opt">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip">Icon Offset:
+          <span class="tooltiptext">If the weather icons are overlapping the text, try adjusting this value. Negative values raise the icon.</span>
+        </div>
+        <input type="form" id="icon_offset" class="opt" value="-23.5">
+      </div>
+      <p></p>
+      <div class="var">
+        <div class="tooltip">Frequency:
+          <span class="tooltiptext">Number of seconds between API calls. Free Dark Sky access only allows for 1,000 calls/day (every 86.4 seconds).</span>
+        </div>
+        <input type="form" id="update_freq" class="opt" value="600">
+      </div>    
+      <p class="pad"></p>
+      <div id="advanced_config" style="display:none">
+        <div class="settings">Weather Info</div>
+        <p></p>
+        <div class="var">
+          <div class="tooltip">Pause:
+            <span class="tooltiptext">The number of seconds to show the "weather info" screen.</span>
+          </div>
+        <input type="form" id="info_pause" class="opt" value="300">
+        </div>
+        <p></p>
+        <div class="var">
+          <div class="tooltip">Delay:
+            <span class="tooltiptext">The number of seconds to wait before showing the "weather info" screen.</span>
+          </div>
+        <input type="form" id="info_delay" class="opt" value="900">
+        </div>
+        <p class="pad"></p>
+        <div class="settings">Daily Weather</div>
+        <div class="plugin_toggle">
+          <div class="left">Off</div>
+          <label class="switch">
+            <input type="checkbox" id="daily" onclick="hide('daily', 'daily_config')">
+            <span class="slider round"></span>
+          </label>
+          <div class="right">On</div>
+        </div>
+        <p></p>
+        <div id="daily_config" style="display:none">
+          <div class="var">
+            <div class="tooltip">Pause:
+              <span class="tooltiptext">The number of seconds to show the "daily weather" screen.</span>
+            </div>
+          <input type="form" id="daily_pause" class="opt" value="60">
+          </div>
+        </div>
+        <p class="pad"></p>
+        <div class="settings">Hourly Weather</div>
+        <div class="plugin_toggle">
+          <div class="left">Off</div>
+          <label class="switch">
+            <input type="checkbox" id="hourly" onclick="hide('hourly','hourly_config')">
+            <span class="slider round"></span>
+          </label>
+          <div class="right">On</div>
+
+        </div>
+        <p></p>
+        <div id="hourly_config" style="display:none">
+          <div class="var">
+            <div class="tooltip">Pause:
+              <span class="tooltiptext">The number of seconds to show the "hourly weather" screen.</span>
+            </div>
+          <input type="form" id="hourly_pause" class="opt" value="60">
+          </div>
+        </div>
+        <p class="pad"></p>
+<!--- *** unused in this version
+        <div class="settings">Speedtest</div>
+        <div class="plugin_toggle">
+          <div class="left">Off</div>
+          <label class="switch">
+            <input type="checkbox" id="speedtest" onclick="hide('speedtest','speedtest_config')">
+            <span class="slider round"></span>
+          </label>
+          <div class="right">On</div>
+        </div>
+        <p></p>
+        <div id="speedtest_config" style="display:none">
+          <div class="var">
+            <div class="tooltip">Pause:
+              <span class="tooltiptext">The number of seconds to show the "speedtest" screen.</span>
+            </div>
+          <input type="form" id="speedtest_pause" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip"><a href="https://www.maketecheasier.com/megabits-vs-megabytes-whats-the-difference/" target="_blank">DL Speed</a>:
+              <span class="tooltiptext">The download speed (in Mb/s) that you are promised to be provided by your ISP. Click the link for more information about megabits per second vs. megabytes per second.</span>
+            </div>
+          <input type="form" id="speedtest_dl_speed" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip"><a href="https://www.maketecheasier.com/megabits-vs-megabytes-whats-the-difference/" target="_blank">UL Speed</a>:
+              <span class="tooltiptext">The upload speed (in Mb/s) that you are promised to be provided by your ISP. Click the link for more information about megabits per second vs. megabytes per second.</span>
+            </div>
+          <input type="form" id="speedtest_ul_speed" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Red %:
+              <span class="tooltiptext">If speedtest is at or below this percentage, show the dial as red.</span>
+            </div>
+          <input type="form" id="speedtest_red_cutoff" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Yellow %:
+              <span class="tooltiptext">If speedtest is at or below this percentage (but above the Red %), show the dial as yellow.</span>
+            </div>
+          <input type="form" id="speedtest_yellow_cutoff" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Archive:
+              <span class="tooltiptext">Old results are deleted from ~/PiWeatherRock/speedtest/queue/. Choosing to archive will move old results to ~/PiWeatherRock/speedtest/archive/ instead.</span>
+            </div>
+          <select id="speedtest_archive" class="opt">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Show %:
+              <span class="tooltiptext">Show the percentage of promised speeds near bottom-right corner of each dial.</span>
+            </div>
+          <select id="speedtest_show_percentage" class="opt">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Show Mb/s:
+              <span class="tooltiptext">Show the the label "Mb/s" under the actual speed, in the center of the dial.</span>
+            </div>
+          <select id="speedtest_show_mbps" class="opt">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip"><a href="https://piweatherrock.technicalissues.us/docs/" target="_blank">Test on Pi</a>:
+              <span class="tooltiptext">Perform the speedtest on the Pi. Click the link to read about important considerations when performing speedtests on a Pi.</span>
+            </div>
+          <select id="speedtest_local_test" class="opt">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Frequency:
+              <span class="tooltiptext">Number of seconds between running speedtest on Pi.</span>
+            </div>
+          <input type="form" id="speedtest_update_freq" class="opt">
+          </div>
+        </div>
+        <p class="pad"></p>
+        <div class="settings">RSS</div>
+        <div class="plugin_toggle">
+          <div class="left">Off</div>
+          <label class="switch">
+            <input type="checkbox" id="rss" onclick="hide('rss','rss_config')">
+            <span class="slider round"></span>
+          </label>
+          <div class="right">On</div>
+
+        </div>
+        <p></p>
+        <div id="rss_config" style="display:none">
+          <div class="var">
+            <div class="tooltip">Pause:
+              <span class="tooltiptext">The number of seconds to show the "rss" screen.</span>
+            </div>
+            <input type="form" id="rss_pause" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Frequency:
+              <span class="tooltiptext">Number of seconds between checking for new RSS items.</span>
+            </div>
+            <input type="form" id="rss_update_freq" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Wrap Text:
+              <span class="tooltiptext">If the text is longer than the column, wrap the text to a second row.</span>
+            </div>
+            <select id="rss_wrap_text" class="opt">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Columns:
+              <span class="tooltiptext">Split the RSS screen into this many columns.</span>
+            </div>
+            <input type="form" id="rss_cols" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Rows:
+              <span class="tooltiptext">Split the RSS screen into this many rows.</span>
+            </div>
+            <input type="form" id="rss_rows" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Show Header:
+              <span class="tooltiptext">Show a header at the top of the RSS screen.</span>
+            </div>
+            <select id="rss_show_header" class="opt">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Header Type:
+              <span class="tooltiptext">Choose the type of header to show (if applicable).</span>
+            </div>
+            <select id="rss_header_type" class="opt">
+              <option value="custom">Custom</option>
+              <option value="time">Date & Time</option>
+            </select>
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">Custom Header:
+              <span class="tooltiptext">The text to show as the RSS screen header (if applicable).</span>
+            </div>
+            <input type="form" id="rss_custom_header" class="opt">
+          </div>
+          <p></p>
+          <div class="var">
+            <div class="tooltip">RSS Feeds:
+              <span class="tooltiptext">Feeds listed below, that are enabled by clicking the checkbox, will be combined into one feed for display.</span>
+            </div>
+            <div class="opt">
+              <div class="tooltip">Feed Name:
+                <span class="tooltiptext">Name of feed. For user reference only.</span>
+              </div>
+            </div>
+            <div class="extra">
+              <div class="tooltip">Feed URL:
+                <span class="tooltiptext">Feed URL.</span>
+              </div>
+            </div>
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed1_on">   Feed 1:
+            <input type="form" id="rss_feed1_name" class="opt">
+            <input type="form" id="rss_feed1" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed2_on">   Feed 2:
+            <input type="form" id="rss_feed2_name" class="opt">
+            <input type="form" id="rss_feed2" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed3_on">   Feed 3:
+            <input type="form" id="rss_feed3_name" class="opt">
+            <input type="form" id="rss_feed3" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed4_on">   Feed 4:
+            <input type="form" id="rss_feed4_name" class="opt">
+            <input type="form" id="rss_feed4" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed5_on">   Feed 5:
+            <input type="form" id="rss_feed5_name" class="opt">
+            <input type="form" id="rss_feed5" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed6_on">   Feed 6:
+            <input type="form" id="rss_feed6_name" class="opt">
+            <input type="form" id="rss_feed6" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed7_on">   Feed 7:
+            <input type="form" id="rss_feed7_name" class="opt">
+            <input type="form" id="rss_feed7" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed8_on">   Feed 8:
+            <input type="form" id="rss_feed8_name" class="opt">
+            <input type="form" id="rss_feed8" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed9_on">   Feed 9:
+            <input type="form" id="rss_feed9_name" class="opt">
+            <input type="form" id="rss_feed9" class="extra">
+          </div>
+          <p></p>
+          <div class="var">
+            <input type="checkbox" id="rss_feed10_on">   Feed 10:
+            <input type="form" id="rss_feed10_name" class="opt">
+            <input type="form" id="rss_feed10" class="extra">
+          </div>
+          <p></p>
+
+        </div>
+        <p class="pad"></p>
+        <div class="settings">Log</div>
+        <p></p>
+        <div class="var">
+          <div class="tooltip">Log Level:
+            <span class="tooltiptext">Change this to 'DEBUG', if you need to troubleshoot issues.</span>
+          </div>
+          <select id="log_level" class="opt">
+            <option value="INFO">INFO</option>
+            <option value="DEBUG">DEBUG</option>
+          </select>
+        </div>
+        <p></p>
+        <div class="var">
+          <div class="tooltip"><a href="log">Go to Log ></a>
+            <span class="tooltiptext">Click this link to show the log.</span>
+          </div>
+        </div>
+-->
+      </div>
+      <br><br>
+      <div class="submit"><input type="submit" id="update" value="Update" class="submit" onclick="config_helper('save')"></div>
+      <br><br><br><br>
+    </div>
+  </body>
 </html>
