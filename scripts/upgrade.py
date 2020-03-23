@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from shutil import copyfile
 
 if os.path.exists("config.json"):
     with open("config.json", "r") as f:
@@ -12,7 +13,6 @@ if os.path.exists("config.json"):
         print("No upgrade needed. This is the current release version.")
     else:
         pass  # This is for future upgrades
-    os.remove("config.json-sample")
 elif os.path.exists("config.py"):
     print(f"\nImporting current configuration settings.\n\n"
           f"Go to http://0.0.0.0:8888 to view new configuration interface.\n"
@@ -65,10 +65,8 @@ elif os.path.exists("config.py"):
     with open("config.json", "w") as f:
         json.dump(new_config_dict, f)
     os.remove("config.py")
-    if os.path.exists("config.py-sample"):
-        os.remove("config.py-sample")
 else:
-    os.rename("config.json-sample", "config.json")
+    copyfile("config.json-sample", "config.json")
     print(f"\nYou must configure PiWeatherRock.\n\n"
           f"Go to http://0.0.0.0:8888 to configure.\n"
           f"Replace 0.0.0.0 with the IP address of the Pi, "
