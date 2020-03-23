@@ -5,14 +5,23 @@ from shutil import copyfile
 
 if os.path.exists("config.json"):
     with open("config.json", "r") as f:
-        config = json.load(f)
-    major, minor, build = [int(x) for x in config['version'].split(".")]
-    if build > 13:
-        print("Version number is greater than current release.")
-    elif build == 13:
-        print("No upgrade needed. This is the current release version.")
+        old_config = json.load(f)
+    with open("config.json-sample", "r") as f:
+        new_config = json.load(f)
+    old_major, old_minor, old_build = [int(x) for x in
+                                       old_config['version'].split(".")]
+    new_major, new_minor, new_build = [int(x) for x in
+                                       new_config['version'].split(".")]
+    if old_build > new_build:
+        print(f"Error: Current version number is greater than the most "
+              f"recently released version.")
+    elif new_build == old_build:
+        print("No upgrade needed. This is the most recently released version.")
     else:
-        pass  # This is for future upgrades
+         # This is for future upgrades.
+         # Code will run when current version of config.json is older than the
+         # most recently released version.
+        pass
 elif os.path.exists("config.py"):
     print(f"\nImporting current configuration settings.\n\n"
           f"Go to http://0.0.0.0:8888 to view new configuration interface.\n"
