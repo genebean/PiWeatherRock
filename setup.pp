@@ -108,7 +108,7 @@ python::pip { $python_packages:
 exec { 'import config':
   path    => '/bin:/usr/bin',
   command => "python3 /home/pi/PiWeatherRock/scripts/upgrade.py",
-  unless  => "! test -e config.json-backup",
+  unless  => "grep "0.0.13" config.json",
 }
 
 systemd::unit_file { 'PiWeatherRock.service':

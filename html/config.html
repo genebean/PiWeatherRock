@@ -1,6 +1,22 @@
 <html>
   <head>
     <script>
+      function test_save() {
+      $('#config_data').serializeJSON();
+      }
+      //var x = ('#config_data').serializeJSON({checkboxUncheckedValue: "false"});
+      //}
+      //  json_obj = $
+      //  var xhr = new XMLHttpRequest();
+      //  var url = "upload";
+      //  xhr.open("POST", url, true);
+      //  xhr.setRequestHeader("Content-Type", "application/json");
+      //  var data = json_obj;
+      //  xhr.send(data);
+      //  alert("Update successful.") // Figure out error checking before alerting "success"
+      //}
+    </script>
+    <script>
       // *****Unused in this version*****
       // Run the start or stop method from config_webpage.py depending on slider position.
       function startstop() {
@@ -18,16 +34,6 @@
           };
           xhr.send(null);
         }
-      }
-    </script>
-    <script>
-      // Save the new values from the page to config.json
-      function save(content, fileName, contentType) {
-        var a = document.createElement("a");
-        var file = new Blob([JSON.stringify(content)], {type: contentType});
-        a.href = URL.createObjectURL(file);
-        a.download = fileName;
-        a.click();
       }
     </script>
     <script>
@@ -176,7 +182,7 @@
     <title>PiWeatherRock Configuration</title>
     <link rel="stylesheet" href="style.css" type="text/css" />
   </head>
-  <body onload="config_helper('load')">
+  <body><!--- onload="config_helper('load')">--->
     <div class="myDiv">
     <div class="bg"></div>
       <div id="lcloud"><img src="chancetstorms.png" height="256" width="256"></div>
@@ -204,34 +210,35 @@
       </div>
       <p></p>
       <p></p>
+      <form id="config_data">
       <div class="settings">Basic Settings</div>
       <p></p>
       <div class="var">
         <div class="tooltip"><a href="https://darksky.net/dev" target="_blank">API Key</a>:
           <span class="tooltiptext">This is your Dark Sky API key. Click the link and sign-up for free to retrieve it.</span>
         </div>
-        <input type="form" id="ds_api_key" class="opt">
+        <input type="form" name="ds_api_key" class="opt">
       </div>
       <p></p>
       <div class="var">
         <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Latitude</a>:
           <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
         </div>
-        <input type="form" id="lat" class="opt">
+        <input type="number" name="lat:number" class="opt">
       </div>
       <p></p>
       <div class="var">
         <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Longitude</a>:
           <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
         </div>
-        <input type="form" id="lon" class="opt">
+        <input type="number" name="lon:number" class="opt">
       </div>
       <p></p>
       <div class="var">
         <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Units</a>:
           <span class="tooltiptext">Information about units can be found by clicking the link, and searching for "units" section.</span>
         </div>
-        <select id="units" class="opt">
+        <select name="units" class="opt">
           <option value="si">S. I.</option>
           <option value="ca">Canada</option>
           <option value="uk2">U. K.</option>
@@ -243,7 +250,7 @@
         <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Language</a>:
           <span class="tooltiptext">Information about languages can be found by clicking the link, and searching for "languages" section.</span>
         </div>
-        <select id="lang" class="opt">
+        <select name="lang" class="opt">
           <option value="ar">Arabic</option>
           <option value="az">Azerbaijani</option>
           <option value="be">Belarusian</option>
@@ -303,9 +310,9 @@
         <div class="tooltip">Fullscreen:
           <span class="tooltiptext">Use fullscreen when running on a TV or similar device with a higher resolution.</span>
         </div>
-        <select id="fullscreen" class="opt">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
+        <select name="fullscreen:boolean" class="opt">
+          <option value="true">true</option>
+          <option value="false">false</option>
         </select>
       </div>
       <p></p>
@@ -313,14 +320,14 @@
         <div class="tooltip">Icon Offset:
           <span class="tooltiptext">If the weather icons are overlapping the text, try adjusting this value. Negative values raise the icon.</span>
         </div>
-        <input type="form" id="icon_offset" class="opt" value="-23.5">
+        <input type="number" name="icon_offset:number" class="opt">
       </div>
       <p></p>
       <div class="var">
         <div class="tooltip">Frequency:
           <span class="tooltiptext">Number of seconds between API calls. Free Dark Sky access only allows for 1,000 calls/day (every 86.4 seconds).</span>
         </div>
-        <input type="form" id="update_freq" class="opt" value="600">
+        <input type="number" name="update_freq:number" class="opt">
       </div>    
       <p class="pad"></p>
       <div id="advanced_config" style="display:none">
@@ -330,21 +337,21 @@
           <div class="tooltip">Pause:
             <span class="tooltiptext">The number of seconds to show the "weather info" screen.</span>
           </div>
-        <input type="form" id="info_pause" class="opt" value="300">
+        <input type="number" name="info_pause:number" class="opt">
         </div>
         <p></p>
         <div class="var">
           <div class="tooltip">Delay:
             <span class="tooltiptext">The number of seconds to wait before showing the "weather info" screen.</span>
           </div>
-        <input type="form" id="info_delay" class="opt" value="900">
+        <input type="number" name="info_delay:number" class="opt">
         </div>
         <p class="pad"></p>
         <div class="settings">Daily Weather</div>
         <div class="plugin_toggle">
           <div class="left">Off</div>
           <label class="switch">
-            <input type="checkbox" id="daily" onclick="hide('daily', 'daily_config')">
+            <input type="checkbox" name="plugins[daily][enabled]:boolean" onclick="hide('daily', 'daily_config')">
             <span class="slider round"></span>
           </label>
           <div class="right">On</div>
@@ -355,7 +362,7 @@
             <div class="tooltip">Pause:
               <span class="tooltiptext">The number of seconds to show the "daily weather" screen.</span>
             </div>
-          <input type="form" id="daily_pause" class="opt" value="60">
+          <input type="number" name="plugins[daily][pause]:number" class="opt">
           </div>
         </div>
         <p class="pad"></p>
@@ -363,7 +370,7 @@
         <div class="plugin_toggle">
           <div class="left">Off</div>
           <label class="switch">
-            <input type="checkbox" id="hourly" onclick="hide('hourly','hourly_config')">
+            <input type="checkbox" name="plugins[hourly][enabled]:boolean" onclick="hide('hourly','hourly_config')">
             <span class="slider round"></span>
           </label>
           <div class="right">On</div>
@@ -375,7 +382,7 @@
             <div class="tooltip">Pause:
               <span class="tooltiptext">The number of seconds to show the "hourly weather" screen.</span>
             </div>
-          <input type="form" id="hourly_pause" class="opt" value="60">
+          <input type="number" name="plugins[hourly][pause]:number" class="opt">
           </div>
         </div>
         <p class="pad"></p>
@@ -650,7 +657,9 @@
 -->
       </div>
       <br><br>
-      <div class="submit"><input type="submit" id="update" value="Update" class="submit" onclick="config_helper('save')"></div>
+      </form>
+      <div class="submit"><input type="submit" id="update" value="Update" class="submit" onclick="test_save()"></div>
+<!---"config_helper('save')"></div> --->
       <br><br><br><br>
     </div>
   </body>
