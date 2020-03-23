@@ -12,6 +12,7 @@ if os.path.exists("config.json"):
         print("No upgrade needed. This is the current release version.")
     else:
         pass  # This is for future upgrades
+    os.remove("config.json-sample")
 elif os.path.exists("config.py"):
     print(f"\nImporting current configuration settings.\n\n"
           f"Go to http://0.0.0.0:8888 to view new configuration interface.\n"
