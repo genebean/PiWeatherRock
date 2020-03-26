@@ -21,13 +21,13 @@ if os.path.exists("config.json"):
     elif new_build == old_build:
         print("No upgrade needed. This is the most recently released version.")
     else:
-         # This is for future upgrades.
-         # Code will run when current version of config.json is older than the
-         # most recently released version.
+        #  This is for future upgrades.
+        #  Code will run when current version of config.json is older than the
+        #  most recently released version.
         pass
 elif os.path.exists("config.py"):
     print(f"\nImporting current configuration settings.\n\n"
-          f"Go to http://{pi_ip}:8888 to view new configuration interface.\n"
+          f"Go to http://{pi_ip}:8888 to view new configuration interface.\n")
     old_config_dict = {}
     with open("config.py", "r") as f:
         old_config = f.read()
@@ -78,4 +78,4 @@ elif os.path.exists("config.py"):
 else:
     copyfile("config.json-sample", "config.json")
     print(f"\nYou must configure PiWeatherRock.\n\n"
-          f"Go to http://{pi_ip}:8888 to configure.\n"
+          f"Go to http://{pi_ip}:8888 to configure.\n")
