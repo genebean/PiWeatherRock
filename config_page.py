@@ -62,50 +62,6 @@ class Config:
             json.dump(input_json, f, indent=2, separators=(',', ': '))
         self.index()
 
-    @cherrypy.expose
-    def start(self):
-        with open(".lock", 'w') as f:
-            f.write("1")
-        self.index()
-
-    @cherrypy.expose
-    def stop(self):
-        with open(".lock", 'w') as f:
-            f.write("0")
-        self.index()
-
-    @cherrypy.expose
-    def log(self):
-        with open(".log", "r") as f:
-            log = f.read()
-        return f"""
-            <html>
-                <head>
-                    <title>PiWeatherRock Log</title>
-                    <link rel="stylesheet" href="style.css" type="text/css" />
-                </head>
-                <body>
-                    <a href="index">< Back to Configuration Page</a>
-                    <div class="page_title">PiWeatherRock Log</div>
-                    <br>
-                    <div class="log">
-                        <br>
-                        <a href="#anchor">Jump to latest log entry</a>
-                        <br>
-                        <div id="scroller">
-                            <!-- append content here -->
-                            <pre>{log}</pre>
-                            <br>
-                            <button onclick="javascript:window.location.reload(true)" class="refresh">Refresh Log</button>
-                            <br>
-                            <br>
-                            <div><a href="index">< Back to Configuration Page</a></div>
-                            <div id="anchor"></div>
-                        </div>
-                    </div>
-                </body>
-            </html>"""
-
 
 if __name__ == '__main__':
     cherrypy.quickstart(Config(), config={
@@ -133,16 +89,6 @@ if __name__ == '__main__':
             'tools.staticfile.filename': os.path.join(
                 os.getcwd(), "icons/bg.png")
         },
-        #'/log': { # ***** Unused in this version
-            #'tools.staticfile.on': True,
-            #'tools.staticfile.filename': os.path.join(
-                #os.getcwd(), "log")
-        #},
-        #'/.lock': {
-            #'tools.staticfile.on': True,
-            #'tools.staticfile.filename': os.path.join(
-                #os.getcwd(), ".lock")
-        #},
         '/config.json': {
             'tools.staticfile.on': True,
             'tools.staticfile.filename': os.path.join(
