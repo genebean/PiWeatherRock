@@ -88,7 +88,7 @@
       }
     </script>
     <title>PiWeatherRock Configuration</title>
-    <link rel="stylesheet" href="style.css" type="text/css" />
+    <link rel="stylesheet" href="style.css?foo=12345678901234567" type="text/css" />
   </head>
   <body onload="config_load()">
     <div class="myDiv">
@@ -96,8 +96,7 @@
       <div id="lcloud"><img src="chancetstorms.png" height="256" width="256"></div>
       <div id="rcloud"><img src="chancetstorms.png" height="256" width="256"></div>
       <div class="page_title">PiWeatherRock Configuration Page</div>
-      <div name = "version" id="version"></div>
-      <p class="pad"></p>
+      <div name="version" id="version"></div>
       <!-- Rounded switch -->
       <div id="toggle">
         <div class="left">Basic</div>
@@ -107,189 +106,169 @@
         </label>
         <div class="right">Advanced</div>
       </div>
-      <p></p>
-      <p></p>
       <form id="config_data">
-      <div class="settings">Basic Settings</div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip"><a href="https://darksky.net/dev" target="_blank">API Key</a>:
-          <span class="tooltiptext">This is your Dark Sky API key. Click the link and sign-up for free to retrieve it.</span>
-        </div>
-        <input type="form" name="ds_api_key" class="opt">
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Latitude</a>:
-          <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
-        </div>
-        <input type="number" name="lat" data-value-type="number" class="opt">
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Longitude</a>:
-          <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
-        </div>
-        <input type="number" name="lon" data-value-type="number" class="opt">
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Units</a>:
-          <span class="tooltiptext">Information about units can be found by clicking the link, and searching for "units" section.</span>
-        </div>
-        <select name="units" class="opt">
-          <option value="si">S. I.</option>
-          <option value="ca">Canada</option>
-          <option value="uk2">U. K.</option>
-          <option value="us">U. S.</option>
-        </select>
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Language</a>:
-          <span class="tooltiptext">Information about languages can be found by clicking the link, and searching for "languages" section.</span>
-        </div>
-        <select name="lang" class="opt">
-          <option value="ar">Arabic</option>
-          <option value="az">Azerbaijani</option>
-          <option value="be">Belarusian</option>
-          <option value="bg">Bulgarian</option>
-          <option value="bn">Bengali</option>
-          <option value="bs">Bosnian</option>
-          <option value="ca">Catalan</option>
-          <option value="cs">Czech</option>
-          <option value="da">Danish</option>
-          <option value="de">German</option>
-          <option value="el">Greek</option>
-          <option value="en">English</option>
-          <option value="eo">Esperanto</option>
-          <option value="es">Spanish</option>
-          <option value="et">Estonian</option>
-          <option value="fi">Finnish</option>
-          <option value="fr">French</option>
-          <option value="he">Hebrew</option>
-          <option value="hi">Hindi</option>
-          <option value="hr">Croatian</option>
-          <option value="hu">Hungarian</option>
-          <option value="id">Indonesian</option>
-          <option value="is">Icelandic</option>
-          <option value="it">Italian</option>
-          <option value="ja">Japanese</option>
-          <option value="ka">Georgian</option>
-          <option value="kn">Kannada</option>
-          <option value="ko">Korean</option>
-          <option value="kw">Cornish</option>
-          <option value="lv">Latvian</option>
-          <option value="ml">Malayam</option>
-          <option value="mr">Marathi</option>
-          <option value="nb">Norwegian Bokmål</option>
-          <option value="nl">Dutch</option>
-          <option value="pa">Punjabi</option>
-          <option value="pl">Polish</option>
-          <option value="pt">Portuguese</option>
-          <option value="ro">Romanian</option>
-          <option value="ru">Russian</option>
-          <option value="sk">Slovak</option>
-          <option value="sl">Slovenian</option>
-          <option value="sr">Serbian</option>
-          <option value="sv">Swedish</option>
-          <option value="ta">Tamil</option>
-          <option value="te">Telugu</option>
-          <option value="tet">Tetum</option>
-          <option value="tr">Turkish</option>
-          <option value="uk">Ukrainian</option>
-          <option value="ur">Urdu</option>
-          <option value="x-pig-latin">Igpay Atinlay</option>
-          <option value="zh">Simplified Chinese</option>
-          <option value="zh-tw">Traditional Chinese</option>
-        </select>
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip">Fullscreen:
-          <span class="tooltiptext">Use fullscreen when running on a TV or similar device with a higher resolution.</span>
-        </div>
-        <select name="fullscreen" data-value-type="boolean" class="opt">
-          <option value="true">true</option>
-          <option value="false">false</option>
-        </select>
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip">Icon Offset:
-          <span class="tooltiptext">If the weather icons are overlapping the text, try adjusting this value. Negative values raise the icon.</span>
-        </div>
-        <input type="number" name="icon_offset" data-value-type="number" class="opt">
-      </div>
-      <p></p>
-      <div class="var">
-        <div class="tooltip">Frequency:
-          <span class="tooltiptext">Number of seconds between API calls. Free Dark Sky access only allows for 1,000 calls/day (every 86.4 seconds).</span>
-        </div>
-        <input type="number" name="update_freq" data-value-type="number" class="opt">
-      </div>    
-      <p class="pad"></p>
-      <div id="advanced_config" style="display:none">
-        <div class="settings">Weather Info</div>
-        <p></p>
+        <div class="settings">Basic Settings</div>
         <div class="var">
-          <div class="tooltip">Pause:
-            <span class="tooltiptext">The number of seconds to show the "weather info" screen.</span>
+          <div class="tooltip"><a href="https://darksky.net/dev" target="_blank">API Key</a>:
+            <span class="tooltiptext">This is your Dark Sky API key. Click the link and sign-up for free to retrieve it.</span>
           </div>
-        <input type="number" name="info_pause" data-value-type="number" class="opt">
+          <input type="form" name="ds_api_key" class="opt">
         </div>
-        <p></p>
         <div class="var">
-          <div class="tooltip">Delay:
-            <span class="tooltiptext">The number of seconds to wait before showing the "weather info" screen.</span>
+          <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Latitude</a>:
+            <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
           </div>
-        <input type="number" name="info_delay" data-value-type="number" class="opt">
+          <input type="number" name="lat" data-value-type="number" class="opt">
         </div>
-        <p class="pad"></p>
-        <div class="settings">Daily Weather</div>
-        <div class="plugin_toggle">
-          <div class="left">Off</div>
-          <label class="switch">
-            <input type="checkbox" data-value-type="boolean" name="plugins[daily][enabled]" onclick="hide('plugins[daily][enabled]', 'daily_config')">
-            <span class="slider round"></span>
-          </label>
-          <div class="right">On</div>
+        <div class="var">
+          <div class="tooltip"><a href="https://www.openstreetmap.org" target="_blank">Longitude</a>:
+            <span class="tooltiptext">Click the link. Right click on desired location on the map, and click "show address" for coordinates.</span>
+          </div>
+          <input type="number" name="lon" data-value-type="number" class="opt">
         </div>
-        <p></p>
-        <div id="daily_config" style="display:none">
+        <div class="var">
+          <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Units</a>:
+            <span class="tooltiptext">Information about units can be found by clicking the link, and searching for "units" section.</span>
+          </div>
+          <select name="units" class="opt">
+            <option value="si">S. I.</option>
+            <option value="ca">Canada</option>
+            <option value="uk2">U. K.</option>
+            <option value="us">U. S.</option>
+          </select>
+        </div>
+        <div class="var">
+          <div class="tooltip"><a href="https://darksky.net/dev/docs" target="_blank">Language</a>:
+            <span class="tooltiptext">Information about languages can be found by clicking the link, and searching for "languages" section.</span>
+          </div>
+          <select name="lang" class="opt">
+            <option value="ar">Arabic</option>
+            <option value="az">Azerbaijani</option>
+            <option value="be">Belarusian</option>
+            <option value="bg">Bulgarian</option>
+            <option value="bn">Bengali</option>
+            <option value="bs">Bosnian</option>
+            <option value="ca">Catalan</option>
+            <option value="cs">Czech</option>
+            <option value="da">Danish</option>
+            <option value="de">German</option>
+            <option value="el">Greek</option>
+            <option value="en">English</option>
+            <option value="eo">Esperanto</option>
+            <option value="es">Spanish</option>
+            <option value="et">Estonian</option>
+            <option value="fi">Finnish</option>
+            <option value="fr">French</option>
+            <option value="he">Hebrew</option>
+            <option value="hi">Hindi</option>
+            <option value="hr">Croatian</option>
+            <option value="hu">Hungarian</option>
+            <option value="id">Indonesian</option>
+            <option value="is">Icelandic</option>
+            <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="ka">Georgian</option>
+            <option value="kn">Kannada</option>
+            <option value="ko">Korean</option>
+            <option value="kw">Cornish</option>
+            <option value="lv">Latvian</option>
+            <option value="ml">Malayam</option>
+            <option value="mr">Marathi</option>
+            <option value="nb">Norwegian Bokmål</option>
+            <option value="nl">Dutch</option>
+            <option value="pa">Punjabi</option>
+            <option value="pl">Polish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ro">Romanian</option>
+            <option value="ru">Russian</option>
+            <option value="sk">Slovak</option>
+            <option value="sl">Slovenian</option>
+            <option value="sr">Serbian</option>
+            <option value="sv">Swedish</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="tet">Tetum</option>
+            <option value="tr">Turkish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="ur">Urdu</option>
+            <option value="x-pig-latin">Igpay Atinlay</option>
+            <option value="zh">Simplified Chinese</option>
+            <option value="zh-tw">Traditional Chinese</option>
+          </select>
+        </div>
+        <div class="var">
+          <div class="tooltip">Fullscreen:
+            <span class="tooltiptext">Use fullscreen when running on a TV or similar device with a higher resolution.</span>
+          </div>
+          <select name="fullscreen" data-value-type="boolean" class="opt">
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+        <div class="var">
+          <div class="tooltip">Icon Offset:
+            <span class="tooltiptext">If the weather icons are overlapping the text, try adjusting this value. Negative values raise the icon.</span>
+          </div>
+          <input type="number" name="icon_offset" data-value-type="number" class="opt">
+        </div>
+        <div class="var">
+          <div class="tooltip">Frequency:
+            <span class="tooltiptext">Number of seconds between API calls. Free Dark Sky access only allows for 1,000 calls/day (every 86.4 seconds).</span>
+          </div>
+          <input type="number" name="update_freq" data-value-type="number" class="opt">
+        </div>
+        <div id="advanced_config" style="display:none">
+          <div class="settings">Weather Info</div>
           <div class="var">
             <div class="tooltip">Pause:
-              <span class="tooltiptext">The number of seconds to show the "daily weather" screen.</span>
+              <span class="tooltiptext">The number of seconds to show the "weather info" screen.</span>
             </div>
-          <input type="number" name="plugins[daily][pause]" data-value-type="number" class="opt">
+          <input type="number" name="info_pause" data-value-type="number" class="opt">
           </div>
-        </div>
-        <p class="pad"></p>
-        <div class="settings">Hourly Weather</div>
-        <div class="plugin_toggle">
-          <div class="left">Off</div>
-          <label class="switch">
-            <input type="checkbox" data-value-type="boolean" name="plugins[hourly][enabled]" onclick="hide('plugins[hourly][enabled]','hourly_config')">
-            <span class="slider round"></span>
-          </label>
-          <div class="right">On</div>
-
-        </div>
-        <p></p>
-        <div id="hourly_config" style="display:none">
           <div class="var">
-            <div class="tooltip">Pause:
-              <span class="tooltiptext">The number of seconds to show the "hourly weather" screen.</span>
+            <div class="tooltip">Delay:
+              <span class="tooltiptext">The number of seconds to wait before showing the "weather info" screen.</span>
             </div>
-          <input type="number" name="plugins[hourly][pause]" data-value-type="number" class="opt">
+          <input type="number" name="info_delay" data-value-type="number" class="opt">
           </div>
-        </div>
-        <p class="pad"></p>
-      </div>
-      <br><br>
-      </form>
+          <div class="settings">Daily Weather</div>
+          <div class="plugin_toggle">
+            <div class="left">Off</div>
+            <label class="switch">
+              <input type="checkbox" data-value-type="boolean" name="plugins[daily][enabled]" onclick="hide('plugins[daily][enabled]', 'daily_config')">
+              <span class="slider round"></span>
+            </label>
+            <div class="right">On</div>
+          </div>
+          <div id="daily_config" style="display:none">
+            <div class="var">
+              <div class="tooltip">Pause:
+                <span class="tooltiptext">The number of seconds to show the "daily weather" screen.</span>
+              </div>
+            <input type="number" name="plugins[daily][pause]" data-value-type="number" class="opt">
+            </div>
+          </div>
+          <div class="settings">Hourly Weather</div>
+          <div class="plugin_toggle">
+            <div class="left">Off</div>
+            <label class="switch">
+              <input type="checkbox" data-value-type="boolean" name="plugins[hourly][enabled]" onclick="hide('plugins[hourly][enabled]','hourly_config')">
+              <span class="slider round"></span>
+            </label>
+            <div class="right">On</div>
+          </div>
+          <div id="hourly_config" style="display:none">
+            <div class="var">
+              <div class="tooltip">Pause:
+                <span class="tooltiptext">The number of seconds to show the "hourly weather" screen.</span>
+              </div>
+            <input type="number" name="plugins[hourly][pause]" data-value-type="number" class="opt">
+            </div>
+          </div>
+          </div>
+        </form>
       <div class="submit"><input type="submit" id="update" value="Update" class="submit" onclick="config_save()"></div>
-      <br><br><br><br>
+
     </div>
   </body>
 </html>

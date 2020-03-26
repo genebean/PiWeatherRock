@@ -33,14 +33,14 @@ a:visited {
 }
 
 #lcloud{
-    width: 256;
+    width: 256px;
     position: relative;
     float:left;
     display: inline;
 }
 
 #rcloud {
-    width: 256;
+    width: 256px;
     float:right;
     position: relative;
     display: inline;
@@ -70,11 +70,6 @@ a:visited {
     position: relative;
     left: 120px;
     top: 180px;
-    
-}
-
-.pad {
-    height: 1em;
 }
 
 .settings {
@@ -85,6 +80,7 @@ a:visited {
     font-size: 32px;
     font-weight: bold;
     display: inline-block;
+    padding-top: 1em;
 }
 
 #toggle {
@@ -92,7 +88,7 @@ a:visited {
     color: #007fff;
     text-align: center;
     position: relative;
-    padding-top: 180px;
+    padding-top: 25vh;
 }
 
 .plugin_toggle {
@@ -150,14 +146,20 @@ body {
 
 .var {
     position: relative;
+    padding-top: 0.5em;
     width: 50vw;
     padding-left: 20vw;
     display: inline-block;
+}
 
+.submit{
+    margin-top: 2em;
+    margin-bottom: 2em;
 }
 
 .opt {
     position: relative;
+    padding-top: 0.5em;
     float: right;
     width: 15vw;
     left: -25vw;
