@@ -2,6 +2,9 @@ import json
 import os
 import re
 from shutil import copyfile
+import socket
+
+pi_ip = socket.gethostbyname(socket.gethostname() + ".local")
 
 if os.path.exists("config.json"):
     with open("config.json", "r") as f:
@@ -24,9 +27,7 @@ if os.path.exists("config.json"):
         pass
 elif os.path.exists("config.py"):
     print(f"\nImporting current configuration settings.\n\n"
-          f"Go to http://0.0.0.0:8888 to view new configuration interface.\n"
-          f"Replace 0.0.0.0 with the IP address of the Pi, "
-          f"if not running this upgrade locally\n")
+          f"Go to http://{pi_ip}:8888 to view new configuration interface.\n"
     old_config_dict = {}
     with open("config.py", "r") as f:
         old_config = f.read()
@@ -77,6 +78,4 @@ elif os.path.exists("config.py"):
 else:
     copyfile("config.json-sample", "config.json")
     print(f"\nYou must configure PiWeatherRock.\n\n"
-          f"Go to http://0.0.0.0:8888 to configure.\n"
-          f"Replace 0.0.0.0 with the IP address of the Pi, "
-          f"if not running this upgrade locally.\n")
+          f"Go to http://{pi_ip}:8888 to configure.\n"
