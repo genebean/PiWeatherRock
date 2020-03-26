@@ -249,7 +249,7 @@ class MyDisplay:
         # for fontname in pygame.font.get_fonts():
         #        print(fontname)
 
-        if CONFIG["fullscreen"] == "yes":
+        if CONFIG["fullscreen"]:
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
             if self.xmax <= 1024:
@@ -272,10 +272,10 @@ class MyDisplay:
         "Destructor to make sure pygame shuts down, etc."
 
     def get_forecast(self):
-        if (time.time() - self.last_update_check) > int(CONFIG["update_freq"]):
+        if (time.time() - self.last_update_check) > CONFIG["update_freq"]:
             self.last_update_check = time.time()
             try:
-                self.weather = forecast(CONFIG["api_key"],
+                self.weather = forecast(CONFIG["ds_api_key"],
                                         CONFIG["lat"],
                                         CONFIG["lon"],
                                         exclude='minutely',
@@ -429,7 +429,7 @@ class MyDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = int(CONFIG["icon_offset"])
+            icon_y_offset = CONFIG["icon_offset"]
 
         self.screen.blit(icon, (self.xmax *
                                 (subwindow_centers * c_times) -
@@ -880,7 +880,7 @@ while RUNNING:
         D_COUNT = 0
         H_COUNT = 0
         # Default in config.py.sample: pause for 5 minutes on info screen.
-        if NON_WEATHER_TIMEOUT > (int(CONFIG["info_pause"]) * 10):
+        if NON_WEATHER_TIMEOUT > (CONFIG["info_pause"] * 10):
             MODE = 'd'
             D_COUNT = 1
             syslog.syslog("Switching to weather mode")
@@ -889,12 +889,12 @@ while RUNNING:
         PERIODIC_INFO_ACTIVATION += 1
         # Default is to flip between 2 weather screens
         # for 15 minutes before showing info screen.
-        if PERIODIC_INFO_ACTIVATION > (int(CONFIG["info_delay"]) * 10):
+        if PERIODIC_INFO_ACTIVATION > (CONFIG["info_delay"] * 10):
             MODE = 'i'
             syslog.syslog("Switching to info mode")
         elif (PERIODIC_INFO_ACTIVATION % (
-                ((int(CONFIG["plugins"]["daily"]["pause"]) * D_COUNT)
-                 + (int(CONFIG["plugins"]["hourly"]["pause"]) * H_COUNT))
+                ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
+                 + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
                 * 10)) == 0:
             if MODE == 'd':
                 syslog.syslog("Switching to HOURLY")
