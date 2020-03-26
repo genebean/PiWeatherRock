@@ -133,8 +133,9 @@
         parsedVal = opts.typeFunctions[type](valStr);
       } else if (opts.parseNumbers  && f.isNumeric(valStr)) { // auto: number
         parsedVal = Number(valStr);
-      } else if (opts.parseBooleans && (valStr === "true" || valStr === "false")) { // auto: boolean
-        parsedVal = (valStr === "true");
+      } else if (opts.parseBooleans && (valStr === true || valStr === false)) { // auto: boolean
+        // the above 'false' and above/below 'true' were changed from string to boolean by metaMMA 2020-03-25
+        parsedVal = (valStr === true);
       } else if (opts.parseNulls    && valStr == "null") { // auto: null
         parsedVal = null;
       } else if (opts.typeFunctions && opts.typeFunctions["string"]) { // make sure to apply :string type if it was re-defined
