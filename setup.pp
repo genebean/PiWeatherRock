@@ -107,8 +107,9 @@ python::pip { $python_packages:
 # Run upgrade script to import current config values to new config file
 exec { 'import config':
   path    => '/bin:/usr/bin',
-  command => "python3 /home/pi/PiWeatherRock/scripts/upgrade.py",
-  unless  => "grep "0.0.13" config.json",
+  command => 'python3 /home/pi/PiWeatherRock/scripts/upgrade.py',
+  unless  => 'grep "0.0.13" config.json',
+  notify  => Service['PiWeatherRock.service'],
 }
 
 systemd::unit_file { 'PiWeatherRock.service':
