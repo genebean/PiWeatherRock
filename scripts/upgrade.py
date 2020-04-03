@@ -31,22 +31,26 @@ elif os.path.exists("config.py"):
     old_config_dict = {}
     with open("config.py", "r") as f:
         old_config = f.read()
-    old_config_dict["api_key"] = re.findall(
+    old_config_dict["ds_api_key"] = re.findall(
         r"(?<=DS_API_KEY = \').*?(?=')", old_config)[0]
-    old_config_dict["update_freq"] = re.findall(
-        r"(?<=DS_CHECK_INTERVAL = )\d+", old_config)[0]
-    old_config_dict["lat"] = re.findall(
-        r"(?<=LAT = )[0-9\.-]+", old_config)[0]
-    old_config_dict["lon"] = re.findall(
-        r"(?<=LON = )[0-9\.-]+", old_config)[0]
+    old_config_dict["update_freq"] = int(re.findall(
+        r"(?<=DS_CHECK_INTERVAL = )\d+", old_config)[0])
+    old_config_dict["lat"] = float(re.findall(
+        r"(?<=LAT = )[0-9\.-]+", old_config)[0])
+    old_config_dict["lon"] = float(re.findall(
+        r"(?<=LON = )[0-9\.-]+", old_config)[0])
     old_config_dict["units"] = re.findall(
         r"(?<=UNITS = \').*?(?=\')", old_config)[0]
     old_config_dict["lang"] = re.findall(
         r"(?<=LANG = \').*?(?=\')", old_config)[0]
-    old_config_dict["fullscreen"] = re.findall(
-        r"(?<=FULLSCREEN = )(?:True|False)", old_config)[0]
-    old_config_dict["icon_offset"] = re.findall(
-        r"(?<=LARGE_ICON_OFFSET = )[0-9.-]+", old_config)[0]
+    fs_test = re.findall(
+        r"(?<=FULLSCREEN = )(?:True|False)", old_config, re.IGNORECASE)[0]
+    if "t" in [ch for ch in fs_test.lower()]:
+        old_config_dict["fullscreen"] = True
+    else:
+        old_config_dict["fullscreen"] = False
+    old_config_dict["icon_offset"] = float(re.findall(
+        r"(?<=LARGE_ICON_OFFSET = )[0-9.-]+", old_config)[0])
 
     daily_pause_list = re.findall(
         r"(?<=DAILY_PAUSE = )[0-9.-]+", old_config)
@@ -62,12 +66,12 @@ elif os.path.exists("config.py"):
         old_config_dict["plugins"] = {}
         old_config_dict["plugins"]["daily"] = {}
         old_config_dict["plugins"]["hourly"] = {}
-        old_config_dict["plugins"]["daily"]["pause"] = daily_pause_list[0]
-        old_config_dict["plugins"]["daily"]["enabled"] = "yes"
-        old_config_dict["plugins"]["hourly"]["pause"] = hourly_pause_list[0]
-        old_config_dict["plugins"]["hourly"]["enabled"] = "yes"
-        old_config_dict["info_pause"] = info_pause_list[0]
-        old_config_dict["info_delay"] = info_delay_list[0]
+        old_config_dict["plugins"]["daily"]["pause"] = int(daily_pause_list[0])
+        old_config_dict["plugins"]["daily"]["enabled"] = True
+        old_config_dict["plugins"]["hourly"]["pause"] = int(hourly_pause_list[0])
+        old_config_dict["plugins"]["hourly"]["enabled"] = True
+        old_config_dict["info_pause"] = int(info_pause_list[0])
+        old_config_dict["info_delay"] = int(info_delay_list[0])
     with open("config.json-sample", "r") as f:
         new_config_dict = json.load(f)
     for key in old_config_dict.keys():
