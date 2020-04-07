@@ -56,8 +56,6 @@ class Config:
         dst = f"{os.getcwd()}/config.json"
 
         input_json = cherrypy.request.json
-        print("Config updated to:")
-        print(input_json)
         with open(dst, 'w') as f:
             json.dump(input_json, f, indent=2, separators=(',', ': '))
         self.index()
