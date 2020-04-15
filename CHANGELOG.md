@@ -1,5 +1,13 @@
 # Change log
 
+## Unreleased
+
+- Change setup.pp to pin to git tags instead of the latest commit on master
+- Add this change log
+- Update code for Python 3 compatibility
+- Move to using a central license file instead of adding the full MIT license
+  to each file.
+
 ## [1.3.0](https://github.com/genebean/PiWeatherRock/tree/1.3.0)
 
 - Added web-based configuration (thanks @mettaMMA)
