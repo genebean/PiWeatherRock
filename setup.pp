@@ -86,9 +86,10 @@ exec { 'enable display-setup-script':
 }
 
 vcsrepo { '/home/pi/PiWeatherRock':
-  ensure   => latest,
+  ensure   => present,
   provider => git,
   source   => 'https://github.com/genebean/PiWeatherRock.git',
+  revision => '1.3.0',
 }
 
 $python_packages = [
