@@ -265,6 +265,21 @@
             <input type="number" name="plugins[hourly][pause]" data-value-type="number" class="opt">
             </div>
           </div>
+          <div class="settings">Log</div>
+          <div class="var">
+            <div class="tooltip">Log Level:
+              <span class="tooltiptext">Change this to 'DEBUG', if you need to troubleshoot issues.</span>
+            </div>
+            <select name="log_level" class="opt">
+              <option value="INFO">INFO</option>
+              <option value="DEBUG">DEBUG</option>
+            </select>
+          </div>
+          <div class="var">
+            <div class="tooltip"><a href="log">Go to Log ></a>
+              <span class="tooltiptext">Click this link to show the log.</span>
+            </div>
+          </div>
           </div>
         </form>
       <div class="submit"><input type="submit" id="update" value="Update" class="submit" onclick="config_save()"></div>
