@@ -6,7 +6,7 @@
 
 """ Fetches weather reports from Dark Sky for displaying on a screen. """
 
-__version__ = "0.0.13"
+__version__ = "0.0.14"
 
 # standard imports
 import datetime
@@ -14,21 +14,19 @@ import os
 import platform
 import signal
 import sys
-import syslog
 import time
 import json
+import logging
 
 # third party imports
 from darksky import forecast
 import pygame
-# from pygame.locals import *
 import requests
 
 with open("config.json", "r") as f:
     CONFIG = json.load(f)
 
 # globals
-MOUSE_X, MOUSE_Y = 0, 0
 UNICODE_DEGREE = u'\xb0'
 
 MODE = 'd'  # Default to weather mode. Showing daily weather first.
@@ -155,9 +153,26 @@ def icon_mapping(icon, size):
     else:
         icon_path = 'icons/{}/unknown.png'.format(size)
 
-    # print(icon_path)
     return icon_path
 
+
+# Create logger
+def get_logger():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    lvl_str = f"logging.{config['log_level']}"
+    log = logging.getLogger()
+    log.setLevel(eval(lvl_str))
+    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
+        datefmt='%Y-%m-%d %H:%M:%S')
+    handler = logging.handlers.RotatingFileHandler(
+              ".log", maxBytes=500000, backupCount=3)
+    if (log.hasHandlers()):
+        log.handlers.clear()
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+
+    return log
 
 # Helper function to which takes seconds and returns (hours, minutes).
 # ###########################################################################
@@ -173,18 +188,19 @@ class MyDisplay:
 
     ####################################################################
     def __init__(self):
+        # Initialize logger
+        self.log = get_logger()
         "Ininitializes a new pygame screen using the framebuffer"
         if platform.system() == 'Darwin':
             pygame.display.init()
             driver = pygame.display.get_driver()
-            print('Using the {0} driver.'.format(driver))
+            self.log.debug(f"Using the {driver} driver.")
         else:
             # Based on "Python GUI in Linux frame buffer"
             # http://www.karoltomala.com/blog/?p=679
             disp_no = os.getenv("DISPLAY")
             if disp_no:
-                print("X Display = {0}".format(disp_no))
-                syslog.syslog("X Display = {0}".format(disp_no))
+                self.log.debug(f"X Display = {disp_no}")
 
             # Check which frame buffer drivers are available
             # Start with fbcon since directfb hangs with composite output
@@ -197,19 +213,17 @@ class MyDisplay:
                 try:
                     pygame.display.init()
                 except pygame.error:
-                    print('Driver: {0} failed.'.format(driver))
-                    syslog.syslog('Driver: {0} failed.'.format(driver))
+                    self.log.debug("Driver: {driver} failed.")
                     continue
                 found = True
                 break
 
             if not found:
-                raise Exception('No suitable video driver found!')
+                self.log.exception("No suitable video driver found!")
 
         size = (pygame.display.Info().current_w,
                 pygame.display.Info().current_h)
-        print("Framebuffer Size: %d x %d" % (size[0], size[1]))
-        syslog.syslog("Framebuffer Size: %d x %d" % (size[0], size[1]))
+        self.log.debug(f"Framebuffer Size: {size[0]} x {size[1]}")
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
         # Clear the screen to start
         self.screen.fill((0, 0, 0))
@@ -218,9 +232,6 @@ class MyDisplay:
         # Render the screen
         pygame.mouse.set_visible(0)
         pygame.display.update()
-        # Print out all available fonts
-        # for fontname in pygame.font.get_fonts():
-        #        print(fontname)
 
         if CONFIG["fullscreen"]:
             self.xmax = pygame.display.Info().current_w - 35
@@ -296,10 +307,10 @@ class MyDisplay:
                             break
 
             except requests.exceptions.RequestException as e:
-                print('Request exception: ' + str(e))
+                self.log.exception(f"Request exception: {e}")
                 return False
             except AttributeError as e:
-                print('Attribute error: ' + str(e))
+                self.log.exception(f"Attribute error: {e}")
                 return False
         return True
 
@@ -385,8 +396,6 @@ class MyDisplay:
                                (subwindow_centers * c_times) - txt_x / 2,
                                self.ymax * (subwindows_y_start_position +
                                             line_spacing_gap * 5)))
-        # rtxt = forecast_font.render('Rain:', True, lc)
-        # self.screen.blit(rtxt, (ro,self.ymax*(wy+gp*5)))
         rptxt = rpfont.render(
             str(int(round(data.precipProbability * 100))) + '%',
             True, text_color)
@@ -741,7 +750,7 @@ class MyDisplay:
     ####################################################################
     def screen_cap(self):
         pygame.image.save(self.screen, "screenshot.jpeg")
-        print("Screen capture complete.")
+        self.log.info("Screen capture complete.")
 
 
 # Given a sunrise and sunset unix timestamp,
@@ -798,14 +807,14 @@ MY_DISP = MyDisplay()
 
 RUNNING = True             # Stay running while True
 SECONDS = 0                # Seconds Placeholder to pace display.
-# Display timeout to automatically switch back to weather dispaly.
+# Display timeout to automatically switch back to weather display.
 NON_WEATHER_TIMEOUT = 0
-# Switch to info periodically to prevent screen burn
+# Switch to info periodically to prevent screen burn.
 PERIODIC_INFO_ACTIVATION = 0
 
 # Loads data from darksky.net into class variables.
-if MY_DISP.get_forecast() is False:
-    print('Error: no data from darksky.net.')
+if not MY_DISP.get_forecast():
+    self.log.exception("Error: no data from darksky.net.")
     RUNNING = False
 
 
@@ -856,7 +865,7 @@ while RUNNING:
         if NON_WEATHER_TIMEOUT > (CONFIG["info_pause"] * 10):
             MODE = 'd'
             D_COUNT = 1
-            syslog.syslog("Switching to weather mode")
+            self.log.info("Switching to weather mode")
     else:
         NON_WEATHER_TIMEOUT = 0
         PERIODIC_INFO_ACTIVATION += 1
@@ -864,17 +873,17 @@ while RUNNING:
         # for 15 minutes before showing info screen.
         if PERIODIC_INFO_ACTIVATION > (CONFIG["info_delay"] * 10):
             MODE = 'i'
-            syslog.syslog("Switching to info mode")
+            self.log.info("Switching to info mode")
         elif (PERIODIC_INFO_ACTIVATION % (
                 ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
                  + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
                 * 10)) == 0:
             if MODE == 'd':
-                syslog.syslog("Switching to HOURLY")
+                self.log.info("Switching to HOURLY")
                 MODE = 'h'
                 H_COUNT += 1
             else:
-                syslog.syslog("Switching to DAILY")
+                self.log.info("Switching to DAILY")
                 MODE = 'd'
                 D_COUNT += 1
 
@@ -884,16 +893,15 @@ while RUNNING:
         if SECONDS != time.localtime().tm_sec:
             SECONDS = time.localtime().tm_sec
             MY_DISP.disp_weather()
-            # ser.write("Weather\r\n")
         # Once the screen is updated, we have a full second to get the weather.
         # Once per minute, update the weather from the net.
         if SECONDS == 0:
             try:
                 MY_DISP.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                print("Decoding JSON has failed", sys.exc_info()[0])
+                self.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
             except BaseException:
-                print("Unexpected error:", sys.exc_info()[0])
+                self.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
     # Hourly Weather Display Mode
     elif MODE == 'h':
         # Update / Refresh the display after each second.
@@ -906,9 +914,9 @@ while RUNNING:
             try:
                 MY_DISP.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                print("Decoding JSON has failed", sys.exc_info()[0])
+                self.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
             except BaseException:
-                print("Unexpected error:", sys.exc_info()[0])
+                self.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
     # Info Screen Display Mode
     elif MODE == 'i':
         # Pace the screen updates to once per second.
@@ -927,9 +935,9 @@ while RUNNING:
             try:
                 MY_DISP.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                print("Decoding JSON has failed", sys.exc_info()[0])
+                self.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
             except BaseException:
-                print("Unexpected error:", sys.exc_info()[0])
+                self.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
 
     (inDaylight, dayHrs, dayMins, seconds_til_daylight,
      delta_seconds_til_dark) = daylight(MY_DISP.weather)
