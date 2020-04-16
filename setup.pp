@@ -110,7 +110,7 @@ exec { 'import config':
   user    => 'pi',
   path    => '/bin:/usr/bin',
   command => 'python3 /home/pi/PiWeatherRock/scripts/upgrade.py',
-  unless  => 'grep "0.0.13" config.json',
+  unless  => 'grep "0.0.14" config.json',
   notify  => Service['PiWeatherRock.service'],
 }
 
