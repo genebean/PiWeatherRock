@@ -814,7 +814,7 @@ PERIODIC_INFO_ACTIVATION = 0
 
 # Loads data from darksky.net into class variables.
 if not MY_DISP.get_forecast():
-    self.log.exception("Error: no data from darksky.net.")
+    MY_DISP.log.exception("Error: no data from darksky.net.")
     RUNNING = False
 
 
@@ -865,7 +865,7 @@ while RUNNING:
         if NON_WEATHER_TIMEOUT > (CONFIG["info_pause"] * 10):
             MODE = 'd'
             D_COUNT = 1
-            self.log.info("Switching to weather mode")
+            MY_DISP.log.info("Switching to weather mode")
     else:
         NON_WEATHER_TIMEOUT = 0
         PERIODIC_INFO_ACTIVATION += 1
@@ -873,17 +873,17 @@ while RUNNING:
         # for 15 minutes before showing info screen.
         if PERIODIC_INFO_ACTIVATION > (CONFIG["info_delay"] * 10):
             MODE = 'i'
-            self.log.info("Switching to info mode")
+            MY_DISP.log.info("Switching to info mode")
         elif (PERIODIC_INFO_ACTIVATION % (
                 ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
                  + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
                 * 10)) == 0:
             if MODE == 'd':
-                self.log.info("Switching to HOURLY")
+                MY_DISP.log.info("Switching to HOURLY")
                 MODE = 'h'
                 H_COUNT += 1
             else:
-                self.log.info("Switching to DAILY")
+                MY_DISP.log.info("Switching to DAILY")
                 MODE = 'd'
                 D_COUNT += 1
 
@@ -899,9 +899,9 @@ while RUNNING:
             try:
                 MY_DISP.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                self.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
+                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
             except BaseException:
-                self.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
+                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
     # Hourly Weather Display Mode
     elif MODE == 'h':
         # Update / Refresh the display after each second.
@@ -914,9 +914,9 @@ while RUNNING:
             try:
                 MY_DISP.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                self.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
+                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
             except BaseException:
-                self.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
+                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
     # Info Screen Display Mode
     elif MODE == 'i':
         # Pace the screen updates to once per second.
@@ -935,9 +935,9 @@ while RUNNING:
             try:
                 MY_DISP.get_forecast()
             except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                self.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
+                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
             except BaseException:
-                self.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
+                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
 
     (inDaylight, dayHrs, dayMins, seconds_til_daylight,
      delta_seconds_til_dark) = daylight(MY_DISP.weather)
