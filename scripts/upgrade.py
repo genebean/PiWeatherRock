@@ -21,10 +21,13 @@ if os.path.exists("config.json"):
     elif new_build == old_build:
         print("No upgrade needed. This is the most recently released version.")
     else:
-        #  This is for future upgrades.
-        #  Code will run when current version of config.json is older than the
-        #  most recently released version.
-        pass
+        # Add any new config variables to config.json
+        old_config["version"] = new_config["version"]
+        for key in new_config.keys():
+            if key not in old_config.keys():
+                old_config[key] = new_config[key]
+        with open("config.json", "w") as f:
+            json.dump(old_config, f)
 elif os.path.exists("config.py"):
     print(f"\nImporting current configuration settings.\n\n"
           f"Go to http://{pi_ip}:8888 to view new configuration interface.\n")
