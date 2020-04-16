@@ -1,5 +1,5 @@
 {
-    "version": "0.0.13",
+    "version": "0.0.14",
     "ds_api_key": "API_KEY_HERE",
     "lat": 0.112358,
     "lon": 0.246810,
@@ -10,6 +10,7 @@
     "update_freq": 300,
     "info_pause": 300,
     "info_delay": 900,
+    "log_level": "INFO",
     "plugins": {
         "daily": {
             "enabled": true,
