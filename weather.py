@@ -885,7 +885,7 @@ while True:
             D_COUNT = 0
             H_COUNT = 0
             # Default in config.py.sample: pause for 5 minutes on info screen.
-            if NON_WEATHER_TIMEOUT > (self.config["info_pause"] * 10):
+            if NON_WEATHER_TIMEOUT > (MY_DISP.config["info_pause"] * 10):
                 MODE = 'd'
                 D_COUNT = 1
                 MY_DISP.log.info("Switching to weather mode")
@@ -894,12 +894,12 @@ while True:
             PERIODIC_INFO_ACTIVATION += 1
             # Default is to flip between 2 weather screens
             # for 15 minutes before showing info screen.
-            if PERIODIC_INFO_ACTIVATION > (self.config["info_delay"] * 10):
+            if PERIODIC_INFO_ACTIVATION > (MY_DISP.config["info_delay"] * 10):
                 MODE = 'i'
                 MY_DISP.log.info("Switching to info mode")
             elif (PERIODIC_INFO_ACTIVATION % (
-                    ((self.config["plugins"]["daily"]["pause"] * D_COUNT)
-                     + (self.config["plugins"]["hourly"]["pause"] * H_COUNT))
+                    ((MY_DISP.config["plugins"]["daily"]["pause"] * D_COUNT)
+                     + (MY_DISP.config["plugins"]["hourly"]["pause"] * H_COUNT))
                     * 10)) == 0:
                 if MODE == 'd':
                     MY_DISP.log.info("Switching to HOURLY")
