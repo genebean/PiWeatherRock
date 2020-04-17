@@ -4,3 +4,4 @@ config.json
 *.pyc
 *.swp
 .log
+.lock
