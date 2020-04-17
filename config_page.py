@@ -4,7 +4,7 @@
 
 """ Configuration page for PiWeatherRock. """
 
-__version__ = "0.0.14"
+__version__ = "0.0.15"
 
 ###############################################################################
 #   Raspberry Pi Weather Display Config Page Plugin
@@ -38,6 +38,17 @@ class Config:
             json.dump(input_json, f, indent=2, separators=(',', ': '))
         self.index()
 
+    @cherrypy.expose
+    def start(self):
+        with open(".lock", 'w') as f:
+            f.write("1")
+        self.index()
+
+    @cherrypy.expose
+    def stop(self):
+        with open(".lock", 'w') as f:
+            f.write("0")
+        self.index()
 
     @cherrypy.expose
     def log(self):
