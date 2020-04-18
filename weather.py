@@ -17,6 +17,7 @@ import sys
 import time
 import json
 import logging
+import logging.handlers
 
 # third party imports
 from darksky import forecast
