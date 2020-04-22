@@ -830,9 +830,12 @@ while True:
     # Loads data from darksky.net into class variables.
     if not MY_DISP.get_forecast():
         MY_DISP.log.exception("Error: no data from darksky.net.")
+        MY_DISP.log.info("Stopping PiWeatherRock.")
+        with open(".lock", "w") as f:
+            f.write("0")
         RUNNING = False
     else:
-        MY_DISP.log.info('Successfully retrieved initial weather data.')
+        MY_DISP.log.info("Successfully retrieved initial weather data.")
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     while RUNNING:
@@ -848,6 +851,8 @@ while True:
             if event.type == pygame.KEYDOWN:
                 # On 'q' or keypad enter key, quit the program.
                 if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
+                    with open(".lock", "w") as f:
+                        f.write("0")
                     RUNNING = False
 
                 # On 'd' key, set mode to 'weather'.
