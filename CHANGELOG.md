@@ -7,6 +7,9 @@
 - Update code for Python 3 compatibility
 - Move to using a central license file instead of adding the full MIT license
   to each file.
+- Moved logging from syslog to a local file and made it visible via the config
+  page
+- sync'ed versions between GitHub and the code here
 
 ## [1.3.0](https://github.com/genebean/PiWeatherRock/tree/1.3.0)
 
