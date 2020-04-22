@@ -1,9 +1,6 @@
 import json
 import os
-import re
-from shutil import copyfile
 import socket
-import version
 
 pi_ip = socket.gethostbyname(socket.gethostname() + ".local")
 
@@ -58,10 +55,6 @@ with open("config.json-sample", "r") as f:
 for key in new_config.keys():
     if key not in old_config.keys():
         old_config[key] = new_config[key]
-
-# Remove version key from config file
-if "version" in old_config.keys():
-    del old_config["version"]
 
 with open("config.json", "w") as f:
     json.dump(old_config, f)
