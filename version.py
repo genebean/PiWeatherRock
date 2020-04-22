@@ -1,1 +1,1 @@
-PWR_VERSION = '1.4.0'
+PWR_VERSION = '1.5.0'
