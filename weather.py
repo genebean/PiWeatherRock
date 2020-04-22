@@ -6,8 +6,7 @@
 
 """ Fetches weather reports from Dark Sky for displaying on a screen. """
 
-import version
-__version__ = version.PWR_VERSION
+__version__ = "0.0.15"
 
 # standard imports
 import datetime
@@ -18,22 +17,28 @@ import sys
 import time
 import json
 import logging
-import logging.handlers
 
 # third party imports
 from darksky import forecast
 import pygame
 import requests
 
-with open("config.json", "r") as f:
-    CONFIG = json.load(f)
-
 # globals
 UNICODE_DEGREE = u'\xb0'
 
-MODE = 'd'  # Default to weather mode. Showing daily weather first.
-D_COUNT = 1
-H_COUNT = 0
+
+def lock_check():
+    if os.path.exists(".lock"):
+        with open(".lock", "r") as f:
+            val = f.read()
+        if val.strip() == "1":
+            return True
+        else:
+            return False
+    else:
+        with open(".lock", "w") as f:
+            f.write("0")
+        return False
 
 
 def exit_gracefully(signum, frame):
@@ -110,11 +115,11 @@ def get_abbreviation(phrase):
     return abbreviation
 
 
-def get_windspeed_abbreviation(unit=CONFIG["units"]):
+def get_windspeed_abbreviation(unit=MY_DISP.config["units"]):
     return get_abbreviation(units_decoder(unit)['windSpeed'])
 
 
-def get_temperature_letter(unit=CONFIG["units"]):
+def get_temperature_letter(unit=MY_DISP.config["units"]):
     return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
 
 
@@ -190,9 +195,12 @@ class MyDisplay:
 
     ####################################################################
     def __init__(self):
-        # Initialize logger
+        #  Initialize logger
         self.log = get_logger()
-        "Ininitializes a new pygame screen using the framebuffer"
+        #  Load config variables
+        with open("config.json", "r") as f:
+            self.config = json.load(f)
+        "Initializes a new pygame screen using the framebuffer"
         if platform.system() == 'Darwin':
             pygame.display.init()
             driver = pygame.display.get_driver()
@@ -215,7 +223,7 @@ class MyDisplay:
                 try:
                     pygame.display.init()
                 except pygame.error:
-                    self.log.debug("Driver: {driver} failed.")
+                    self.log.exception(f"Driver: {driver} failed.")
                     continue
                 found = True
                 break
@@ -235,7 +243,7 @@ class MyDisplay:
         pygame.mouse.set_visible(0)
         pygame.display.update()
 
-        if CONFIG["fullscreen"]:
+        if self.config["fullscreen"]:
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
             if self.xmax <= 1024:
@@ -258,15 +266,15 @@ class MyDisplay:
         "Destructor to make sure pygame shuts down, etc."
 
     def get_forecast(self):
-        if (time.time() - self.last_update_check) > CONFIG["update_freq"]:
+        if (time.time() - self.last_update_check) > self.config["update_freq"]:
             self.last_update_check = time.time()
             try:
-                self.weather = forecast(CONFIG["ds_api_key"],
-                                        CONFIG["lat"],
-                                        CONFIG["lon"],
+                self.weather = forecast(self.config["ds_api_key"],
+                                        self.config["lat"],
+                                        self.config["lon"],
                                         exclude='minutely',
-                                        units=CONFIG["units"],
-                                        lang=CONFIG["lang"])
+                                        units=self.config["units"],
+                                        lang=self.config["lang"])
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
@@ -413,7 +421,7 @@ class MyDisplay:
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = CONFIG["icon_offset"]
+            icon_y_offset = self.config["icon_offset"]
 
         self.screen.blit(icon, (self.xmax *
                                 (subwindow_centers * c_times) -
@@ -804,148 +812,160 @@ def daylight(weather):
             delta_seconds_til_dark)
 
 
-# Create an instance of the lcd display class.
-MY_DISP = MyDisplay()
+while True:
+    RUNNING = lock_check()
+    if RUNNING:
+        SECONDS = 0  # Seconds Placeholder to pace display.
+        MY_DISP = MyDisplay()  # Create an instance of the lcd display class.
+        MY_DISP.log.info("Received signal to begin running.")
+        MODE = 'd'  # Default to weather mode. Showing daily weather first.
+        D_COUNT = 1
+        H_COUNT = 0
+        NON_WEATHER_TIMEOUT = 0  # Seconds showing info screen
+        PERIODIC_INFO_ACTIVATION = 0  # Seconds showing non-info screen
+    else:
+        pygame.quit()
+        continue
 
-RUNNING = True             # Stay running while True
-SECONDS = 0                # Seconds Placeholder to pace display.
-# Display timeout to automatically switch back to weather display.
-NON_WEATHER_TIMEOUT = 0
-# Switch to info periodically to prevent screen burn.
-PERIODIC_INFO_ACTIVATION = 0
-
-# Loads data from darksky.net into class variables.
-if not MY_DISP.get_forecast():
-    MY_DISP.log.exception("Error: no data from darksky.net.")
-    RUNNING = False
-
+    # Loads data from darksky.net into class variables.
+    if not MY_DISP.get_forecast():
+        MY_DISP.log.exception("Error: no data from darksky.net.")
+        RUNNING = False
+    else:
+        MY_DISP.log.info('Successfully retrieved initial weather data.')
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-while RUNNING:
-    # Look for and process keyboard events to change modes.
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            # On 'q' or keypad enter key, quit the program.
-            if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
-                RUNNING = False
+    while RUNNING:
+        with open(".lock", "r") as f:
+            val = f.read()
+        if val.strip() == "0":
+            MY_DISP.log.info(
+                "Lock file has instructed the application to wait and listen.")
+            RUNNING = False
+            break
+        # Look for and process keyboard events to change modes.
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                # On 'q' or keypad enter key, quit the program.
+                if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
+                    RUNNING = False
 
-            # On 'd' key, set mode to 'weather'.
-            elif event.key == pygame.K_d:
+                # On 'd' key, set mode to 'weather'.
+                elif event.key == pygame.K_d:
+                    MODE = 'd'
+                    D_COUNT = 1
+                    H_COUNT = 0
+                    NON_WEATHER_TIMEOUT = 0
+                    PERIODIC_INFO_ACTIVATION = 0
+
+                # On 's' key, save a screen shot.
+                elif event.key == pygame.K_s:
+                    MY_DISP.screen_cap()
+
+                # On 'i' key, set mode to 'info'.
+                elif event.key == pygame.K_i:
+                    MODE = 'i'
+                    D_COUNT = 0
+                    H_COUNT = 0
+                    NON_WEATHER_TIMEOUT = 0
+                    PERIODIC_INFO_ACTIVATION = 0
+
+                # on 'h' key, set mode to 'hourly'
+                elif event.key == pygame.K_h:
+                    MODE = 'h'
+                    D_COUNT = 0
+                    H_COUNT = 1
+                    NON_WEATHER_TIMEOUT = 0
+                    PERIODIC_INFO_ACTIVATION = 0
+
+        # Automatically switch back to weather display after a couple minutes.
+        if MODE not in ('d', 'h'):
+            PERIODIC_INFO_ACTIVATION = 0
+            NON_WEATHER_TIMEOUT += 1
+            D_COUNT = 0
+            H_COUNT = 0
+            # Default in config.py.sample: pause for 5 minutes on info screen.
+            if NON_WEATHER_TIMEOUT > (MY_DISP.config["info_pause"] * 10):
                 MODE = 'd'
                 D_COUNT = 1
-                H_COUNT = 0
-                NON_WEATHER_TIMEOUT = 0
-                PERIODIC_INFO_ACTIVATION = 0
-
-            # On 's' key, save a screen shot.
-            elif event.key == pygame.K_s:
-                MY_DISP.screen_cap()
-
-            # On 'i' key, set mode to 'info'.
-            elif event.key == pygame.K_i:
+                MY_DISP.log.info("Switching to weather mode")
+        else:
+            NON_WEATHER_TIMEOUT = 0
+            PERIODIC_INFO_ACTIVATION += 1
+            # Default is to flip between 2 weather screens
+            # for 15 minutes before showing info screen.
+            if PERIODIC_INFO_ACTIVATION > (MY_DISP.config["info_delay"] * 10):
                 MODE = 'i'
-                D_COUNT = 0
-                H_COUNT = 0
-                NON_WEATHER_TIMEOUT = 0
-                PERIODIC_INFO_ACTIVATION = 0
+                MY_DISP.log.info("Switching to info mode")
+            elif (PERIODIC_INFO_ACTIVATION % (
+                    ((MY_DISP.config["plugins"]["daily"]["pause"] * D_COUNT)
+                     + (MY_DISP.config["plugins"]["hourly"]["pause"] * H_COUNT))
+                    * 10)) == 0:
+                if MODE == 'd':
+                    MY_DISP.log.info("Switching to HOURLY")
+                    MODE = 'h'
+                    H_COUNT += 1
+                else:
+                    MY_DISP.log.info("Switching to DAILY")
+                    MODE = 'd'
+                    D_COUNT += 1
 
-            # on 'h' key, set mode to 'hourly'
-            elif event.key == pygame.K_h:
-                MODE = 'h'
-                D_COUNT = 0
-                H_COUNT = 1
-                NON_WEATHER_TIMEOUT = 0
-                PERIODIC_INFO_ACTIVATION = 0
+        # Daily Weather Display Mode
+        if MODE == 'd':
+            # Update / Refresh the display after each second.
+            if SECONDS != time.localtime().tm_sec:
+                SECONDS = time.localtime().tm_sec
+                MY_DISP.disp_weather()
+            # Once the screen is updated, we have a full second to get the weather.
+            # Once per minute, update the weather from the net.
+            if SECONDS == 0:
+                try:
+                    MY_DISP.get_forecast()
+                except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                    MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
+                except BaseException:
+                    MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
+        # Hourly Weather Display Mode
+        elif MODE == 'h':
+            # Update / Refresh the display after each second.
+            if SECONDS != time.localtime().tm_sec:
+                SECONDS = time.localtime().tm_sec
+                MY_DISP.disp_hourly()
+            # Once the screen is updated, we have a full second to get the weather.
+            # Once per minute, update the weather from the net.
+            if SECONDS == 0:
+                try:
+                    MY_DISP.get_forecast()
+                except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                    MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
+                except BaseException:
+                    MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
+        # Info Screen Display Mode
+        elif MODE == 'i':
+            # Pace the screen updates to once per second.
+            if SECONDS != time.localtime().tm_sec:
+                SECONDS = time.localtime().tm_sec
 
-    # Automatically switch back to weather display after a couple minutes.
-    if MODE not in ('d', 'h'):
-        PERIODIC_INFO_ACTIVATION = 0
-        NON_WEATHER_TIMEOUT += 1
-        D_COUNT = 0
-        H_COUNT = 0
-        # Default in config.py.sample: pause for 5 minutes on info screen.
-        if NON_WEATHER_TIMEOUT > (CONFIG["info_pause"] * 10):
-            MODE = 'd'
-            D_COUNT = 1
-            MY_DISP.log.info("Switching to weather mode")
-    else:
-        NON_WEATHER_TIMEOUT = 0
-        PERIODIC_INFO_ACTIVATION += 1
-        # Default is to flip between 2 weather screens
-        # for 15 minutes before showing info screen.
-        if PERIODIC_INFO_ACTIVATION > (CONFIG["info_delay"] * 10):
-            MODE = 'i'
-            MY_DISP.log.info("Switching to info mode")
-        elif (PERIODIC_INFO_ACTIVATION % (
-                ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
-                 + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
-                * 10)) == 0:
-            if MODE == 'd':
-                MY_DISP.log.info("Switching to HOURLY")
-                MODE = 'h'
-                H_COUNT += 1
-            else:
-                MY_DISP.log.info("Switching to DAILY")
-                MODE = 'd'
-                D_COUNT += 1
+                (inDaylight, dayHrs, dayMins, seconds_til_daylight,
+                 delta_seconds_til_dark) = daylight(MY_DISP.weather)
 
-    # Daily Weather Display Mode
-    if MODE == 'd':
-        # Update / Refresh the display after each second.
-        if SECONDS != time.localtime().tm_sec:
-            SECONDS = time.localtime().tm_sec
-            MY_DISP.disp_weather()
-        # Once the screen is updated, we have a full second to get the weather.
-        # Once per minute, update the weather from the net.
-        if SECONDS == 0:
-            try:
-                MY_DISP.get_forecast()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
-            except BaseException:
-                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
-    # Hourly Weather Display Mode
-    elif MODE == 'h':
-        # Update / Refresh the display after each second.
-        if SECONDS != time.localtime().tm_sec:
-            SECONDS = time.localtime().tm_sec
-            MY_DISP.disp_hourly()
-        # Once the screen is updated, we have a full second to get the weather.
-        # Once per minute, update the weather from the net.
-        if SECONDS == 0:
-            try:
-                MY_DISP.get_forecast()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
-            except BaseException:
-                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
-    # Info Screen Display Mode
-    elif MODE == 'i':
-        # Pace the screen updates to once per second.
-        if SECONDS != time.localtime().tm_sec:
-            SECONDS = time.localtime().tm_sec
+                # Extra info display.
+                MY_DISP.disp_info(inDaylight, dayHrs, dayMins,
+                                  seconds_til_daylight,
+                                  delta_seconds_til_dark)
+            # Refresh the weather data once per minute.
+            if int(SECONDS) == 0:
+                try:
+                    MY_DISP.get_forecast()
+                except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                    MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
+                except BaseException:
+                    MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
 
-            (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-             delta_seconds_til_dark) = daylight(MY_DISP.weather)
+        (inDaylight, dayHrs, dayMins, seconds_til_daylight,
+         delta_seconds_til_dark) = daylight(MY_DISP.weather)
 
-            # Extra info display.
-            MY_DISP.disp_info(inDaylight, dayHrs, dayMins,
-                              seconds_til_daylight,
-                              delta_seconds_til_dark)
-        # Refresh the weather data once per minute.
-        if int(SECONDS) == 0:
-            try:
-                MY_DISP.get_forecast()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
-            except BaseException:
-                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
-
-    (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-     delta_seconds_til_dark) = daylight(MY_DISP.weather)
-
-    # Loop timer.
-    pygame.time.wait(100)
-
+        # Loop timer.
+        pygame.time.wait(100)
 
 pygame.quit()
