@@ -3,5 +3,5 @@ config.py
 config.json
 *.pyc
 *.swp
-.log
+.log*
 .lock
