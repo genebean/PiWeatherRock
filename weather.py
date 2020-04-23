@@ -362,7 +362,7 @@ class MyDisplay:
             self.screen.blit(degree_txt, (
                 self.xmax * second_column_x_start_position + txt_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
-            degree_letter = conditions_font.render(get_temperature_letter(),
+            degree_letter = conditions_font.render(get_temperature_letter(self.config["units"]),
                                                    True, text_color)
             degree_letter_x = degree_letter.get_size()[0]
             self.screen.blit(degree_letter, (
@@ -396,12 +396,12 @@ class MyDisplay:
                 UNICODE_DEGREE +
                 ' / ' +
                 str(int(round(data.temperatureHigh))) +
-                UNICODE_DEGREE + get_temperature_letter(),
+                UNICODE_DEGREE + get_temperature_letter(self.config["units"]),
                 True, text_color)
         else:
             txt = forecast_font.render(
                 str(int(round(data.temperature))) +
-                UNICODE_DEGREE + get_temperature_letter(),
+                UNICODE_DEGREE + get_temperature_letter(self.config["units"]),
                 True, text_color)
         (txt_x, txt_y) = txt.get_size()
         self.screen.blit(txt, (self.xmax *
@@ -600,7 +600,7 @@ class MyDisplay:
             font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
         degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
         (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
-        degree_letter = outside_temp_font.render(get_temperature_letter(),
+        degree_letter = outside_temp_font.render(get_temperature_letter(self.config["units"]),
                                                  True, text_color)
         (degree_letter_x, degree_letter_y) = degree_letter.get_size()
         # Position text
