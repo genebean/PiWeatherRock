@@ -117,11 +117,11 @@ def get_abbreviation(phrase):
     return abbreviation
 
 
-def get_windspeed_abbreviation(unit=MY_DISP.config["units"]):
+def get_windspeed_abbreviation(unit):
     return get_abbreviation(units_decoder(unit)['windSpeed'])
 
 
-def get_temperature_letter(unit=MY_DISP.config["units"]):
+def get_temperature_letter(unit):
     return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
 
 
@@ -484,7 +484,7 @@ class MyDisplay:
             wind_direction = ''
         wind_txt = wind_direction + str(
             int(round(self.weather.windSpeed))) + \
-            ' ' + get_windspeed_abbreviation()
+            ' ' + get_windspeed_abbreviation(self.config["units"])
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
@@ -541,7 +541,7 @@ class MyDisplay:
             wind_direction = ''
         wind_txt = wind_direction + str(
             int(round(self.weather.windSpeed))) + \
-            ' ' + get_windspeed_abbreviation()
+            ' ' + get_windspeed_abbreviation(self.config["units"])
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
