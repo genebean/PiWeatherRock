@@ -56,6 +56,9 @@ for key in new_config.keys():
     if key not in old_config.keys():
         old_config[key] = new_config[key]
 
+# Update version
+old_config["version"] = new_config["version"]
+
 with open("config.json", "w") as f:
     json.dump(old_config, f)
 

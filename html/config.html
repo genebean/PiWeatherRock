@@ -3,6 +3,25 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="serialize_script.js"></script>
     <script>
+      // Run the start or stop method from config_webpage.py depending on slider position.
+      function startstop() {
+        var xhr = new XMLHttpRequest();
+        if (document.getElementById('start').checked == false) {
+          xhr.open('GET', 'stop', true);
+          xhr.onload = function () {
+            console.log(xhr.responseURL);
+          };
+          xhr.send(null);
+        } else {
+          xhr.open('GET', 'start', true);
+          xhr.onload = function () {
+            console.log(xhr.responseURL);
+          };
+          xhr.send(null);
+        }
+      }
+    </script>
+    <script>
       function config_save() {
         json_obj = $('#config_data').serializeJSON({checkboxUncheckedValue: "false", parseBooleans: true});
         var xhr = new XMLHttpRequest();
@@ -96,6 +115,14 @@
       <div id="lcloud"><img src="chancetstorms.png" height="256" width="256"></div>
       <div id="rcloud"><img src="chancetstorms.png" height="256" width="256"></div>
       <div class="page_title">PiWeatherRock Configuration Page</div>
+        <div id="start_toggle">
+          <div class="left">Stop</div>
+          <label class="switch">
+            <input type="checkbox" id="start" onclick="startstop()">
+              <span class="slider round"></span>
+          </label>
+          <div class="right">Start</div>
+        </div>
       <div name="version" id="version"></div>
       <!-- Rounded switch -->
       <div id="toggle">

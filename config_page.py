@@ -39,6 +39,17 @@ class Config:
             json.dump(input_json, f, indent=2, separators=(',', ': '))
         self.index()
 
+    @cherrypy.expose
+    def start(self):
+        with open(".lock", 'w') as f:
+            f.write("1")
+        self.index()
+
+    @cherrypy.expose
+    def stop(self):
+        with open(".lock", 'w') as f:
+            f.write("0")
+        self.index()
 
     @cherrypy.expose
     def log(self):
