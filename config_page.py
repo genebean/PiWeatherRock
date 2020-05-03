@@ -5,7 +5,7 @@
 """ Configuration page for PiWeatherRock. """
 
 import version
-__version__ = version.PWR_VERSION
+__version__ = version.__version__
 
 ###############################################################################
 #   Raspberry Pi Weather Display Config Page Plugin

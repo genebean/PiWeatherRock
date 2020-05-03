@@ -7,7 +7,7 @@
 """ Fetches weather reports from Dark Sky for displaying on a screen. """
 
 import version
-__version__ = version.PWR_VERSION
+__version__ = version.__version__
 
 # standard imports
 import datetime
