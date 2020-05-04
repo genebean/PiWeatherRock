@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2014 Jim Kemp <kemp.jim@gmail.com>
+# Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
+# Distributed under the MIT License (https://opensource.org/licenses/MIT)
+
 # standard imports
 import datetime
 import os
