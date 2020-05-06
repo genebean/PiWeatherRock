@@ -219,6 +219,18 @@ class PluginWeatherCommon:
                 txt_x + degree_letter_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
 
+    def deg_to_compass(self, degrees):
+        """
+        Convert numerical direction into the letters you'd see on a compas
+        such as 'N' for north or 'SE' for south east.
+        """
+        val = int((degrees/22.5)+.5)
+        dirs = ["N", "NNE", "NE", "ENE",
+                "E", "ESE", "SE", "SSE",
+                "S", "SSW", "SW", "WSW",
+                "W", "WNW", "NW", "NNW"]
+        return dirs[(val % 16)]
+
     def get_windspeed_abbreviation(self, unit):
         """
         Determines the abbreviation to use for wind speed based on the unit
