@@ -15,14 +15,20 @@ class PluginWeatherHourly:
     forecast.
     """
 
-    def __init__(self, screen, weather, config, sizes):
-        self.screen = screen
-        self.weather = weather
-        self.weather_common = PluginWeatherCommon(
-            self.screen, self.weather, config, sizes)
+    def __init__(self, weather_rock):
+        self.screen = None
+        self.weather = None
+        self.weather_common = None
 
-    def disp_hourly(self):
-        self.weather_common.disp_weather_top()
+    def get_rock_values(self, weather_rock):
+        self.screen = weather_rock.screen
+        self.weather = weather_rock.weather
+        self.weather_common = PluginWeatherCommon(weather_rock)
+
+    def disp_hourly(self, weather_rock):
+        self.get_rock_values(weather_rock)
+
+        self.weather_common.disp_weather_top(weather_rock)
 
         # Current hour
         this_hour = self.weather.hourly[0]

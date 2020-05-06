@@ -17,20 +17,37 @@ class PluginInfo:
     help prevent screen burn-in.
     """
 
-    def __init__(self, screen, weather, last_update_check, sizes):
-        self.screen = screen
-        self.weather = weather
-        self.last_update_check = last_update_check
-        self.xmax = sizes['xmax']
-        self.ymax = sizes['ymax']
-        self.time_date_small_text_height = sizes['time_date_small_text_height']
-        self.time_date_text_height = sizes['time_date_text_height']
-        self.time_date_y_position = sizes['time_date_y_position']
-        self.time_date_small_y_position = sizes['time_date_small_y_position']
-        self.sunrise_string = sizes['sunrise_string']
-        self.sunset_string = sizes['sunset_string']
+    def __init__(self, weather_rock):
+        self.screen = None
+        self.weather = None
+        self.last_update_check = None
+        self.xmax = None
+        self.ymax = None
+        self.time_date_small_text_height = None
+        self.time_date_text_height = None
+        self.time_date_y_position = None
+        self.time_date_small_y_position = None
+        self.sunrise_string = None
+        self.sunset_string = None
 
-    def disp_info(self):
+        self.get_rock_values(weather_rock)
+
+    def get_rock_values(self, weather_rock):
+        self.screen = weather_rock.screen
+        self.weather = weather_rock.weather
+        self.last_update_check = weather_rock.last_update_check
+        self.xmax = weather_rock.xmax
+        self.ymax = weather_rock.ymax
+        self.time_date_small_text_height = weather_rock.time_date_small_text_height
+        self.time_date_text_height = weather_rock.time_date_text_height
+        self.time_date_y_position = weather_rock.time_date_y_position
+        self.time_date_small_y_position = weather_rock.time_date_small_y_position
+        self.sunrise_string = weather_rock.sunrise_string
+        self.sunset_string = weather_rock.sunset_string
+
+    def disp_info(self, weather_rock):
+        self.get_rock_values(weather_rock)
+
         (in_daylight, day_hrs, day_mins, seconds_til_daylight,
          delta_seconds_til_dark) = self.daylight(self.weather)
 
