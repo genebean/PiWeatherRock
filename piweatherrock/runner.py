@@ -59,7 +59,9 @@ def main(config_file):
     while RUNNING:
         # Look for and process keyboard events to change modes.
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
+                RUNNING = False
+            elif event.type == pygame.KEYDOWN:
                 # On 'q' or keypad enter key, quit the program.
                 if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
                     RUNNING = False
