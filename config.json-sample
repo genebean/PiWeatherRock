@@ -10,6 +10,7 @@
     "update_freq": 300,
     "info_pause": 300,
     "info_delay": 900,
+    "hour_disp": "24h",
     "log_level": "INFO",
     "plugins": {
         "daily": {
