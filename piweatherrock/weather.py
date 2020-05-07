@@ -81,7 +81,20 @@ class Weather:
         size = (pygame.display.Info().current_w,
                 pygame.display.Info().current_h)
         self.log.debug(f"Framebuffer Size: {size[0]} x {size[1]}")
-        self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+
+        if self.config["fullscreen"]:
+            self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+            pygame.display.set_caption('PiWeatherRock')
+
+        self.xmax = pygame.display.Info().current_w - 35
+        self.ymax = pygame.display.Info().current_h - 5
+        if self.xmax <= 1024:
+            self.icon_size = '64'
+        else:
+            self.icon_size = '256'
+
         # Clear the screen to start
         self.screen.fill((0, 0, 0))
         # Initialise font support
@@ -89,18 +102,6 @@ class Weather:
         # Render the screen
         pygame.mouse.set_visible(0)
         pygame.display.update()
-
-        if self.config["fullscreen"]:
-            self.xmax = pygame.display.Info().current_w - 35
-            self.ymax = pygame.display.Info().current_h - 5
-            if self.xmax <= 1024:
-                self.icon_size = '64'
-            else:
-                self.icon_size = '256'
-        else:
-            self.xmax = 480 - 35
-            self.ymax = 320 - 5
-            self.icon_size = '64'
 
         self.subwindow_text_height = 0.055
         self.time_date_text_height = 0.115
