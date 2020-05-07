@@ -10,7 +10,9 @@ import time
 
 # local imports
 from piweatherrock import utils
-from piweatherrock import weather
+from piweatherrock.weather import Weather
+from piweatherrock.plugin_weather_daily import PluginWeatherDaily
+from piweatherrock.plugin_weather_hourly import PluginWeatherHourly
 
 
 def main(config_file):
@@ -18,7 +20,23 @@ def main(config_file):
         CONFIG = json.load(f)
 
     # Create an instance of the lcd display class.
-    MY_DISP = weather.Weather(config_file)
+    MY_DISP = Weather(config_file)
+    SIZES = {
+        'xmax': MY_DISP.xmax,
+        'ymax': MY_DISP.ymax,
+        'time_date_small_text_height': MY_DISP.time_date_small_text_height,
+        'time_date_text_height': MY_DISP.time_date_text_height,
+        'time_date_y_position': MY_DISP.time_date_y_position,
+        'time_date_small_y_position': MY_DISP.time_date_small_y_position,
+        'subwindow_text_height': MY_DISP.subwindow_text_height,
+        'icon_size': MY_DISP.icon_size,
+    }
+
+    HOURLY = PluginWeatherHourly(
+        MY_DISP.screen, MY_DISP.weather, MY_DISP.config, SIZES)
+
+    DAILY = PluginWeatherDaily(
+        MY_DISP.screen, MY_DISP.weather, MY_DISP.config, SIZES)
 
     MODE = 'd'  # Default to weather mode. Showing daily weather first.
 
@@ -36,7 +54,6 @@ def main(config_file):
     if not MY_DISP.get_forecast():
         MY_DISP.log.exception("Error: no data from darksky.net.")
         RUNNING = False
-
 
     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     while RUNNING:
@@ -96,7 +113,7 @@ def main(config_file):
                 MY_DISP.log.info("Switching to info mode")
             elif (PERIODIC_INFO_ACTIVATION % (
                     ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
-                    + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
+                     + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
                     * 10)) == 0:
                 if MODE == 'd':
                     MY_DISP.log.info("Switching to HOURLY")
@@ -112,13 +129,15 @@ def main(config_file):
             # Update / Refresh the display after each second.
             if SECONDS != time.localtime().tm_sec:
                 SECONDS = time.localtime().tm_sec
-                MY_DISP.disp_weather()
-            # Once the screen is updated, we have a full second to get the weather.
-            # Once per minute, update the weather from the net.
+                DAILY.disp_daily()
+
+            # Once the screen is updated, we have a full second to get the
+            # weather. Once per minute, update the weather from the net.
             if SECONDS == 0:
                 try:
                     MY_DISP.get_forecast()
-                except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                # includes simplejson.decoder.JSONDecodeError
+                except ValueError:
                     MY_DISP.log.exception(
                         f"Decoding JSON has failed: {sys.exc_info()[0]}")
                 except BaseException:
@@ -129,13 +148,14 @@ def main(config_file):
             # Update / Refresh the display after each second.
             if SECONDS != time.localtime().tm_sec:
                 SECONDS = time.localtime().tm_sec
-                MY_DISP.disp_hourly()
-            # Once the screen is updated, we have a full second to get the weather.
-            # Once per minute, update the weather from the net.
+                HOURLY.disp_hourly()
+            # Once the screen is updated, we have a full second to get the
+            # weather. Once per minute, update the weather from the net.
             if SECONDS == 0:
                 try:
                     MY_DISP.get_forecast()
-                except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                # includes simplejson.decoder.JSONDecodeError
+                except ValueError:
                     MY_DISP.log.exception(
                         f"Decoding JSON has failed: {sys.exc_info()[0]}")
                 except BaseException:
@@ -148,17 +168,18 @@ def main(config_file):
                 SECONDS = time.localtime().tm_sec
 
                 (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-                delta_seconds_til_dark) = utils.daylight(MY_DISP.weather)
+                 delta_seconds_til_dark) = utils.daylight(MY_DISP.weather)
 
                 # Extra info display.
                 MY_DISP.disp_info(inDaylight, dayHrs, dayMins,
-                                seconds_til_daylight,
-                                delta_seconds_til_dark)
+                                  seconds_til_daylight,
+                                  delta_seconds_til_dark)
             # Refresh the weather data once per minute.
             if int(SECONDS) == 0:
                 try:
                     MY_DISP.get_forecast()
-                except ValueError:  # includes simplejson.decoder.JSONDecodeError
+                # includes simplejson.decoder.JSONDecodeError
+                except ValueError:
                     MY_DISP.log.exception(
                         f"Decoding JSON has failed: {sys.exc_info()[0]}")
                 except BaseException:
@@ -166,10 +187,9 @@ def main(config_file):
                         f"Unexpected error: {sys.exc_info()[0]}")
 
         (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-        delta_seconds_til_dark) = utils.daylight(MY_DISP.weather)
+         delta_seconds_til_dark) = utils.daylight(MY_DISP.weather)
 
         # Loop timer.
         pygame.time.wait(100)
-
 
     pygame.quit()
