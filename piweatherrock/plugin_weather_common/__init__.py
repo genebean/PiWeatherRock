@@ -137,8 +137,12 @@ class PluginWeatherCommon:
             font_name,
             int(self.ymax * self.time_date_small_text_height), bold=1)
 
-        time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
-        am_pm_string = time.strftime(" %p", time.localtime())
+        if HOUR_DISP == "12h":
+            time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
+            am_pm_string = time.strftime(" %p", time.localtime())
+        else:
+            time_string = time.strftime("%a, %b %d   %H:%M", time.localtime())
+            am_pm_string = "hr"
 
         rendered_time_string = time_date_font.render(time_string, True,
                                                      text_color)
