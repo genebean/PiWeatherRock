@@ -8,6 +8,12 @@ import pygame
 import sys
 import time
 
+# pylint is mad about thise locals regardless of how they are used. with
+# that being the case, I decided to have the lint error here instead of
+# every place they get used. PR's welcome to make pylint happy about this
+# and pygame.quit()
+from pygame.locals import QUIT, VIDEORESIZE, KEYDOWN, K_KP_ENTER, K_q, K_d, K_h, K_i, K_s
+
 # local imports
 from piweatherrock.weather import Weather
 from piweatherrock.plugin_weather_daily import PluginWeatherDaily
@@ -15,165 +21,201 @@ from piweatherrock.plugin_weather_hourly import PluginWeatherHourly
 from piweatherrock.plugin_info import PluginInfo
 
 
-def main(config_file):
-    with open(config_file, "r") as f:
-        CONFIG = json.load(f)
+class Runner:
 
-    # Create an instance of the lcd display class.
-    MY_WEATHER_ROCK = Weather(config_file)
+    def __init__(self):
+        self.current_screen = None
+        self.d_count = 1
+        self.h_count = 0
+        self.running = False
+        self.seconds = 0
+        self.non_weather_timeout = 0
+        self.periodic_info_activation = 0
+        self.config = None
+        self.my_weather_rock = None
+        self.daily = None
+        self.hourly = None
+        self.info = None
 
-    DAILY = PluginWeatherDaily(MY_WEATHER_ROCK)
-    HOURLY = PluginWeatherHourly(MY_WEATHER_ROCK)
-    INFO = PluginInfo(MY_WEATHER_ROCK)
+    def main(self, config_file):
+        with open(config_file, "r") as f:
+            self.config = json.load(f)
 
-    MODE = 'd'  # Default to weather mode. Showing daily weather first.
+        # Create an instance of the main application class
+        self.my_weather_rock = Weather(config_file)
 
-    D_COUNT = 1
-    H_COUNT = 0
+        # Create an instance of each plugin that will be used
+        self.daily = PluginWeatherDaily(self.my_weather_rock)
+        self.hourly = PluginWeatherHourly(self.my_weather_rock)
+        self.info = PluginInfo(self.my_weather_rock)
 
-    RUNNING = True             # Stay running while True
-    SECONDS = 0                # Seconds Placeholder to pace display.
-    # Display timeout to automatically switch back to weather display.
-    NON_WEATHER_TIMEOUT = 0
-    # Switch to info periodically to prevent screen burn.
-    PERIODIC_INFO_ACTIVATION = 0
+        # Default to weather mode. Showing daily weather first.
+        self.current_screen = 'd'
 
-    # Loads data from darksky.net into class variables.
-    if not MY_WEATHER_ROCK.get_forecast():
-        MY_WEATHER_ROCK.log.exception("Error: no data from darksky.net.")
-        RUNNING = False
+        self.d_count = 1
+        self.h_count = 0
 
-    # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    while RUNNING:
-        # Look for and process keyboard events to change modes.
+        # Stay running while True
+        self.running = True
+
+        # Seconds Placeholder to pace display
+        self.seconds = 0
+
+        # Display timeout to automatically switch back to weather display.
+        self.non_weather_timeout = 0
+
+        # Switch to info periodically to prevent screen burn.
+        self.periodic_info_activation = 0
+
+        # Loads data from darksky.net
+        if not self.my_weather_rock.get_forecast():
+            self.my_weather_rock.log.exception(
+                "Error: no data from darksky.net.")
+            self.running = False
+
+        ##################################################################
+        #                        Main progam loop                        #
+        ##################################################################
+        while self.running:
+            # Look for and process keyboard events to change modes.
+            self.process_pygame_events()
+            self.screen_switcher()
+
+            # Loop timer.
+            pygame.time.wait(100)
+
+        # When the main program loop is exited, exit the application
+        pygame.quit()
+
+    def process_pygame_events(self):
+        """
+        pygame events are how we learn about a window being closed or
+        resized or a key being pressed. This function looks for the events
+        we care about and reacts when needed.
+        """
+
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                RUNNING = False
-            elif event.type == pygame.VIDEORESIZE:
-                MY_WEATHER_ROCK.sizing(event.size)
-            elif event.type == pygame.KEYDOWN:
+            if event.type == QUIT:
+                self.running = False
+            elif event.type == VIDEORESIZE:
+                self.my_weather_rock.sizing(event.size)
+            elif event.type == KEYDOWN:
+
                 # On 'q' or keypad enter key, quit the program.
-                if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
-                    RUNNING = False
+                if ((event.key == K_KP_ENTER) or (event.key == K_q)):
+                    self.running = False
 
-                # On 'd' key, set mode to 'weather'.
-                elif event.key == pygame.K_d:
-                    MODE = 'd'
-                    D_COUNT = 1
-                    H_COUNT = 0
-                    NON_WEATHER_TIMEOUT = 0
-                    PERIODIC_INFO_ACTIVATION = 0
+                # On 'd' key, set mode to 'daily weather'.
+                elif event.key == K_d:
+                    self.current_screen = 'd'
+                    self.d_count = 1
+                    self.h_count = 0
+                    self.non_weather_timeout = 0
+                    self.periodic_info_activation = 0
 
-                # On 's' key, save a screen shot.
-                elif event.key == pygame.K_s:
-                    MY_WEATHER_ROCK.screen_cap()
+                # on 'h' key, set mode to 'hourly weather'
+                elif event.key == K_h:
+                    self.current_screen = 'h'
+                    self.d_count = 0
+                    self.h_count = 1
+                    self.non_weather_timeout = 0
+                    self.periodic_info_activation = 0
 
                 # On 'i' key, set mode to 'info'.
-                elif event.key == pygame.K_i:
-                    MODE = 'i'
-                    D_COUNT = 0
-                    H_COUNT = 0
-                    NON_WEATHER_TIMEOUT = 0
-                    PERIODIC_INFO_ACTIVATION = 0
+                elif event.key == K_i:
+                    self.current_screen = 'i'
+                    self.d_count = 0
+                    self.h_count = 0
+                    self.non_weather_timeout = 0
+                    self.periodic_info_activation = 0
 
-                # on 'h' key, set mode to 'hourly'
-                elif event.key == pygame.K_h:
-                    MODE = 'h'
-                    D_COUNT = 0
-                    H_COUNT = 1
-                    NON_WEATHER_TIMEOUT = 0
-                    PERIODIC_INFO_ACTIVATION = 0
+                # On 's' key, save a screen shot.
+                elif event.key == K_s:
+                    self.my_weather_rock.screen_cap()
 
-        # Automatically switch back to weather display after a couple minutes.
-        if MODE not in ('d', 'h'):
-            PERIODIC_INFO_ACTIVATION = 0
-            NON_WEATHER_TIMEOUT += 1
-            D_COUNT = 0
-            H_COUNT = 0
-            # Default in config.py.sample: pause for 5 minutes on info screen.
-            if NON_WEATHER_TIMEOUT > (CONFIG["info_pause"] * 10):
-                MODE = 'd'
-                D_COUNT = 1
-                MY_WEATHER_ROCK.log.info("Switching to weather mode")
+    def screen_switcher(self):
+        """
+        This function takes care of cycling through the different screens
+        on a regular basis.
+        """
+
+        # Automatically switch back to weather display after a couple minutes
+        if self.current_screen not in ('d', 'h'):
+            self.periodic_info_activation = 0
+            self.non_weather_timeout += 1
+            self.d_count = 0
+            self.h_count = 0
+
+            # Default in config.json.sample: pause for 5 minutes on info screen
+            if self.non_weather_timeout > (self.config["info_pause"] * 10):
+                self.current_screen = 'd'
+                self.d_count = 1
+                self.my_weather_rock.log.info("Switching to weather mode")
         else:
-            NON_WEATHER_TIMEOUT = 0
-            PERIODIC_INFO_ACTIVATION += 1
+            self.non_weather_timeout = 0
+            self.periodic_info_activation += 1
+
             # Default is to flip between 2 weather screens
             # for 15 minutes before showing info screen.
-            if PERIODIC_INFO_ACTIVATION > (CONFIG["info_delay"] * 10):
-                MODE = 'i'
-                MY_WEATHER_ROCK.log.info("Switching to info mode")
-            elif (PERIODIC_INFO_ACTIVATION % (
-                    ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
-                     + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
+            if self.periodic_info_activation > (self.config["info_delay"] * 10):
+                self.current_screen = 'i'
+                self.my_weather_rock.log.info("Switching to info mode")
+            elif (self.periodic_info_activation % (
+                    ((self.config["plugins"]["daily"]["pause"] * self.d_count)
+                        + (self.config["plugins"]["hourly"]["pause"] * self.h_count))
                     * 10)) == 0:
-                if MODE == 'd':
-                    MY_WEATHER_ROCK.log.info("Switching to HOURLY")
-                    MODE = 'h'
-                    H_COUNT += 1
+                if self.current_screen == 'd':
+                    self.my_weather_rock.log.info("Switching to HOURLY")
+                    self.current_screen = 'h'
+                    self.h_count += 1
                 else:
-                    MY_WEATHER_ROCK.log.info("Switching to DAILY")
-                    MODE = 'd'
-                    D_COUNT += 1
+                    self.my_weather_rock.log.info("Switching to DAILY")
+                    self.current_screen = 'd'
+                    self.d_count += 1
 
         # Daily Weather Display Mode
-        if MODE == 'd':
+        if self.current_screen == 'd':
             # Update / Refresh the display after each second.
-            if SECONDS != time.localtime().tm_sec:
-                SECONDS = time.localtime().tm_sec
-                DAILY.disp_daily(MY_WEATHER_ROCK)
+            if self.seconds != time.localtime().tm_sec:
+                self.seconds = time.localtime().tm_sec
+                self.daily.disp_daily(self.my_weather_rock)
 
             # Once the screen is updated, we have a full second to get the
-            # weather. Once per minute, update the weather from the net.
-            if SECONDS == 0:
-                try:
-                    MY_WEATHER_ROCK.get_forecast()
-                # includes simplejson.decoder.JSONDecodeError
-                except ValueError:
-                    MY_WEATHER_ROCK.log.exception(
-                        f"Decoding JSON has failed: {sys.exc_info()[0]}")
-                except BaseException:
-                    MY_WEATHER_ROCK.log.exception(
-                        f"Unexpected error: {sys.exc_info()[0]}")
+            # weather. Once per minute, check to see if its time to get a
+            # new set of data from the API.
+            if self.seconds == 0:
+                self.check_forecast()
+
         # Hourly Weather Display Mode
-        elif MODE == 'h':
+        elif self.current_screen == 'h':
             # Update / Refresh the display after each second.
-            if SECONDS != time.localtime().tm_sec:
-                SECONDS = time.localtime().tm_sec
-                HOURLY.disp_hourly(MY_WEATHER_ROCK)
+            if self.seconds != time.localtime().tm_sec:
+                self.seconds = time.localtime().tm_sec
+                self.hourly.disp_hourly(self.my_weather_rock)
+
             # Once the screen is updated, we have a full second to get the
-            # weather. Once per minute, update the weather from the net.
-            if SECONDS == 0:
-                try:
-                    MY_WEATHER_ROCK.get_forecast()
-                # includes simplejson.decoder.JSONDecodeError
-                except ValueError:
-                    MY_WEATHER_ROCK.log.exception(
-                        f"Decoding JSON has failed: {sys.exc_info()[0]}")
-                except BaseException:
-                    MY_WEATHER_ROCK.log.exception(
-                        f"Unexpected error: {sys.exc_info()[0]}")
+            # weather. Once per minute, check to see if its time to get a
+            # new set of data from the API.
+            if self.seconds == 0:
+                self.check_forecast()
+
         # Info Screen Display Mode
-        elif MODE == 'i':
+        elif self.current_screen == 'i':
             # Pace the screen updates to once per second.
-            if SECONDS != time.localtime().tm_sec:
-                SECONDS = time.localtime().tm_sec
+            if self.seconds != time.localtime().tm_sec:
+                self.seconds = time.localtime().tm_sec
 
-                # Extra info display.
-                INFO.disp_info(MY_WEATHER_ROCK)
-            # Refresh the weather data once per minute.
-            if int(SECONDS) == 0:
-                try:
-                    MY_WEATHER_ROCK.get_forecast()
-                # includes simplejson.decoder.JSONDecodeError
-                except ValueError:
-                    MY_WEATHER_ROCK.log.exception(
-                        f"Decoding JSON has failed: {sys.exc_info()[0]}")
-                except BaseException:
-                    MY_WEATHER_ROCK.log.exception(
-                        f"Unexpected error: {sys.exc_info()[0]}")
+                # Disaplay information about the application along with the
+                # time of sunrise and sunset.
+                self.info.disp_info(self.my_weather_rock)
 
-        # Loop timer.
-        pygame.time.wait(100)
-
-    pygame.quit()
+    def check_forecast(self):
+        try:
+            self.my_weather_rock.get_forecast()
+        # includes simplejson.decoder.JSONDecodeError
+        except ValueError:
+            self.my_weather_rock.log.exception(
+                f"Decoding JSON has failed: {sys.exc_info()[0]}")
+        except BaseException:
+            self.my_weather_rock.log.exception(
+                f"Unexpected error: {sys.exc_info()[0]}")
