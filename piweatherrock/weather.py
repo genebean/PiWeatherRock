@@ -1,13 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 Jim Kemp <kemp.jim@gmail.com>
 # Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 # Distributed under the MIT License (https://opensource.org/licenses/MIT)
-
-""" Fetches weather reports from Dark Sky for displaying on a screen. """
-
-import version
-__version__ = version.__version__
 
 # standard imports
 import datetime
@@ -25,15 +19,10 @@ from darksky import forecast
 import pygame
 import requests
 
-with open("config.json", "r") as f:
-    CONFIG = json.load(f)
+from piweatherrock import utils
 
 # globals
 UNICODE_DEGREE = u'\xb0'
-
-MODE = 'd'  # Default to weather mode. Showing daily weather first.
-D_COUNT = 1
-H_COUNT = 0
 
 
 def exit_gracefully(signum, frame):
@@ -43,155 +32,18 @@ def exit_gracefully(signum, frame):
 signal.signal(signal.SIGTERM, exit_gracefully)
 
 
-def deg_to_compass(degrees):
-    val = int((degrees/22.5)+.5)
-    dirs = ["N", "NNE", "NE", "ENE",
-            "E", "ESE", "SE", "SSE",
-            "S", "SSW", "SW", "WSW",
-            "W", "WNW", "NW", "NNW"]
-    return dirs[(val % 16)]
-
-
-def units_decoder(units):
-    """
-    https://darksky.net/dev/docs has lists out what each
-    unit is. The method below is just a codified version
-    of what is on that page.
-    """
-    si_dict = {
-        'nearestStormDistance': 'Kilometers',
-        'precipIntensity': 'Millimeters per hour',
-        'precipIntensityMax': 'Millimeters per hour',
-        'precipAccumulation': 'Centimeters',
-        'temperature': 'Degrees Celsius',
-        'temperatureMin': 'Degrees Celsius',
-        'temperatureMax': 'Degrees Celsius',
-        'apparentTemperature': 'Degrees Celsius',
-        'dewPoint': 'Degrees Celsius',
-        'windSpeed': 'Meters per second',
-        'windGust': 'Meters per second',
-        'pressure': 'Hectopascals',
-        'visibility': 'Kilometers',
-    }
-    ca_dict = si_dict.copy()
-    ca_dict['windSpeed'] = 'Kilometers per hour'
-    ca_dict['windGust'] = 'Kilometers per hour'
-    uk2_dict = si_dict.copy()
-    uk2_dict['nearestStormDistance'] = 'Miles'
-    uk2_dict['visibility'] = 'Miles'
-    uk2_dict['windSpeed'] = 'Miles per hour'
-    uk2_dict['windGust'] = 'Miles per hour'
-    us_dict = {
-        'nearestStormDistance': 'Miles',
-        'precipIntensity': 'Inches per hour',
-        'precipIntensityMax': 'Inches per hour',
-        'precipAccumulation': 'Inches',
-        'temperature': 'Degrees Fahrenheit',
-        'temperatureMin': 'Degrees Fahrenheit',
-        'temperatureMax': 'Degrees Fahrenheit',
-        'apparentTemperature': 'Degrees Fahrenheit',
-        'dewPoint': 'Degrees Fahrenheit',
-        'windSpeed': 'Miles per hour',
-        'windGust': 'Miles per hour',
-        'pressure': 'Millibars',
-        'visibility': 'Miles',
-    }
-    switcher = {
-        'ca': ca_dict,
-        'uk2': uk2_dict,
-        'us': us_dict,
-        'si': si_dict,
-    }
-    return switcher.get(units, "Invalid unit name")
-
-
-def get_abbreviation(phrase):
-    abbreviation = ''.join(item[0].lower() for item in phrase.split())
-    return abbreviation
-
-
-def get_windspeed_abbreviation(unit=CONFIG["units"]):
-    return get_abbreviation(units_decoder(unit)['windSpeed'])
-
-
-def get_temperature_letter(unit=CONFIG["units"]):
-    return units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
-
-
-def icon_mapping(icon, size):
-    """
-    https://darksky.net/dev/docs has this to say about icons:
-    icon optional
-    A machine-readable text summary of this data point, suitable for selecting an
-    icon for display. If defined, this property will have one of the following
-    values: clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy,
-    partly-cloudy-day, or partly-cloudy-night. (Developers should ensure that a
-    sensible default is defined, as additional values, such as hail, thunderstorm,
-    or tornado, may be defined in the future.)
-
-    Based on that, this method will map the Dark Sky icon name to the name of an
-    icon in this project.
-    """
-    if icon == 'clear-day':
-        icon_path = 'icons/{}/clear.png'.format(size)
-    elif icon == 'clear-night':
-        icon_path = 'icons/{}/nt_clear.png'.format(size)
-    elif icon == 'rain':
-        icon_path = 'icons/{}/rain.png'.format(size)
-    elif icon == 'snow':
-        icon_path = 'icons/{}/snow.png'.format(size)
-    elif icon == 'sleet':
-        icon_path = 'icons/{}/sleet.png'.format(size)
-    elif icon == 'wind':
-        icon_path = 'icons/alt_icons/{}/wind.png'.format(size)
-    elif icon == 'fog':
-        icon_path = 'icons/{}/fog.png'.format(size)
-    elif icon == 'cloudy':
-        icon_path = 'icons/{}/cloudy.png'.format(size)
-    elif icon == 'partly-cloudy-day':
-        icon_path = 'icons/{}/partlycloudy.png'.format(size)
-    elif icon == 'partly-cloudy-night':
-        icon_path = 'icons/{}/nt_partlycloudy.png'.format(size)
-    else:
-        icon_path = 'icons/{}/unknown.png'.format(size)
-
-    return icon_path
-
-
-# Create logger
-def get_logger():
-    with open("config.json", "r") as f:
-        config = json.load(f)
-    lvl_str = f"logging.{config['log_level']}"
-    log = logging.getLogger()
-    log.setLevel(eval(lvl_str))
-    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
-        datefmt='%Y-%m-%d %H:%M:%S')
-    handler = logging.handlers.RotatingFileHandler(
-              ".log", maxBytes=500000, backupCount=3)
-    if (log.hasHandlers()):
-        log.handlers.clear()
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
-
-    return log
-
-# Helper function to which takes seconds and returns (hours, minutes).
-# ###########################################################################
-def stot(sec):
-    mins = sec.seconds // 60
-    hrs = mins // 60
-    return (hrs, mins % 60)
-
-
 ###############################################################################
-class MyDisplay:
+class Weather:
+    """ Fetches weather reports from Dark Sky for displaying on a screen. """
     screen = None
 
     ####################################################################
-    def __init__(self):
+    def __init__(self, config_file):
+        with open(config_file, "r") as f:
+            self.config = json.load(f)
+
         # Initialize logger
-        self.log = get_logger()
+        self.log = self.get_logger()
         "Ininitializes a new pygame screen using the framebuffer"
         if platform.system() == 'Darwin':
             pygame.display.init()
@@ -235,7 +87,7 @@ class MyDisplay:
         pygame.mouse.set_visible(0)
         pygame.display.update()
 
-        if CONFIG["fullscreen"]:
+        if self.config["fullscreen"]:
             self.xmax = pygame.display.Info().current_w - 35
             self.ymax = pygame.display.Info().current_h - 5
             if self.xmax <= 1024:
@@ -254,19 +106,147 @@ class MyDisplay:
 
         self.last_update_check = 0
 
+    def deg_to_compass(self, degrees):
+        val = int((degrees/22.5)+.5)
+        dirs = ["N", "NNE", "NE", "ENE",
+                "E", "ESE", "SE", "SSE",
+                "S", "SSW", "SW", "WSW",
+                "W", "WNW", "NW", "NNW"]
+        return dirs[(val % 16)]
+
+    def units_decoder(self, units):
+        """
+        https://darksky.net/dev/docs has lists out what each
+        unit is. The method below is just a codified version
+        of what is on that page.
+        """
+        si_dict = {
+            'nearestStormDistance': 'Kilometers',
+            'precipIntensity': 'Millimeters per hour',
+            'precipIntensityMax': 'Millimeters per hour',
+            'precipAccumulation': 'Centimeters',
+            'temperature': 'Degrees Celsius',
+            'temperatureMin': 'Degrees Celsius',
+            'temperatureMax': 'Degrees Celsius',
+            'apparentTemperature': 'Degrees Celsius',
+            'dewPoint': 'Degrees Celsius',
+            'windSpeed': 'Meters per second',
+            'windGust': 'Meters per second',
+            'pressure': 'Hectopascals',
+            'visibility': 'Kilometers',
+        }
+        ca_dict = si_dict.copy()
+        ca_dict['windSpeed'] = 'Kilometers per hour'
+        ca_dict['windGust'] = 'Kilometers per hour'
+        uk2_dict = si_dict.copy()
+        uk2_dict['nearestStormDistance'] = 'Miles'
+        uk2_dict['visibility'] = 'Miles'
+        uk2_dict['windSpeed'] = 'Miles per hour'
+        uk2_dict['windGust'] = 'Miles per hour'
+        us_dict = {
+            'nearestStormDistance': 'Miles',
+            'precipIntensity': 'Inches per hour',
+            'precipIntensityMax': 'Inches per hour',
+            'precipAccumulation': 'Inches',
+            'temperature': 'Degrees Fahrenheit',
+            'temperatureMin': 'Degrees Fahrenheit',
+            'temperatureMax': 'Degrees Fahrenheit',
+            'apparentTemperature': 'Degrees Fahrenheit',
+            'dewPoint': 'Degrees Fahrenheit',
+            'windSpeed': 'Miles per hour',
+            'windGust': 'Miles per hour',
+            'pressure': 'Millibars',
+            'visibility': 'Miles',
+        }
+        switcher = {
+            'ca': ca_dict,
+            'uk2': uk2_dict,
+            'us': us_dict,
+            'si': si_dict,
+        }
+        return switcher.get(units, "Invalid unit name")
+
+    def get_abbreviation(self, phrase):
+        abbreviation = ''.join(item[0].lower() for item in phrase.split())
+        return abbreviation
+
+    def get_windspeed_abbreviation(self, unit):
+        return self.get_abbreviation(self.units_decoder(unit)['windSpeed'])
+
+    def get_temperature_letter(self, unit):
+        return self.units_decoder(unit)['temperature'].split(' ')[-1][0].upper()
+
+    def icon_mapping(self, icon, size):
+        """
+        https://darksky.net/dev/docs has this to say about icons:
+        icon optional
+        A machine-readable text summary of this data point, suitable for
+        selecting an icon for display. If defined, this property will have one
+        of the following values: clear-day, clear-night, rain, snow, sleet,
+        wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night.
+        (Developers should ensure that a sensible default is defined, as
+        additional values, such as hail, thunderstorm, or tornado, may be
+        defined in the future.)
+
+        Based on that, this method will map the Dark Sky icon name to the name
+        of an icon in this project.
+        """
+        if icon == 'clear-day':
+            icon_path = 'icons/{}/clear.png'.format(size)
+        elif icon == 'clear-night':
+            icon_path = 'icons/{}/nt_clear.png'.format(size)
+        elif icon == 'rain':
+            icon_path = 'icons/{}/rain.png'.format(size)
+        elif icon == 'snow':
+            icon_path = 'icons/{}/snow.png'.format(size)
+        elif icon == 'sleet':
+            icon_path = 'icons/{}/sleet.png'.format(size)
+        elif icon == 'wind':
+            icon_path = 'icons/alt_icons/{}/wind.png'.format(size)
+        elif icon == 'fog':
+            icon_path = 'icons/{}/fog.png'.format(size)
+        elif icon == 'cloudy':
+            icon_path = 'icons/{}/cloudy.png'.format(size)
+        elif icon == 'partly-cloudy-day':
+            icon_path = 'icons/{}/partlycloudy.png'.format(size)
+        elif icon == 'partly-cloudy-night':
+            icon_path = 'icons/{}/nt_partlycloudy.png'.format(size)
+        else:
+            icon_path = 'icons/{}/unknown.png'.format(size)
+
+        return os.path.join(os.path.dirname(__file__), icon_path)
+
+    # Create logger
+    def get_logger(self):
+        lvl_str = f"logging.{self.config['log_level']}"
+        log = logging.getLogger()
+        log.setLevel(eval(lvl_str))
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)-8s %(message)s",
+            datefmt='%Y-%m-%d %H:%M:%S')
+        handler = logging.handlers.RotatingFileHandler(
+                ".log", maxBytes=500000, backupCount=3)
+        if (log.hasHandlers()):
+            log.handlers.clear()
+        handler.setFormatter(formatter)
+        log.addHandler(handler)
+
+        return log
+
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
 
     def get_forecast(self):
-        if (time.time() - self.last_update_check) > CONFIG["update_freq"]:
+        if (time.time() - self.last_update_check) > self.config["update_freq"]:
             self.last_update_check = time.time()
             try:
-                self.weather = forecast(CONFIG["ds_api_key"],
-                                        CONFIG["lat"],
-                                        CONFIG["lon"],
-                                        exclude='minutely',
-                                        units=CONFIG["units"],
-                                        lang=CONFIG["lang"])
+                self.weather = forecast(
+                    self.config["ds_api_key"],
+                    self.config["lat"],
+                    self.config["lon"],
+                    exclude='minutely',
+                    units=self.config["units"],
+                    lang=self.config["lang"])
 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
@@ -352,8 +332,9 @@ class MyDisplay:
             self.screen.blit(degree_txt, (
                 self.xmax * second_column_x_start_position + txt_x * 1.01,
                 self.ymax * (y_start + degree_symbol_y_offset)))
-            degree_letter = conditions_font.render(get_temperature_letter(),
-                                                   True, text_color)
+            degree_letter = conditions_font.render(
+                self.get_temperature_letter(self.config["units"]),
+                True, text_color)
             degree_letter_x = degree_letter.get_size()[0]
             self.screen.blit(degree_letter, (
                 self.xmax * second_column_x_start_position +
@@ -386,12 +367,14 @@ class MyDisplay:
                 UNICODE_DEGREE +
                 ' / ' +
                 str(int(round(data.temperatureHigh))) +
-                UNICODE_DEGREE + get_temperature_letter(),
+                UNICODE_DEGREE + self.get_temperature_letter(
+                    self.config["units"]),
                 True, text_color)
         else:
             txt = forecast_font.render(
                 str(int(round(data.temperature))) +
-                UNICODE_DEGREE + get_temperature_letter(),
+                UNICODE_DEGREE + self.get_temperature_letter(
+                    self.config["units"]),
                 True, text_color)
         (txt_x, txt_y) = txt.get_size()
         self.screen.blit(txt, (self.xmax *
@@ -408,12 +391,12 @@ class MyDisplay:
                                               line_spacing_gap *
                                               rain_percent_line_offset)))
         icon = pygame.image.load(
-            icon_mapping(data.icon, self.icon_size)).convert_alpha()
+            self.icon_mapping(data.icon, self.icon_size)).convert_alpha()
         (icon_size_x, icon_size_y) = icon.get_size()
         if icon_size_y < 90:
             icon_y_offset = (90 - icon_size_y) / 2
         else:
-            icon_y_offset = CONFIG["icon_offset"]
+            icon_y_offset = self.config["icon_offset"]
 
         self.screen.blit(icon, (self.xmax *
                                 (subwindow_centers * c_times) -
@@ -469,12 +452,12 @@ class MyDisplay:
 
         try:
             wind_bearing = self.weather.windBearing
-            wind_direction = deg_to_compass(wind_bearing) + ' @ '
+            wind_direction = self.deg_to_compass(wind_bearing) + ' @ '
         except AttributeError:
             wind_direction = ''
         wind_txt = wind_direction + str(
             int(round(self.weather.windSpeed))) + \
-            ' ' + get_windspeed_abbreviation()
+            ' ' + self.get_windspeed_abbreviation(self.config["units"])
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
@@ -526,12 +509,12 @@ class MyDisplay:
 
         try:
             wind_bearing = self.weather.windBearing
-            wind_direction = deg_to_compass(wind_bearing) + ' @ '
+            wind_direction = self.deg_to_compass(wind_bearing) + ' @ '
         except AttributeError:
             wind_direction = ''
         wind_txt = wind_direction + str(
             int(round(self.weather.windSpeed))) + \
-            ' ' + get_windspeed_abbreviation()
+            ' ' + self.get_windspeed_abbreviation(self.config["units"])
         self.display_conditions_line(
             'Wind:', wind_txt, False, 1)
 
@@ -590,8 +573,9 @@ class MyDisplay:
             font_name, int(self.ymax * (0.5 - 0.15) * 0.3), bold=1)
         degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
         (rendered_am_pm_x, rendered_am_pm_y) = degree_txt.get_size()
-        degree_letter = outside_temp_font.render(get_temperature_letter(),
-                                                 True, text_color)
+        degree_letter = outside_temp_font.render(
+            self.get_temperature_letter(self.config["units"]),
+            True, text_color)
         (degree_letter_x, degree_letter_y) = degree_letter.get_size()
         # Position text
         x = self.xmax * 0.27 - (txt_x * 1.02 + rendered_am_pm_x +
@@ -730,9 +714,11 @@ class MyDisplay:
         # leaving row 7 blank
 
         if in_daylight:
-            text = "Sunset in %d hrs %02d min" % stot(delta_seconds_til_dark)
+            text = "Sunset in %d hrs %02d min" % utils.stot(
+                delta_seconds_til_dark)
         else:
-            text = "Sunrise in %d hrs %02d min" % stot(seconds_til_daylight)
+            text = "Sunrise in %d hrs %02d min" % utils.stot(
+                seconds_til_daylight)
         self.sPrint(text, small_font, self.xmax * 0.05, 8, text_color)
 
         # leaving row 9 blank
@@ -753,199 +739,3 @@ class MyDisplay:
     def screen_cap(self):
         pygame.image.save(self.screen, "screenshot.jpeg")
         self.log.info("Screen capture complete.")
-
-
-# Given a sunrise and sunset unix timestamp,
-# return true if current local time is between sunrise and sunset. In other
-# words, return true if it's daytime and the sun is up. Also, return the
-# number of hours:minutes of daylight in this day. Lastly, return the number
-# of seconds until daybreak and sunset. If it's dark, daybreak is set to the
-# number of seconds until sunrise. If it daytime, sunset is set to the number
-# of seconds until the sun sets.
-#
-# So, five things are returned as:
-#  (InDaylight, Hours, Minutes, secToSun, secToDark).
-############################################################################
-def daylight(weather):
-    inDaylight = False    # Default return code.
-
-    # Get current datetime with tz's local day and time.
-    tNow = datetime.datetime.now()
-
-    # Build a datetime variable from a unix timestamp for today's sunrise.
-    tSunrise = datetime.datetime.fromtimestamp(weather.daily[0].sunriseTime)
-    tSunset = datetime.datetime.fromtimestamp(weather.daily[0].sunsetTime)
-
-    # Test if current time is between sunrise and sunset.
-    if (tNow > tSunrise) and (tNow < tSunset):
-        inDaylight = True        # We're in Daytime
-        delta_seconds_til_dark = tSunset - tNow
-        seconds_til_daylight = 0
-    else:
-        inDaylight = False        # We're in Nighttime
-        delta_seconds_til_dark = 0            # Seconds until dark.
-        # Delta seconds until daybreak.
-        if tNow > tSunset:
-            # Must be evening - compute sunrise as time left today
-            # plus time from midnight tomorrow.
-            sunrise_tomorrow = datetime.datetime.fromtimestamp(
-                weather.daily[1].sunriseTime)
-            seconds_til_daylight = sunrise_tomorrow - tNow
-        else:
-            # Else, must be early morning hours. Time to sunrise is
-            # just the delta between sunrise and now.
-            seconds_til_daylight = tSunrise - tNow
-
-    # Compute the delta time (in seconds) between sunrise and set.
-    dDaySec = tSunset - tSunrise        # timedelta in seconds
-    (dayHrs, dayMin) = stot(dDaySec)    # split into hours and minutes.
-
-    return (inDaylight, dayHrs, dayMin, seconds_til_daylight,
-            delta_seconds_til_dark)
-
-
-# Create an instance of the lcd display class.
-MY_DISP = MyDisplay()
-
-RUNNING = True             # Stay running while True
-SECONDS = 0                # Seconds Placeholder to pace display.
-# Display timeout to automatically switch back to weather display.
-NON_WEATHER_TIMEOUT = 0
-# Switch to info periodically to prevent screen burn.
-PERIODIC_INFO_ACTIVATION = 0
-
-# Loads data from darksky.net into class variables.
-if not MY_DISP.get_forecast():
-    MY_DISP.log.exception("Error: no data from darksky.net.")
-    RUNNING = False
-
-
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-while RUNNING:
-    # Look for and process keyboard events to change modes.
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            # On 'q' or keypad enter key, quit the program.
-            if ((event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_q)):
-                RUNNING = False
-
-            # On 'd' key, set mode to 'weather'.
-            elif event.key == pygame.K_d:
-                MODE = 'd'
-                D_COUNT = 1
-                H_COUNT = 0
-                NON_WEATHER_TIMEOUT = 0
-                PERIODIC_INFO_ACTIVATION = 0
-
-            # On 's' key, save a screen shot.
-            elif event.key == pygame.K_s:
-                MY_DISP.screen_cap()
-
-            # On 'i' key, set mode to 'info'.
-            elif event.key == pygame.K_i:
-                MODE = 'i'
-                D_COUNT = 0
-                H_COUNT = 0
-                NON_WEATHER_TIMEOUT = 0
-                PERIODIC_INFO_ACTIVATION = 0
-
-            # on 'h' key, set mode to 'hourly'
-            elif event.key == pygame.K_h:
-                MODE = 'h'
-                D_COUNT = 0
-                H_COUNT = 1
-                NON_WEATHER_TIMEOUT = 0
-                PERIODIC_INFO_ACTIVATION = 0
-
-    # Automatically switch back to weather display after a couple minutes.
-    if MODE not in ('d', 'h'):
-        PERIODIC_INFO_ACTIVATION = 0
-        NON_WEATHER_TIMEOUT += 1
-        D_COUNT = 0
-        H_COUNT = 0
-        # Default in config.py.sample: pause for 5 minutes on info screen.
-        if NON_WEATHER_TIMEOUT > (CONFIG["info_pause"] * 10):
-            MODE = 'd'
-            D_COUNT = 1
-            MY_DISP.log.info("Switching to weather mode")
-    else:
-        NON_WEATHER_TIMEOUT = 0
-        PERIODIC_INFO_ACTIVATION += 1
-        # Default is to flip between 2 weather screens
-        # for 15 minutes before showing info screen.
-        if PERIODIC_INFO_ACTIVATION > (CONFIG["info_delay"] * 10):
-            MODE = 'i'
-            MY_DISP.log.info("Switching to info mode")
-        elif (PERIODIC_INFO_ACTIVATION % (
-                ((CONFIG["plugins"]["daily"]["pause"] * D_COUNT)
-                 + (CONFIG["plugins"]["hourly"]["pause"] * H_COUNT))
-                * 10)) == 0:
-            if MODE == 'd':
-                MY_DISP.log.info("Switching to HOURLY")
-                MODE = 'h'
-                H_COUNT += 1
-            else:
-                MY_DISP.log.info("Switching to DAILY")
-                MODE = 'd'
-                D_COUNT += 1
-
-    # Daily Weather Display Mode
-    if MODE == 'd':
-        # Update / Refresh the display after each second.
-        if SECONDS != time.localtime().tm_sec:
-            SECONDS = time.localtime().tm_sec
-            MY_DISP.disp_weather()
-        # Once the screen is updated, we have a full second to get the weather.
-        # Once per minute, update the weather from the net.
-        if SECONDS == 0:
-            try:
-                MY_DISP.get_forecast()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
-            except BaseException:
-                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
-    # Hourly Weather Display Mode
-    elif MODE == 'h':
-        # Update / Refresh the display after each second.
-        if SECONDS != time.localtime().tm_sec:
-            SECONDS = time.localtime().tm_sec
-            MY_DISP.disp_hourly()
-        # Once the screen is updated, we have a full second to get the weather.
-        # Once per minute, update the weather from the net.
-        if SECONDS == 0:
-            try:
-                MY_DISP.get_forecast()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
-            except BaseException:
-                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
-    # Info Screen Display Mode
-    elif MODE == 'i':
-        # Pace the screen updates to once per second.
-        if SECONDS != time.localtime().tm_sec:
-            SECONDS = time.localtime().tm_sec
-
-            (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-             delta_seconds_til_dark) = daylight(MY_DISP.weather)
-
-            # Extra info display.
-            MY_DISP.disp_info(inDaylight, dayHrs, dayMins,
-                              seconds_til_daylight,
-                              delta_seconds_til_dark)
-        # Refresh the weather data once per minute.
-        if int(SECONDS) == 0:
-            try:
-                MY_DISP.get_forecast()
-            except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                MY_DISP.log.exception(f"Decoding JSON has failed: {sys.exc_info()[0]}")
-            except BaseException:
-                MY_DISP.log.exception(f"Unexpected error: {sys.exc_info()[0]}")
-
-    (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-     delta_seconds_til_dark) = daylight(MY_DISP.weather)
-
-    # Loop timer.
-    pygame.time.wait(100)
-
-
-pygame.quit()

@@ -1,11 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Distributed under the MIT License (https://opensource.org/licenses/MIT)
 
-""" Configuration page for PiWeatherRock. """
-
-import version
-__version__ = version.__version__
 
 ###############################################################################
 #   Raspberry Pi Weather Display Config Page Plugin
@@ -19,11 +14,15 @@ import json
 # third-party imports
 import cherrypy
 
-with open(os.path.join(os.getcwd(), 'html/config.html'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), 'html/config.html'), 'r') as f:
     html = f.read()
 
 
 class Config:
+    """ Configuration page for PiWeatherRock. """
+
+    def __init__(self, config_file):
+        self.config_file = config_file
 
     @cherrypy.expose()
     def index(self):
@@ -32,7 +31,7 @@ class Config:
     @cherrypy.tools.json_in()
     @cherrypy.expose
     def upload(self):
-        dst = f"{os.getcwd()}/config.json"
+        dst = self.config_file
 
         input_json = cherrypy.request.json
         with open(dst, 'w') as f:
@@ -73,9 +72,8 @@ class Config:
             </html>"""
 
 
-
-if __name__ == '__main__':
-    cherrypy.quickstart(Config(), config={
+def main(config_file):
+    cherrypy.quickstart(Config(config_file), config={
         'global': {
             'server.socket_port': 8888,
             'server.socket_host': '0.0.0.0'
@@ -83,26 +81,25 @@ if __name__ == '__main__':
         '/serialize_script.js': {
             'tools.staticfile.on': True,
             'tools.staticfile.filename': os.path.join(
-                os.getcwd(), "html/serialize_script.js")
+                os.path.dirname(__file__), "html/serialize_script.js")
         },
         '/style.css': {
             'tools.staticfile.on': True,
             'tools.staticfile.filename': os.path.join(
-                os.getcwd(), "html/style.css")
+                os.path.dirname(__file__), "html/style.css")
         },
         '/chancetstorms.png': {
             'tools.staticfile.on': True,
             'tools.staticfile.filename': os.path.join(
-                os.getcwd(), "icons/256/chancetstorms.png")
+                os.path.dirname(__file__), "icons/256/chancetstorms.png")
         },
         '/bg.png': {
             'tools.staticfile.on': True,
             'tools.staticfile.filename': os.path.join(
-                os.getcwd(), "icons/bg.png")
+                os.path.dirname(__file__), "icons/bg.png")
         },
         '/config.json': {
             'tools.staticfile.on': True,
-            'tools.staticfile.filename': os.path.join(
-                os.getcwd(), "config.json")
+            'tools.staticfile.filename': config_file
         }
     })

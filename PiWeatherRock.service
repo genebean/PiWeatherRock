@@ -9,7 +9,7 @@ User=pi
 Group=pi
 WorkingDirectory=/home/pi/PiWeatherRock
 Environment='DISPLAY=:0'
-ExecStart=/usr/bin/python3 /home/pi/PiWeatherRock/weather.py
+ExecStart=/home/pi/PiWeatherRock/scripts/pwr-ui -c /home/pi/PiWeatherRock/config.json
 Restart=always
 RestartSec=5
 
