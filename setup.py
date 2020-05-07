@@ -26,7 +26,7 @@ if __name__ == "__main__":
         version=VERSION,
         packages=find_packages(),
         install_requires=parse_requirements("requirements.txt"),
-        python_requires=">=3.7",
+        python_requires=">=3.6",
         scripts=['scripts/pwr-ui'],
         description="Provides forecast data from ClimaCell for PiWeatherRock",
         long_description=long_description,
