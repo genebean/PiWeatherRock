@@ -14,9 +14,6 @@ sudo apt update
 sudo apt full-upgrade -y
 sudo apt install -y git puppet
 sudo rm -f /etc/puppet/hiera.yaml
-source /etc/profile.d/puppet-agent.sh
-sudo puppet module install puppetlabs-vcsrepo
-sudo puppet module install puppet-python
-sudo puppet module install camptocamp-systemd
+sudo puppet module install genebean-piweatherrock
 
-sudo puppet apply /home/pi/PiWeatherRock/setup.pp
+sudo puppet apply -e 'include piweatherrock'
