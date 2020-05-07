@@ -9,10 +9,10 @@ import sys
 import time
 
 # local imports
-from piweatherrock import utils
 from piweatherrock.weather import Weather
 from piweatherrock.plugin_weather_daily import PluginWeatherDaily
 from piweatherrock.plugin_weather_hourly import PluginWeatherHourly
+from piweatherrock.plugin_info import PluginInfo
 
 
 def main(config_file):
@@ -30,6 +30,8 @@ def main(config_file):
         'time_date_small_y_position': MY_DISP.time_date_small_y_position,
         'subwindow_text_height': MY_DISP.subwindow_text_height,
         'icon_size': MY_DISP.icon_size,
+        'sunrise_string': MY_DISP.sunrise_string,
+        'sunset_string': MY_DISP.sunset_string,
     }
 
     HOURLY = PluginWeatherHourly(
@@ -37,6 +39,9 @@ def main(config_file):
 
     DAILY = PluginWeatherDaily(
         MY_DISP.screen, MY_DISP.weather, MY_DISP.config, SIZES)
+
+    INFO = PluginInfo(
+        MY_DISP.screen, MY_DISP.weather, MY_DISP.last_update_check, SIZES)
 
     MODE = 'd'  # Default to weather mode. Showing daily weather first.
 
@@ -169,13 +174,8 @@ def main(config_file):
             if SECONDS != time.localtime().tm_sec:
                 SECONDS = time.localtime().tm_sec
 
-                (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-                 delta_seconds_til_dark) = utils.daylight(MY_DISP.weather)
-
                 # Extra info display.
-                MY_DISP.disp_info(inDaylight, dayHrs, dayMins,
-                                  seconds_til_daylight,
-                                  delta_seconds_til_dark)
+                INFO.disp_info()
             # Refresh the weather data once per minute.
             if int(SECONDS) == 0:
                 try:
@@ -187,9 +187,6 @@ def main(config_file):
                 except BaseException:
                     MY_DISP.log.exception(
                         f"Unexpected error: {sys.exc_info()[0]}")
-
-        (inDaylight, dayHrs, dayMins, seconds_til_daylight,
-         delta_seconds_til_dark) = utils.daylight(MY_DISP.weather)
 
         # Loop timer.
         pygame.time.wait(100)
