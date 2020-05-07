@@ -78,20 +78,7 @@ class Weather:
 
         size = (pygame.display.Info().current_w,
                 pygame.display.Info().current_h)
-        self.log.debug(f"Framebuffer Size: {size[0]} x {size[1]}")
-
-        if self.config["fullscreen"]:
-            self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-        else:
-            self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
-            pygame.display.set_caption('PiWeatherRock')
-
-        self.xmax = pygame.display.Info().current_w - 35
-        self.ymax = pygame.display.Info().current_h - 5
-        if self.xmax <= 1024:
-            self.icon_size = '64'
-        else:
-            self.icon_size = '256'
+        self.sizing(size)
 
         # Clear the screen to start
         self.screen.fill((0, 0, 0))
@@ -109,6 +96,29 @@ class Weather:
 
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
+
+    def sizing(self, size):
+        """
+        Set various asplect of the app related to the screen size of
+        the display and/or window.
+        """
+
+        self.log.debug(f"Framebuffer Size: {size[0]} x {size[1]}")
+
+        if self.config["fullscreen"]:
+            self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+            self.xmax = pygame.display.Info().current_w - 35
+            self.ymax = pygame.display.Info().current_h - 5
+        else:
+            self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+            pygame.display.set_caption('PiWeatherRock')
+            self.xmax = pygame.display.get_surface().get_width() - 35
+            self.ymax = pygame.display.get_surface().get_height() - 5
+
+        if self.xmax <= 1024:
+            self.icon_size = '64'
+        else:
+            self.icon_size = '256'
 
     def get_logger(self):
         """

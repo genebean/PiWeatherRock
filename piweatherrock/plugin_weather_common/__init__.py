@@ -23,21 +23,39 @@ class PluginWeatherCommon:
     by 'plugin_weather_daily' and 'plugin_weather_hourly'.
     """
 
-    def __init__(self, screen, weather, config, sizes):
-        self.screen = screen
-        self.weather = weather
-        self.config = config
-        self.take_umbrella = self.umbrella_needed()
-        self.xmax = sizes['xmax']
-        self.ymax = sizes['ymax']
-        self.time_date_small_text_height = sizes['time_date_small_text_height']
-        self.time_date_text_height = sizes['time_date_text_height']
-        self.time_date_y_position = sizes['time_date_y_position']
-        self.time_date_small_y_position = sizes['time_date_small_y_position']
-        self.subwindow_text_height = sizes['subwindow_text_height']
-        self.icon_size = sizes['icon_size']
+    def __init__(self, weather_rock):
+        self.screen = None
+        self.weather = None
+        self.config = None
+        self.take_umbrella = None
+        self.xmax = None
+        self.ymax = None
+        self.time_date_small_text_height = None
+        self.time_date_text_height = None
+        self.time_date_y_position = None
+        self.time_date_small_y_position = None
+        self.subwindow_text_height = None
+        self.icon_size = None
 
-    def disp_weather_top(self):
+        self.get_rock_values(weather_rock)
+
+    def get_rock_values(self, weather_rock):
+        self.screen = weather_rock.screen
+        self.weather = weather_rock.weather
+        self.config = weather_rock.config
+        self.take_umbrella = self.umbrella_needed()
+        self.xmax = weather_rock.xmax
+        self.ymax = weather_rock.ymax
+        self.time_date_small_text_height = weather_rock.time_date_small_text_height
+        self.time_date_text_height = weather_rock.time_date_text_height
+        self.time_date_y_position = weather_rock.time_date_y_position
+        self.time_date_small_y_position = weather_rock.time_date_small_y_position
+        self.subwindow_text_height = weather_rock.subwindow_text_height
+        self.icon_size = weather_rock.icon_size
+
+    def disp_weather_top(self, weather_rock):
+        self.get_rock_values(weather_rock)
+
         # Fill the screen with black
         self.screen.fill((0, 0, 0))
         xmin = 10
