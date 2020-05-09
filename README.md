@@ -1,10 +1,11 @@
 # PiWeatherRock
 
 ![GitHub](https://img.shields.io/github/license/genebean/PiWeatherRock)
+![PyPI](https://img.shields.io/pypi/v/piweatherrock)
 
-Display local weather on a Raspberry Pi
+PiWeatherRock displays local weather on (almost) any screen you connect to a Raspberry Pi. It also works on other platforms, including macOS, but is not tested as thoroughly there.
 
-Documentation lives at https://piweatherrock.technicalissues.us
+More information can be found at https://piweatherrock.technicalissues.us
 
 ## Release process
 
