@@ -91,12 +91,12 @@ def main():
     config_file = os.path.abspath(args.config)
     sample_file = os.path.abspath(args.sample)
 
-    if args.oldconfig is not None and os.path.exists(old_config_file):
+    if args.oldconfig is not None and os.path.exists(args.oldconfig):
         old_config_file = os.path.abspath(args.oldconfig)
         old_config = migrate_to_json_config(old_config_file)
 
-    elif os.path.exists('/home/pi/PiWeatherRock/config.py'):
-        old_config = migrate_to_json_config('/home/pi/PiWeatherRock/config.py')
+    elif os.path.exists('/home/pi/config.py'):
+        old_config = migrate_to_json_config('/home/pi/config.py')
 
     elif os.path.exists(config_file):
         with open(config_file, "r") as f:
