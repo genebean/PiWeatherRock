@@ -11,6 +11,7 @@
     "info_pause": 300,
     "info_delay": 900,
     "log_level": "INFO",
+    "12hour_disp": true,
     "plugins": {
         "daily": {
             "enabled": true,

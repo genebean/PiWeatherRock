@@ -168,11 +168,18 @@ class Weather:
                     ss_suffix = 'tomorrow'
 
                 self.sunrise = self.weather.daily[index].sunriseTime
-                self.sunrise_string = datetime.datetime.fromtimestamp(
-                    self.sunrise).strftime("%I:%M %p {}").format(sr_suffix)
                 self.sunset = self.weather.daily[index].sunsetTime
-                self.sunset_string = datetime.datetime.fromtimestamp(
-                    self.sunset).strftime("%I:%M %p {}").format(ss_suffix)
+
+                if self.config["12hour_disp"]:
+                    self.sunrise_string = datetime.datetime.fromtimestamp(
+                        self.sunrise).strftime("%I:%M %p {}").format(sr_suffix)
+                    self.sunset_string = datetime.datetime.fromtimestamp(
+                        self.sunset).strftime("%I:%M %p {}").format(ss_suffix)
+                else:
+                    self.sunrise_string = datetime.datetime.fromtimestamp(
+                        self.sunrise).strftime("%H:%M {}").format(sr_suffix)
+                    self.sunset_string = datetime.datetime.fromtimestamp(
+                        self.sunset).strftime("%H:%M {}").format(ss_suffix)
 
             except requests.exceptions.RequestException as e:
                 self.log.exception(f"Request exception: {e}")

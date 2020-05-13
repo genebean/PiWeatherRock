@@ -16,11 +16,13 @@ class PluginWeatherHourly:
     """
 
     def __init__(self, weather_rock):
+        self.config = None
         self.screen = None
         self.weather = None
         self.weather_common = None
 
     def get_rock_values(self, weather_rock):
+        self.config = weather_rock.config
         self.screen = weather_rock.screen
         self.weather = weather_rock.weather
         self.weather_common = PluginWeatherCommon(weather_rock)
