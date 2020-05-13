@@ -4,4 +4,4 @@ pyserial
 requests
 cherrypy
 
-piweatherrock-webconfig==1.4.0
+piweatherrock-webconfig==1.5.0

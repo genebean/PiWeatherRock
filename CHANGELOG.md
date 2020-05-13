@@ -1,5 +1,9 @@
 # Change log
 
+## [2.1.0](https://github.com/genebean/PiWeatherRock/tree/2.1.0)
+
+- Add option for 24h time
+
 ## [2.0.1](https://github.com/genebean/PiWeatherRock/tree/2.0.1)
 
 - Update url in `setup.py` to the documentation site
