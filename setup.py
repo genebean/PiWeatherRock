@@ -36,7 +36,7 @@ if __name__ == "__main__":
         long_description=long_description,
         long_description_content_type="text/markdown",
         license='MIT',
-        url='https://github.com/genebean/PiWeatherRock',
+        url='https://piweatherrock.technicalissues.us',
         classifiers=[
             'License :: OSI Approved :: MIT License',
         ],
