@@ -1,6 +1,12 @@
 # Change log
 
-## Unreleased
+## [2.0.1](https://github.com/genebean/PiWeatherRock/tree/2.0.1)
+
+- Update url in `setup.py` to the documentation site
+- Update this changelog (I forgot before releasing 2.0.0)
+- Update the readme a little.
+
+## [2.0.0](https://github.com/genebean/PiWeatherRock/tree/2.0.0)
 
 - Add this change log
 - Update code for Python 3 compatibility
