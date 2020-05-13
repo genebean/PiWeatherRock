@@ -23,7 +23,6 @@ import requests
 # globals
 UNICODE_DEGREE = u'\xb0'
 
-
 def exit_gracefully(signum, frame):
     sys.exit(0)
 
@@ -107,8 +106,8 @@ class Weather:
 
         if self.config["fullscreen"]:
             self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-            self.xmax = pygame.display.Info().current_w # - 35 Why not use full screen in "fullescreen"? 
-            self.ymax = pygame.display.Info().current_h # - 5 Why not use full screen in "fullescreen"?
+            self.xmax = pygame.display.Info().current_w #  - 35 Why not use full screen in "fullescreen"?
+            self.ymax = pygame.display.Info().current_h #  - 5 Why not use full screen in "fullescreen"?
         else:
             self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
             pygame.display.set_caption('PiWeatherRock')
