@@ -6,6 +6,7 @@
     "units": "us",
     "lang": "en",
     "fullscreen": true,
+    "12hour_disp": true,
     "icon_offset": -23.5,
     "update_freq": 300,
     "info_pause": 300,
