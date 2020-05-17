@@ -23,7 +23,6 @@ import requests
 # globals
 UNICODE_DEGREE = u'\xb0'
 
-
 def exit_gracefully(signum, frame):
     sys.exit(0)
 
@@ -107,8 +106,8 @@ class Weather:
 
         if self.config["fullscreen"]:
             self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-            self.xmax = pygame.display.Info().current_w # - 35 Why not use full screen in "fullescreen"? 
-            self.ymax = pygame.display.Info().current_h # - 5 Why not use full screen in "fullescreen"?
+            self.xmax = pygame.display.Info().current_w #  - 35 Why not use full screen in "fullescreen"?
+            self.ymax = pygame.display.Info().current_h #  - 5 Why not use full screen in "fullescreen"?
         else:
             self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
             pygame.display.set_caption('PiWeatherRock')
@@ -169,11 +168,18 @@ class Weather:
                     ss_suffix = 'tomorrow'
 
                 self.sunrise = self.weather.daily[index].sunriseTime
-                self.sunrise_string = datetime.datetime.fromtimestamp(
-                    self.sunrise).strftime("%I:%M %p {}").format(sr_suffix)
                 self.sunset = self.weather.daily[index].sunsetTime
-                self.sunset_string = datetime.datetime.fromtimestamp(
-                    self.sunset).strftime("%I:%M %p {}").format(ss_suffix)
+
+                if self.config["12hour_disp"]:
+                    self.sunrise_string = datetime.datetime.fromtimestamp(
+                        self.sunrise).strftime("%I:%M %p {}").format(sr_suffix)
+                    self.sunset_string = datetime.datetime.fromtimestamp(
+                        self.sunset).strftime("%I:%M %p {}").format(ss_suffix)
+                else:
+                    self.sunrise_string = datetime.datetime.fromtimestamp(
+                        self.sunrise).strftime("%H:%M {}").format(sr_suffix)
+                    self.sunset_string = datetime.datetime.fromtimestamp(
+                        self.sunset).strftime("%H:%M {}").format(ss_suffix)
 
             except requests.exceptions.RequestException as e:
                 self.log.exception(f"Request exception: {e}")
