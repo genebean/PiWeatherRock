@@ -36,6 +36,7 @@ class Runner:
         self.daily = None
         self.hourly = None
         self.info = None
+        self.hourcap = 0
 
     def main(self, config_file):
         with open(config_file, "r") as f:
@@ -179,6 +180,10 @@ class Runner:
             if self.seconds != time.localtime().tm_sec:
                 self.seconds = time.localtime().tm_sec
                 self.daily.disp_daily(self.my_weather_rock)
+                # At first Daily screen of the new hour, capture it
+                if time.localtime().tm_hour != self.hourcap:
+                    self.my_weather_rock.screen_cap()
+                    self.hourcap = time.localtime().tm_hour
 
             # Once the screen is updated, we have a full second to get the
             # weather. Once per minute, check to see if its time to get a
