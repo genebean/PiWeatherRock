@@ -16,11 +16,13 @@ class PluginWeatherHourly:
     """
 
     def __init__(self, weather_rock):
+        self.config = None
         self.screen = None
         self.weather = None
         self.weather_common = None
 
     def get_rock_values(self, weather_rock):
+        self.config = weather_rock.config
         self.screen = weather_rock.screen
         self.weather = weather_rock.weather
         self.weather_common = PluginWeatherCommon(weather_rock)
@@ -40,7 +42,10 @@ class PluginWeatherHourly:
             ampm = 'p.m.'
         this_hour_12_int = int(datetime.datetime.fromtimestamp(
             this_hour.time).strftime("%I"))
-        this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
+        if self.config["12hour_disp"]:
+            this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
+        else:
+            this_hour_string = "{} {}".format(str(this_hour_24_int), "hr")
         multiplier = 1
         self.weather_common.display_subwindow(
             this_hour, this_hour_string, multiplier)
@@ -56,7 +61,10 @@ class PluginWeatherHourly:
                 ampm = 'p.m.'
             this_hour_12_int = int(datetime.datetime.fromtimestamp(
                 this_hour.time).strftime("%I"))
-            this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
+            if self.config["12hour_disp"]:
+                this_hour_string = "{} {}".format(str(this_hour_12_int), ampm)
+            else:
+                this_hour_string = "{} {}".format(str(this_hour_24_int), "hr")
             multiplier += 2
             self.weather_common.display_subwindow(
                 this_hour, this_hour_string, multiplier)

@@ -18,6 +18,7 @@ class PluginInfo:
     """
 
     def __init__(self, weather_rock):
+        self.config = None
         self.screen = None
         self.weather = None
         self.last_update_check = None
@@ -33,6 +34,7 @@ class PluginInfo:
         self.get_rock_values(weather_rock)
 
     def get_rock_values(self, weather_rock):
+        self.config = weather_rock.config
         self.screen = weather_rock.screen
         self.weather = weather_rock.weather
         self.last_update_check = weather_rock.last_update_check
@@ -81,8 +83,12 @@ class PluginInfo:
         small_font = pygame.font.SysFont(
             font_name, int(self.ymax * time_height_small), bold=1)
 
-        hours_and_minutes = time.strftime("%I:%M", time.localtime())
-        am_pm = time.strftime(" %p", time.localtime())
+        if self.config["12hour_disp"]:
+            hours_and_minutes = time.strftime("%I:%M", time.localtime())
+            am_pm = time.strftime(" %p", time.localtime())
+        else:
+            hours_and_minutes = time.strftime("%H:%M", time.localtime())
+            am_pm = "hr"
 
         rendered_hours_and_minutes = regular_font.render(
             hours_and_minutes, True, text_color)
@@ -126,9 +132,15 @@ class PluginInfo:
         text = "Weather checked at"
         self.string_print(text, small_font, self.xmax * 0.05, 10, text_color)
 
-        text = "    %s" % time.strftime(
-            "%I:%M:%S %p %Z on %a. %d %b %Y ",
-            time.localtime(self.last_update_check))
+        if self.config["12hour_disp"]:
+            text = "    %s" % time.strftime(
+                "%I:%M:%S %p %Z on %a. %d %b %Y ",
+                time.localtime(self.last_update_check))
+        else:
+            text = "    %s" % time.strftime(
+                "%H:%M:%S %Z on %a. %d %b %Y ",
+                time.localtime(self.last_update_check))
+
         self.string_print(text, small_font, self.xmax * 0.05, 11, text_color)
 
         # Update the display
