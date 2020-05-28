@@ -182,7 +182,7 @@ class Runner:
                 self.seconds = time.localtime().tm_sec
                 self.daily.disp_daily(self.my_weather_rock)
                 # At first Daily screen of the new hour, capture it
-                if self.caphour:
+                if self.config["caphour"]:
                     if time.localtime().tm_hour != self.hourcap:
                         self.my_weather_rock.screen_cap()
                         self.hourcap = time.localtime().tm_hour
