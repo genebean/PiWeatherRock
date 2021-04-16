@@ -3,14 +3,18 @@
 # Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 # Distributed under the MIT License (https://opensource.org/licenses/MIT)
 
-import datetime
 import pygame
 import time
+import json
 
 from os import path
+from datetime import datetime
+
+# local imports
+from piweatherrock.intl import intl
+
 
 UNICODE_DEGREE = u'\xb0'
-
 
 class PluginWeatherCommon:
     """
@@ -36,9 +40,11 @@ class PluginWeatherCommon:
         self.time_date_small_y_position = None
         self.subwindow_text_height = None
         self.icon_size = None
-
+        self.intl = None
+        self.ui_lang = None
+       
         self.get_rock_values(weather_rock)
-
+    
     def get_rock_values(self, weather_rock):
         self.screen = weather_rock.screen
         self.weather = weather_rock.weather
@@ -52,6 +58,10 @@ class PluginWeatherCommon:
         self.time_date_small_y_position = weather_rock.time_date_small_y_position
         self.subwindow_text_height = weather_rock.subwindow_text_height
         self.icon_size = weather_rock.icon_size
+        
+        #Initialize locale resources
+        self.intl = intl()
+        self.ui_lang = self.config["ui_lang"]
 
     def disp_weather_top(self, weather_rock):
         self.get_rock_values(weather_rock)
@@ -69,7 +79,7 @@ class PluginWeatherCommon:
         self.disp_current_temp(font_name, text_color)
         self.disp_summary()
         self.display_conditions_line(
-            'Feels Like:', int(round(self.weather.apparentTemperature)),
+            self.intl.get_text(self.ui_lang,"feels_like"), int(round(self.weather.apparentTemperature)),
             True)
 
         try:
@@ -81,18 +91,18 @@ class PluginWeatherCommon:
             int(round(self.weather.windSpeed))) + \
             ' ' + self.get_windspeed_abbreviation(self.config["units"])
         self.display_conditions_line(
-            'Wind:', wind_txt, False, 1)
+            self.intl.get_text(self.ui_lang,"wind"), wind_txt, False, 1)
 
         self.display_conditions_line(
-            'Humidity:', str(int(round((self.weather.humidity * 100)))) + '%',
+            self.intl.get_text(self.ui_lang,"humidity"), str(int(round((self.weather.humidity * 100)))) + '%',
             False, 2)
 
         # Skipping multiplier 3 (line 4)
 
         if self.take_umbrella:
-            umbrella_txt = 'Grab your umbrella!'
+            umbrella_txt = self.intl.get_text(self.ui_lang,"umbrella")
         else:
-            umbrella_txt = 'No umbrella needed today.'
+            umbrella_txt = self.intl.get_text(self.ui_lang,"no_umbrella")
         self.disp_umbrella_info(umbrella_txt)
 
     def draw_screen_border(self, line_color, xmin, lines):
@@ -138,10 +148,10 @@ class PluginWeatherCommon:
             int(self.ymax * self.time_date_small_text_height), bold=1)
 
         if self.config["12hour_disp"]:
-            time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
-            am_pm_string = time.strftime(" %p", time.localtime())
+            time_string = self.intl.get_datetime(self.ui_lang, datetime.utcnow(), True)
+            am_pm_string = self.intl.get_ampm(self.ui_lang, datetime.utcnow())
         else:
-            time_string = time.strftime("%a, %b %d   %H:%M", time.localtime())
+            time_string = self.intl.get_datetime(self.ui_lang, datetime.utcnow(), False)
             am_pm_string = "hr"
 
         rendered_time_string = time_date_font.render(time_string, True,
@@ -269,12 +279,12 @@ class PluginWeatherCommon:
             take_umbrella = True
         else:
             # determine if an umbrella is needed during daylight hours
-            curr_date = datetime.datetime.today().date()
+            curr_date = datetime.today().date()
             for hour in self.weather.hourly:
-                hr = datetime.datetime.fromtimestamp(hour.time)
-                sr = datetime.datetime.fromtimestamp(
+                hr = datetime.fromtimestamp(hour.time)
+                sr = datetime.fromtimestamp(
                     self.weather.daily[0].sunriseTime)
-                ss = datetime.datetime.fromtimestamp(
+                ss = datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
                 rain_chance = hour.precipProbability
                 is_today = hr.date() == curr_date
