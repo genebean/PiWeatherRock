@@ -5,6 +5,7 @@
     "lon": 0.246810,
     "units": "us",
     "lang": "en",
+    "ui_lang": "en",
     "fullscreen": true,
     "icon_offset": -23.5,
     "update_freq": 300,

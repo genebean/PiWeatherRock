@@ -1,0 +1,19 @@
+{
+	"fr":{
+		"feels_like": "Refroidissement éolien:",
+		"wind": "Vent:",
+		"humidity": "Humidité:",
+		"umbrella": "Attrape le parapluie!",
+		"no_umbrella": "Ne prenez pas le parapluie aujourd'hui",
+		"today": "aujourd'hui",
+		"powered_by": "Weather rock grâce à Dark Sky",
+		"tonight":"ce soir",
+		"tomorrow": "demain",
+		"check_at": "Bulletin météo du",
+		"sunrise": "Lever de soleil: %{sunrise}",
+		"sunset": "Coucher de soleil: %{sunset}",
+		"sunrise_at": "Lever de soleil dans %{hour} hrs %{minute} min",
+		"sunset_at": "Coucher de soleil dans %{hour} hrs %{minute} min",
+		"daylight": "Lumière du joir: %{hour} hrs %{minute} min"
+		}
+}

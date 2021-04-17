@@ -119,24 +119,24 @@ class PluginInfo:
             self.xmax * 0.05, 3, text_color)
 
         self.string_print(
-            self.intl.get_text(self.ui_lang,"sunrise").format(sunrise=self.sunrise_string),
+            self.intl.get_text(self.ui_lang,"sunrise", {'sunrise':self.sunrise_string}),
             small_font, self.xmax * 0.05, 4, text_color)
 
         self.string_print(
-            self.intl.get_text(self.ui_lang,"sunset").format(sunset=self.sunset_string),
+            self.intl.get_text(self.ui_lang,"sunset", {'sunset':self.sunset_string}),
             small_font, self.xmax * 0.05, 5, text_color)
 
-        text = self.intl.get_text(self.ui_lang,"daylight").format(hour=day_hrs, minute=day_mins)
+        text = self.intl.get_text(self.ui_lang,"daylight",{'hour':day_hrs,'minute':day_mins})
         self.string_print(text, small_font, self.xmax * 0.05, 6, text_color)
 
         # leaving row 7 blank
 
         if in_daylight:
             (sunset_hour, sunset_minute) = self.stot(delta_seconds_til_dark)
-            text = self.intl.get_text(self.ui_lang,"sunset_at").format(hour=sunset_hour, minute=sunset_minute)
+            text = self.intl.get_text(self.ui_lang,"sunset_at",{'hour':sunset_hour,'minute':sunset_minute})
         else:
             (sunrise_hour, sunrise_minute) = self.stot(seconds_til_daylight)
-            text = self.intl.get_text(self.ui_lang,"sunrise_at").format(hour=sunrise_hour, minute=sunrise_minute)
+            text = self.intl.get_text(self.ui_lang,"sunrise_at",{'hour':sunrise_hour,'minute':sunrise_minute})
         self.string_print(text, small_font, self.xmax * 0.05, 8, text_color)
 
         # leaving row 9 blank
@@ -145,11 +145,11 @@ class PluginInfo:
         self.string_print(text, small_font, self.xmax * 0.05, 10, text_color)
 
         if self.config["12hour_disp"]:
-            text = "    %s" % time.strftime(
+            text = "%s" % time.strftime(
                 "%I:%M:%S %p %Z on %a. %d %b %Y ",
                 time.localtime(self.last_update_check))
         else:
-            text = "    %s" % time.strftime(
+            text = "%s" % time.strftime(
                 "%H:%M:%S %Z on %a. %d %b %Y ",
                 time.localtime(self.last_update_check))
 

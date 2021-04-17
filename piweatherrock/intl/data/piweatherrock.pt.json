@@ -1,0 +1,19 @@
+{
+	"pt":{
+		"feels_like": "Parece:",
+		"wind": "Vento:",
+		"humidity": "Umidade:",
+		"umbrella": "¡Pegue o guarda-chuva!",
+		"no_umbrella": "Não leve o guarda-chuva hoje",
+		"today": "hoje",
+		"powered_by": "Weather rock graças ao Dark Sky",
+		"tonight": "esta noite",
+		"tomorrow": "amanhã",
+		"check_at": "Boletim meteorológico de",
+		"sunrise": "Nascer do sol: %{sunrise}",
+		"sunset": "Pôr do sol: %{sunset}",
+		"sunrise_at": "Nascer do sol em %{hour} horas %{minute} min",
+		"sunset_at": "Pôr do sol em %{hour} horas %{minute} min",
+		"daylight": "Luz do dia: %{hour} horas %{minute} min"
+		}
+}

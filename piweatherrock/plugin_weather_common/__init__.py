@@ -229,26 +229,29 @@ class PluginWeatherCommon:
 
         self.screen.blit(
             txt, (self.xmax * x_start_position, self.ymax * y_start))
+        
+        # position the information for the second column based on the length of the labels
+        second_column_x_start_position = txt.get_rect().width
 
         txt = conditions_font.render(str(cond), True, text_color)
-        self.screen.blit(txt, (self.xmax * second_column_x_start_position,
+        self.screen.blit(txt, (self.xmax * x_start_position + second_column_x_start_position * 1.01,
                                self.ymax * y_start))
 
         if is_temp:
-            txt_x = txt.get_size()[0]
+            txt_x = txt.get_rect().width
             degree_font = pygame.font.SysFont(
                 font_name, int(self.ymax * degree_symbol_height), bold=1)
             degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
             self.screen.blit(degree_txt, (
-                self.xmax * second_column_x_start_position + txt_x * 1.01,
+                self.xmax * x_start_position + second_column_x_start_position + txt_x * 1.2,
                 self.ymax * (y_start + degree_symbol_y_offset)))
             degree_letter = conditions_font.render(
                 self.get_temperature_letter(self.config["units"]),
                 True, text_color)
-            degree_letter_x = degree_letter.get_size()[0]
+            degree_letter_x = degree_letter.get_rect().width
             self.screen.blit(degree_letter, (
-                self.xmax * second_column_x_start_position +
-                txt_x + degree_letter_x * 1.01,
+                self.xmax * x_start_position + second_column_x_start_position +
+                txt_x + degree_letter_x,
                 self.ymax * (y_start + degree_symbol_y_offset)))
 
     def deg_to_compass(self, degrees):

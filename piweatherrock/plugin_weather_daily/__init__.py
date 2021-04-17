@@ -40,7 +40,7 @@ class PluginWeatherDaily:
 
         # Today
         today = self.weather.daily[0]
-        today_string = self.intl.get_text(self.ui_lang,"today", True)
+        today_string = self.intl.get_text(self.ui_lang,"today").capitalize()
         multiplier = 1
         self.weather_common.display_subwindow(today, today_string, multiplier)
 
