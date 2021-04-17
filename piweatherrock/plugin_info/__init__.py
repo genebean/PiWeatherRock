@@ -9,7 +9,6 @@ import time
 
 # local imports
 from piweatherrock.intl import intl
-from piweatherrock.plugin_weather_common import PluginWeatherCommon
 
 
 class PluginInfo:
@@ -34,7 +33,6 @@ class PluginInfo:
         self.time_date_small_y_position = None
         self.sunrise_string = None
         self.sunset_string = None
-        self.weather_common = None
         self.intl = None
         self.ui_lang = None
         
@@ -53,7 +51,6 @@ class PluginInfo:
         self.time_date_small_y_position = weather_rock.time_date_small_y_position
         self.sunrise_string = weather_rock.sunrise_string
         self.sunset_string = weather_rock.sunset_string
-        self.weather_common = PluginWeatherCommon(weather_rock)
         
         #Initialize locale resources
         self.intl = intl()

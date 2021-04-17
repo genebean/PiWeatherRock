@@ -5,7 +5,6 @@
 
 import pygame
 import time
-import json
 
 from os import path
 from datetime import datetime
