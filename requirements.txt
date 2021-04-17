@@ -4,6 +4,6 @@ pyserial
 requests
 cherrypy
 babel
-i18n
+python-i18n
 
 piweatherrock-webconfig==1.5.0
