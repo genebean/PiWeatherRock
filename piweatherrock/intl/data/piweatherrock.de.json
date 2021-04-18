@@ -1,0 +1,19 @@
+{
+	"de":{
+		"feels_like": "Fühlt sich an wie:",
+		"wind": "Wind:",
+		"humidity": "Luftfeuchtigkeit:",
+		"umbrella": "Schnapp dir den Regenschirm!",
+		"no_umbrella": "Nimm heute nicht den Regenschirm",
+		"today": "heute",
+		"powered_by": "Weather rock dank Dark Sky",
+		"tonight": "heute Abend",
+		"tomorrow":"morgen",
+		"check_at": "Wetterbericht der",
+		"sunrise": "Sonnenaufgang: %{sunrise}",
+		"sunset": "Sonnenuntergang: %{sunset}",
+		"sunrise_at": "Sonnenaufgang in %{hour} std. %{minute} min.",
+		"sunset_at": "Sonnenuntergang in %{hour} std. %{minute} min.",
+		"daylight": "Tageslicht: %{hour} Std. %{minute} min."
+		}
+}

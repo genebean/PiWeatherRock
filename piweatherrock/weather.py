@@ -19,6 +19,9 @@ from darksky import forecast
 import pygame
 import requests
 
+# local imports
+from piweatherrock.intl import intl
+
 
 # globals
 UNICODE_DEGREE = u'\xb0'
@@ -39,6 +42,10 @@ class Weather:
         with open(config_file, "r") as f:
             self.config = json.load(f)
 
+        #Initialize locale intl
+        self.intl = intl()
+        self.ui_lang = self.config["ui_lang"]
+        
         self.last_update_check = 0
         self.weather = {}
         self.get_forecast()
@@ -155,17 +162,17 @@ class Weather:
                     exclude='minutely',
                     units=self.config["units"],
                     lang=self.config["lang"])
-
+                
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
                 if datetime.datetime.now() < sunset_today:
                     index = 0
-                    sr_suffix = 'today'
-                    ss_suffix = 'tonight'
+                    sr_suffix = self.intl.get_text(self.ui_lang,"today")
+                    ss_suffix = self.intl.get_text(self.ui_lang,"tonight")
                 else:
                     index = 1
-                    sr_suffix = 'tomorrow'
-                    ss_suffix = 'tomorrow'
+                    sr_suffix = self.intl.get_text(self.ui_lang,"tomorrow")
+                    ss_suffix = self.intl.get_text(self.ui_lang,"tomorrow")
 
                 self.sunrise = self.weather.daily[index].sunriseTime
                 self.sunset = self.weather.daily[index].sunsetTime

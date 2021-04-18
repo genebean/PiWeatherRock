@@ -1,0 +1,19 @@
+{
+	"ca":{
+		"feels_like": "Sensació tèrmica:",
+		"wind": "Vent:",
+		"humidity": "Humitat:",
+		"umbrella": "¡Agafa el paraigües!",
+		"no_umbrella": "Avui no agafis el paraigües",
+		"today": "avui",
+		"powered_by": "Weather rock gràcies a Dark Sky",
+		"tonight": "aquesta nit",
+		"tomorrow": "demà",
+		"check_at": "Part meteorològic de les",
+		"sunrise": "Alba: %{sunrise}",
+		"sunset": "Posta de sol: %{sunset}",
+		"sunrise_at": "fa de dia a %{hour} hrs %{minute} min",
+		"sunset_at": "Ocàs a %{hour} hrs %{minute} min",
+		"daylight": "Llum de dia: %{hour} hrs %{minute} min"
+		}
+}

@@ -1,0 +1,19 @@
+{
+	"gl":{
+		"feels_like": "Refrixeración do vento:",
+		"wind": "Vento:",
+		"moist": "Humidade:",
+		"umbrella": "Agarra o paraugas!",
+		"no_umbrella": "Non collas o paraugas hoxe",
+		"today": "hoxe",
+		"powered_by": "O tempo é rockeiro grazas a Dark Sky",
+		"tonight": "esta noite",
+		"mañá": "mañá",
+		"check_at": "Informe meteorolóxico do",
+		"sunrise": "Amanecer: %{sunrise}",
+		"sunset": "Atardecer: %{sunset}",
+		"sunrise_at": "Amencer en %{hour} hrs %{minute} min",
+		"sunset_at": "Atardecer en %{hour} hrs %{minute} min",
+		"daylight": "Luz do día: %{hour} hrs %{minute} min"
+		}
+}

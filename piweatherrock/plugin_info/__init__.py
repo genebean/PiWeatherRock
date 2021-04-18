@@ -7,6 +7,9 @@ import datetime
 import pygame
 import time
 
+# local imports
+from piweatherrock.intl import intl
+
 
 class PluginInfo:
     """
@@ -30,7 +33,9 @@ class PluginInfo:
         self.time_date_small_y_position = None
         self.sunrise_string = None
         self.sunset_string = None
-
+        self.intl = None
+        self.ui_lang = None
+        
         self.get_rock_values(weather_rock)
 
     def get_rock_values(self, weather_rock):
@@ -46,6 +51,10 @@ class PluginInfo:
         self.time_date_small_y_position = weather_rock.time_date_small_y_position
         self.sunrise_string = weather_rock.sunrise_string
         self.sunset_string = weather_rock.sunset_string
+        
+        #Initialize locale resources
+        self.intl = intl()
+        self.ui_lang = self.config["ui_lang"]
 
     def disp_info(self, weather_rock):
         self.get_rock_values(weather_rock)
@@ -103,41 +112,41 @@ class PluginInfo:
                          (tp + tx1 + 3, self.time_date_small_y_position))
 
         self.string_print(
-            "A weather rock powered by Dark Sky", small_font,
+            self.intl.get_text(self.ui_lang,"powered_by"), small_font,
             self.xmax * 0.05, 3, text_color)
 
         self.string_print(
-            "Sunrise: %s" % self.sunrise_string,
+            self.intl.get_text(self.ui_lang,"sunrise", {'sunrise':self.sunrise_string}),
             small_font, self.xmax * 0.05, 4, text_color)
 
         self.string_print(
-            "Sunset:  %s" % self.sunset_string,
+            self.intl.get_text(self.ui_lang,"sunset", {'sunset':self.sunset_string}),
             small_font, self.xmax * 0.05, 5, text_color)
 
-        text = "Daylight: %d hrs %02d min" % (day_hrs, day_mins)
+        text = self.intl.get_text(self.ui_lang,"daylight",{'hour':day_hrs,'minute':day_mins})
         self.string_print(text, small_font, self.xmax * 0.05, 6, text_color)
 
         # leaving row 7 blank
 
         if in_daylight:
-            text = "Sunset in %d hrs %02d min" % self.stot(
-                delta_seconds_til_dark)
+            (sunset_hour, sunset_minute) = self.stot(delta_seconds_til_dark)
+            text = self.intl.get_text(self.ui_lang,"sunset_at",{'hour':sunset_hour,'minute':sunset_minute})
         else:
-            text = "Sunrise in %d hrs %02d min" % self.stot(
-                seconds_til_daylight)
+            (sunrise_hour, sunrise_minute) = self.stot(seconds_til_daylight)
+            text = self.intl.get_text(self.ui_lang,"sunrise_at",{'hour':sunrise_hour,'minute':sunrise_minute})
         self.string_print(text, small_font, self.xmax * 0.05, 8, text_color)
 
         # leaving row 9 blank
 
-        text = "Weather checked at"
+        text = self.intl.get_text(self.ui_lang,"check_at")
         self.string_print(text, small_font, self.xmax * 0.05, 10, text_color)
 
         if self.config["12hour_disp"]:
-            text = "    %s" % time.strftime(
+            text = "%s" % time.strftime(
                 "%I:%M:%S %p %Z on %a. %d %b %Y ",
                 time.localtime(self.last_update_check))
         else:
-            text = "    %s" % time.strftime(
+            text = "%s" % time.strftime(
                 "%H:%M:%S %Z on %a. %d %b %Y ",
                 time.localtime(self.last_update_check))
 

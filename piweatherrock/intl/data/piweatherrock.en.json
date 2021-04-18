@@ -1,0 +1,19 @@
+{
+	"en": {
+		"feels_like": "Feels Like:",
+		"wind":"Wind:",
+		"humidity":"Humidity:",
+		"umbrella":"Grab your umbrella!",
+		"no_umbrella":"No umbrella needed today.",
+		"today":"today",
+		"powered_by":"A weather rock powered by Dark Sky",
+		"tonight":"tonight",
+		"tomorrow":"tomorrow",
+		"check_at":"Weather checked at",
+		"sunrise":"Sunrise: %{sunrise}",
+		"sunset":"Sunset:  %{sunset}",
+		"sunrise_at":"Sunrise in %{hour} hrs %{minute} min",
+		"sunset_at":"Sunset in %{hour} hrs %{minute} min",
+		"daylight":"Daylight: %{hour} hrs %{minute} min"
+	}
+}

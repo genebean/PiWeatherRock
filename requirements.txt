@@ -3,5 +3,7 @@ pygame
 pyserial
 requests
 cherrypy
+babel
+python-i18n
 
 piweatherrock-webconfig==1.5.0
