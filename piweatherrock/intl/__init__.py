@@ -5,10 +5,12 @@
 import json
 import babel
 import i18n
+from os import path
 
 from datetime import date, datetime, time
 from babel.dates import format_date, format_datetime, format_time
-from os import path
+from babel import Locale
+from babel.dates import LOCALTZ, get_timezone_name, get_timezone
 
 class intl:
     """
@@ -20,18 +22,24 @@ class intl:
         i18n.set('file_format', 'json')
         i18n.set('fallback', 'en')
         i18n.load_path.append(path.join(path.dirname(__file__),'data'))
+        self.tz = get_timezone(LOCALTZ)
             
     def get_weekday(self, ui_lang, date):
-        return format_date(date,"EEEE",locale='%s' % ui_lang).capitalize()
+        date = self.tz.fromutc(self.tz.localize(date))
+        return format_date(date,"EEEE",locale=Locale.parse(ui_lang)).capitalize()
     
     def get_datetime(self, ui_lang, datetime, twelvehr):
+        datetime = self.tz.fromutc(self.tz.localize(datetime))
+
         if twelvehr is True:
-            return format_datetime(datetime, "EEE, MMM dd HH:mm", locale='%s' % ui_lang).title()
+            return format_datetime(datetime, "EEE, MMM dd HH:mm", locale=Locale.parse(ui_lang)).title()
         else:
-            return format_datetime(datetime, "EEE, MMM dd hh:mm", locale='%s' % ui_lang).title()
+            return format_datetime(datetime, "EEE, MMM dd hh:mm", locale=Locale.parse(ui_lang)).title()
 
     def get_ampm(self, ui_lang, datetime):
-        return format_datetime(datetime, "a", locale='%s' % ui_lang)
+        datetime = self.tz.fromutc(self.tz.localize(datetime))
+
+        return format_datetime(datetime, "a", locale=Locale.parse(ui_lang))
         
     def get_text(self, ui_lang, text, params = None):
         i18n.set('locale', ui_lang)
