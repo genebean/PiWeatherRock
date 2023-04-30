@@ -217,7 +217,7 @@ def openmeteo_to_darksky(data, lang):
         "nearestStormDistance": 0,
         "precipIntensity": daily_data["precipitation_probability_min"][0],
         "precipIntensityError": 0,
-        "precipProbability": daily_data["precipitation_probability_mean"][0] /,
+        "precipProbability": daily_data["precipitation_probability_mean"][0] / 100,
         "precipType": "rain",
         "temperature": json_data["current_weather"]["temperature"],
         "apparentTemperature": json_data["current_weather"]["temperature"],
