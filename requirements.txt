@@ -1,9 +1,9 @@
-darkskylib
 pygame
 pyserial
 requests
 cherrypy
 babel
 python-i18n
+pytz
 
 piweatherrock-webconfig==1.5.0

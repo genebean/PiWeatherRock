@@ -15,7 +15,7 @@ import logging
 import logging.handlers
 
 # third party imports
-from darksky import forecast
+from piweatherrock.climate import forecast
 import pygame
 import requests
 
@@ -45,12 +45,13 @@ class Weather:
         #Initialize locale intl
         self.intl = intl()
         self.ui_lang = self.config["ui_lang"]
-        
+
+        # Initialize logger
+        self.log = self.get_logger()
+
         self.last_update_check = 0
         self.weather = {}
         self.get_forecast()
-        # Initialize logger
-        self.log = self.get_logger()
 
         if platform.system() == 'Darwin':
             pygame.display.init()
@@ -161,7 +162,8 @@ class Weather:
                     self.config["lon"],
                     exclude='minutely',
                     units=self.config["units"],
-                    lang=self.config["lang"])
+                    lang=self.config["lang"],
+                    timezone=self.config["timezone"])
                 
                 sunset_today = datetime.datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)

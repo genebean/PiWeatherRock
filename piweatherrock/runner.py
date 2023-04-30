@@ -41,6 +41,7 @@ class Runner:
         with open(config_file, "r") as f:
             self.config = json.load(f)
 
+        pygame.init()
         # Create an instance of the main application class
         self.my_weather_rock = Weather(config_file)
 
