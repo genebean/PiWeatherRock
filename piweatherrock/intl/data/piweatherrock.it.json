@@ -1,0 +1,19 @@
+{
+	"it":{
+		"feels_like": "Si sente come:",
+		"wind": "Vento:",
+		"humidity": "Umidità:",
+		"umbrella": "Prendi l'ombrello!",
+		"no_umbrella": "Non prendere l'ombrello oggi",
+		"today": "today",
+		"powered_by": "Weather rock grazie a Dark Sky",
+		"tonight": "stasera",
+		"tomorrow": "domani",
+		"check_at": "Bollettino meteorologico del",
+		"sunrise": "Alba: %{sunrise}",
+		"sunset": "Tramonto: %{sunset}",
+		"sunrise_at": "Alba tra %{hour} ore %{minute} min",
+		"sunset_at": "Tramonto tra %{hour} ore %{minute} min",
+		"daylight": "Luce del giorno: %{hour} ore %{minute} min"
+		}
+}

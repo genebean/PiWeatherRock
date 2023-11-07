@@ -26,6 +26,7 @@ if __name__ == "__main__":
         version=VERSION,
         packages=find_packages(),
         include_package_data=True,
+        package_data={'':['data/*.json']},
         install_requires=parse_requirements("requirements.txt"),
         python_requires=">=3.6",
         scripts=[
