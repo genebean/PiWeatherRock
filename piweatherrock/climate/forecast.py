@@ -89,9 +89,10 @@ class Forecast(DataPoint):
 
             return super().__init__(data)
         else:
-            response = requests.get(self.url, **request_params)
+            response = requests.get(self.url)
             self.response_headers = response.headers
             if response.status_code != 200:
+                print(response.text)
                 raise requests.exceptions.HTTPError('Bad response')
 
             return super().__init__(openmeteo_to_darksky(response.text, queries["lang"]))
