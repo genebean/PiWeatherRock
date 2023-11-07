@@ -7,6 +7,15 @@ import sys
 import requests
 from os import path
 
+import logging
+from http.client import HTTPConnection
+
+# Enable HTTPConnection debug logging to stdout.
+log = logging.getLogger('urllib3')
+log.setLevel(logging.DEBUG)
+stream_handler = logging.StreamHandler(sys.stdout)
+log.addHandler(stream_handler)
+
 from .data import DataPoint
 from .openmeteo import *
 
