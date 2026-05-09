@@ -6,12 +6,14 @@
 import datetime
 import pygame
 
+# local imports
+from piweatherrock.intl import intl
 from piweatherrock.plugin_weather_common import PluginWeatherCommon
 
 
 class PluginWeatherDaily:
     """
-    This plugin is resposible for displaying the screen with the daily
+    This plugin is responsible for displaying the screen with the daily
     forecast.
     """
 
@@ -19,11 +21,17 @@ class PluginWeatherDaily:
         self.screen = None
         self.weather = None
         self.weather_common = None
+        self.intl = None
+        self.ui_lang = None
 
     def get_rock_values(self, weather_rock):
         self.screen = weather_rock.screen
         self.weather = weather_rock.weather
         self.weather_common = PluginWeatherCommon(weather_rock)
+        
+        #Initialize locale resources
+        self.intl = intl()
+        self.ui_lang = self.weather_common.config["ui_lang"]
 
     def disp_daily(self, weather_rock):
         self.get_rock_values(weather_rock)
@@ -32,7 +40,7 @@ class PluginWeatherDaily:
 
         # Today
         today = self.weather.daily[0]
-        today_string = "Today"
+        today_string = self.intl.get_text(self.ui_lang,"today").capitalize()
         multiplier = 1
         self.weather_common.display_subwindow(today, today_string, multiplier)
 
@@ -40,10 +48,9 @@ class PluginWeatherDaily:
         for future_day in range(3):
             this_day = self.weather.daily[future_day + 1]
             this_day_no = datetime.datetime.fromtimestamp(this_day.time)
-            this_day_string = this_day_no.strftime("%A")
             multiplier += 2
             self.weather_common.display_subwindow(
-                this_day, this_day_string, multiplier)
+                this_day, self.intl.get_weekday(self.ui_lang, this_day_no), multiplier)
 
         # Update the display
         pygame.display.update()

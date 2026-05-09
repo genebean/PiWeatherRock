@@ -1,0 +1,19 @@
+{
+    "ca": {
+        "feels_like": "Sensació tèrmica:",
+        "wind": "Vent:",
+        "humidity": "Humitat:",
+        "umbrella": "Agafa el paraigua!",
+        "no_umbrella": "Avui no cal paraigua.",
+        "today": "avui",
+        "powered_by": "Weather rock gràcies a Open-Meteo",
+        "tonight": "aquesta nit",
+        "tomorrow": "demà",
+        "check_at": "Part meteorològic de les",
+        "sunrise": "Sortida del sol: %{sunrise}",
+        "sunset": "Posta de sol: %{sunset}",
+        "sunrise_at": "Sortida del sol en %{hour} h %{minute} min",
+        "sunset_at": "Posta de sol en %{hour} h %{minute} min",
+        "daylight": "Llum de dia: %{hour} h %{minute} min"
+    }
+}

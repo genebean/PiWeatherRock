@@ -1,2 +1,0 @@
-include piweatherrock/config.json-sample
-include piweatherrock/plugin_weather_common/icons/**/*

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="600" viewBox="0 0 1024 600" role="img" aria-labelledby="title desc">
+  <title id="title">Captura representativa de la pantalla de información de PiWeatherRock</title>
+  <desc id="desc">Pantalla de información con hora, salida y puesta de sol, horas de luz y última actualización.</desc>
+  <rect width="1024" height="600" fill="#000"/>
+  <g fill="#fff" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700">
+    <text x="512" y="78" font-size="68" text-anchor="middle">14:02 hr</text>
+    <text x="55" y="185" font-size="32">Desarrollado por PiWeatherRock</text>
+    <text x="55" y="230" font-size="32">Salida del sol: 07:08 hoy</text>
+    <text x="55" y="275" font-size="32">Puesta del sol: 21:10 esta noche</text>
+    <text x="55" y="320" font-size="32">Luz diurna: 14 horas 2 minutos</text>
+    <text x="55" y="410" font-size="32">Quedan 7 horas y 8 minutos para la puesta del sol</text>
+    <text x="55" y="500" font-size="32">Última comprobación:</text>
+    <text x="55" y="545" font-size="32">14:00:01 CEST on Thu. 07 May 2026</text>
+  </g>
+</svg>

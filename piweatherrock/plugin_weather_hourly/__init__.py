@@ -32,6 +32,12 @@ class PluginWeatherHourly:
 
         self.weather_common.disp_weather_top(weather_rock)
 
+        num_hours = len(self.weather.hourly)
+        if num_hours == 0:
+            # No hourly data available; skip rendering subwindows
+            pygame.display.update()
+            return
+
         # Current hour
         this_hour = self.weather.hourly[0]
         this_hour_24_int = int(datetime.datetime.fromtimestamp(
@@ -50,8 +56,8 @@ class PluginWeatherHourly:
         self.weather_common.display_subwindow(
             this_hour, this_hour_string, multiplier)
 
-        # counts from 0 to 2
-        for future_hour in range(3):
+        # counts from 0 to 2, but only if we have enough data
+        for future_hour in range(min(3, num_hours - 1)):
             this_hour = self.weather.hourly[future_hour + 1]
             this_hour_24_int = int(datetime.datetime.fromtimestamp(
                 this_hour.time).strftime("%H"))

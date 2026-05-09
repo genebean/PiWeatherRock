@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "piweatherrock"
+version = "3.0.0"
+description = "Displays local weather on a Raspberry Pi using the Open-Meteo API"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.6"
+authors = [
+    { name = "Gene Liverman", email = "gene@technicalissues.us" },
+    { name = "Carlos HM" },
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "pygame",
+    "pyserial",
+    "requests",
+    "cherrypy",
+    "babel",
+    "python-i18n",
+    "pytz",
+]
+
+[project.urls]
+Homepage = "https://github.com/carloshm/PiWeatherRock"
+
+[project.scripts]
+pwr-ui = "piweatherrock.pwr_ui:main"
+pwr-config-web = "piweatherrock.pwr_config_web:main"
+pwr-config-upgrade = "piweatherrock.pwr_config_upgrade:main"
+
+[tool.setuptools.packages.find]
+include = ["piweatherrock*"]
+
+[tool.setuptools.package-data]
+piweatherrock = [
+    "config.json-sample",
+    "data/*.json",
+    "intl/data/*.json",
+    "plugin_weather_common/icons/**/*",
+]

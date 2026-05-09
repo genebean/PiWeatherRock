@@ -13,6 +13,7 @@ import os
 import socket
 
 from argparse import ArgumentParser
+from piweatherrock.config_manager import load_config, merge_defaults, write_config_atomic
 
 pi_ip = socket.gethostbyname(socket.gethostname() + ".local")
 
@@ -103,21 +104,16 @@ def main():
             old_config = json.load(f)
 
     elif os.path.exists(sample_file):
-        with open(sample_file, "r") as f:
-            old_config = json.load(f)
+        old_config = load_config(sample_file)
         print(f"\nYou must configure PiWeatherRock.\n\n"
               f"Go to http://{pi_ip}:8888 to configure.\n")
 
-    with open(sample_file, "r") as f:
-        new_config = json.load(f)
+    new_config = load_config(sample_file)
 
     # Add any new config variables
-    for key in new_config.keys():
-        if key not in old_config.keys():
-            old_config[key] = new_config[key]
+    old_config = merge_defaults(old_config, new_config)
 
-    with open(config_file, "w") as f:
-        json.dump(old_config, f)
+    write_config_atomic(config_file, old_config)
 
 
 if __name__ == '__main__':

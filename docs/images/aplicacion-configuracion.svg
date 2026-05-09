@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="720" viewBox="0 0 1024 720" role="img" aria-labelledby="title desc">
+  <title id="title">Vista representativa de la aplicación web de configuración de PiWeatherRock</title>
+  <desc id="desc">Formulario web local con campos de ubicación, zona horaria, idiomas, pantalla, rotación de páginas, botón de guardar y enlace de validación.</desc>
+  <rect width="1024" height="720" fill="#eef2f7"/>
+  <rect x="80" y="48" width="864" height="624" rx="18" fill="#fff" stroke="#c8d0dc" stroke-width="2"/>
+  <rect x="80" y="48" width="864" height="72" rx="18" fill="#26374f"/>
+  <text x="112" y="94" fill="#fff" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" font-weight="700">Configuración de PiWeatherRock</text>
+  <text x="750" y="94" fill="#cfe3ff" font-family="DejaVu Sans, Arial, sans-serif" font-size="18">127.0.0.1:8888</text>
+
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <text x="112" y="158" fill="#26374f" font-size="20" font-weight="700">Ubicación y previsión</text>
+    <line x1="112" y1="170" x2="912" y2="170" stroke="#d9e0ea" stroke-width="2"/>
+
+    <text x="112" y="205" fill="#3a4658" font-size="16" font-weight="700">Latitud</text>
+    <rect x="112" y="216" width="220" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="128" y="243" fill="#26374f" font-size="16">40.4168</text>
+
+    <text x="372" y="205" fill="#3a4658" font-size="16" font-weight="700">Longitud</text>
+    <rect x="372" y="216" width="220" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="388" y="243" fill="#26374f" font-size="16">-3.7038</text>
+
+    <text x="632" y="205" fill="#3a4658" font-size="16" font-weight="700">Zona horaria</text>
+    <rect x="632" y="216" width="280" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="648" y="243" fill="#26374f" font-size="16">Europe/Madrid</text>
+
+    <text x="112" y="294" fill="#3a4658" font-size="16" font-weight="700">Idioma meteorológico</text>
+    <rect x="112" y="305" width="220" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="128" y="332" fill="#26374f" font-size="16">es</text>
+
+    <text x="372" y="294" fill="#3a4658" font-size="16" font-weight="700">Idioma de interfaz</text>
+    <rect x="372" y="305" width="220" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="388" y="332" fill="#26374f" font-size="16">es</text>
+
+    <text x="632" y="294" fill="#3a4658" font-size="16" font-weight="700">Frecuencia del pronóstico</text>
+    <rect x="632" y="305" width="280" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="648" y="332" fill="#26374f" font-size="16">900 segundos</text>
+
+    <text x="112" y="394" fill="#26374f" font-size="20" font-weight="700">Pantalla y rotación</text>
+    <line x1="112" y1="406" x2="912" y2="406" stroke="#d9e0ea" stroke-width="2"/>
+
+    <rect x="112" y="438" width="24" height="24" rx="4" fill="#2f80ed"/>
+    <path d="M117 450 l6 7 l12 -15" fill="none" stroke="#fff" stroke-width="3"/>
+    <text x="148" y="457" fill="#26374f" font-size="16">Pantalla completa</text>
+
+    <rect x="372" y="438" width="24" height="24" rx="4" fill="#fff" stroke="#b9c4d0"/>
+    <text x="408" y="457" fill="#26374f" font-size="16">Formato de 12 horas</text>
+
+    <rect x="632" y="430" width="280" height="42" rx="6" fill="#f8fafc" stroke="#b9c4d0"/>
+    <text x="648" y="457" fill="#26374f" font-size="16">Desplazamiento iconos: 30</text>
+
+    <rect x="112" y="510" width="24" height="24" rx="4" fill="#2f80ed"/>
+    <path d="M117 522 l6 7 l12 -15" fill="none" stroke="#fff" stroke-width="3"/>
+    <text x="148" y="529" fill="#26374f" font-size="16">Página diaria activada · pausa 60s</text>
+
+    <rect x="512" y="510" width="24" height="24" rx="4" fill="#2f80ed"/>
+    <path d="M517 522 l6 7 l12 -15" fill="none" stroke="#fff" stroke-width="3"/>
+    <text x="548" y="529" fill="#26374f" font-size="16">Página horaria activada · pausa 60s</text>
+
+    <rect x="112" y="586" width="180" height="46" rx="8" fill="#2f80ed"/>
+    <text x="202" y="616" fill="#fff" font-size="17" font-weight="700" text-anchor="middle">Guardar cambios</text>
+    <text x="322" y="615" fill="#2f80ed" font-size="17" text-decoration="underline">Validar configuración</text>
+
+    <rect x="704" y="576" width="208" height="56" rx="8" fill="#eef8ee" stroke="#7bbf7b"/>
+    <text x="808" y="599" fill="#256a25" font-size="15" font-weight="700" text-anchor="middle">Cambios aplicados</text>
+    <text x="808" y="620" fill="#256a25" font-size="13" text-anchor="middle">pwr-ui recarga el JSON válido</text>
+  </g>
+</svg>

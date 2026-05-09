@@ -3,14 +3,18 @@
 # Copyright (c) 2017 Gene Liverman <gene@technicalissues.us>
 # Distributed under the MIT License (https://opensource.org/licenses/MIT)
 
-import datetime
+import logging
 import pygame
 import time
 
 from os import path
+from datetime import datetime
+
+# local imports
+from piweatherrock.intl import intl
+
 
 UNICODE_DEGREE = u'\xb0'
-
 
 class PluginWeatherCommon:
     """
@@ -36,9 +40,11 @@ class PluginWeatherCommon:
         self.time_date_small_y_position = None
         self.subwindow_text_height = None
         self.icon_size = None
-
+        self.intl = None
+        self.ui_lang = None
+       
         self.get_rock_values(weather_rock)
-
+    
     def get_rock_values(self, weather_rock):
         self.screen = weather_rock.screen
         self.weather = weather_rock.weather
@@ -52,6 +58,10 @@ class PluginWeatherCommon:
         self.time_date_small_y_position = weather_rock.time_date_small_y_position
         self.subwindow_text_height = weather_rock.subwindow_text_height
         self.icon_size = weather_rock.icon_size
+        
+        #Initialize locale resources
+        self.intl = intl()
+        self.ui_lang = self.config["ui_lang"]
 
     def disp_weather_top(self, weather_rock):
         self.get_rock_values(weather_rock)
@@ -69,7 +79,7 @@ class PluginWeatherCommon:
         self.disp_current_temp(font_name, text_color)
         self.disp_summary()
         self.display_conditions_line(
-            'Feels Like:', int(round(self.weather.apparentTemperature)),
+            self.intl.get_text(self.ui_lang,"feels_like"), int(round(self.weather.apparentTemperature)),
             True)
 
         try:
@@ -81,18 +91,18 @@ class PluginWeatherCommon:
             int(round(self.weather.windSpeed))) + \
             ' ' + self.get_windspeed_abbreviation(self.config["units"])
         self.display_conditions_line(
-            'Wind:', wind_txt, False, 1)
+            self.intl.get_text(self.ui_lang,"wind"), wind_txt, False, 1)
 
         self.display_conditions_line(
-            'Humidity:', str(int(round((self.weather.humidity * 100)))) + '%',
+            self.intl.get_text(self.ui_lang,"humidity"), str(int(round((self.weather.humidity * 100)))) + '%',
             False, 2)
 
         # Skipping multiplier 3 (line 4)
 
         if self.take_umbrella:
-            umbrella_txt = 'Grab your umbrella!'
+            umbrella_txt = self.intl.get_text(self.ui_lang,"umbrella")
         else:
-            umbrella_txt = 'No umbrella needed today.'
+            umbrella_txt = self.intl.get_text(self.ui_lang,"no_umbrella")
         self.disp_umbrella_info(umbrella_txt)
 
     def draw_screen_border(self, line_color, xmin, lines):
@@ -138,10 +148,10 @@ class PluginWeatherCommon:
             int(self.ymax * self.time_date_small_text_height), bold=1)
 
         if self.config["12hour_disp"]:
-            time_string = time.strftime("%a, %b %d   %I:%M", time.localtime())
-            am_pm_string = time.strftime(" %p", time.localtime())
+            time_string = self.intl.get_datetime(self.ui_lang, datetime.utcnow(), True)
+            am_pm_string = self.intl.get_ampm(self.ui_lang, datetime.utcnow())
         else:
-            time_string = time.strftime("%a, %b %d   %H:%M", time.localtime())
+            time_string = self.intl.get_datetime(self.ui_lang, datetime.utcnow(), False)
             am_pm_string = "hr"
 
         rendered_time_string = time_date_font.render(time_string, True,
@@ -219,26 +229,29 @@ class PluginWeatherCommon:
 
         self.screen.blit(
             txt, (self.xmax * x_start_position, self.ymax * y_start))
+        
+        # position the information for the second column based on the length of the labels
+        second_column_x_start_position = txt.get_rect().width
 
         txt = conditions_font.render(str(cond), True, text_color)
-        self.screen.blit(txt, (self.xmax * second_column_x_start_position,
+        self.screen.blit(txt, (self.xmax * x_start_position + second_column_x_start_position * 1.01,
                                self.ymax * y_start))
 
         if is_temp:
-            txt_x = txt.get_size()[0]
+            txt_x = txt.get_rect().width
             degree_font = pygame.font.SysFont(
                 font_name, int(self.ymax * degree_symbol_height), bold=1)
             degree_txt = degree_font.render(UNICODE_DEGREE, True, text_color)
             self.screen.blit(degree_txt, (
-                self.xmax * second_column_x_start_position + txt_x * 1.01,
+                self.xmax * x_start_position + second_column_x_start_position + txt_x * 1.2,
                 self.ymax * (y_start + degree_symbol_y_offset)))
             degree_letter = conditions_font.render(
                 self.get_temperature_letter(self.config["units"]),
                 True, text_color)
-            degree_letter_x = degree_letter.get_size()[0]
+            degree_letter_x = degree_letter.get_rect().width
             self.screen.blit(degree_letter, (
-                self.xmax * second_column_x_start_position +
-                txt_x + degree_letter_x * 1.01,
+                self.xmax * x_start_position + second_column_x_start_position +
+                txt_x + degree_letter_x,
                 self.ymax * (y_start + degree_symbol_y_offset)))
 
     def deg_to_compass(self, degrees):
@@ -269,12 +282,12 @@ class PluginWeatherCommon:
             take_umbrella = True
         else:
             # determine if an umbrella is needed during daylight hours
-            curr_date = datetime.datetime.today().date()
+            curr_date = datetime.today().date()
             for hour in self.weather.hourly:
-                hr = datetime.datetime.fromtimestamp(hour.time)
-                sr = datetime.datetime.fromtimestamp(
+                hr = datetime.fromtimestamp(hour.time)
+                sr = datetime.fromtimestamp(
                     self.weather.daily[0].sunriseTime)
-                ss = datetime.datetime.fromtimestamp(
+                ss = datetime.fromtimestamp(
                     self.weather.daily[0].sunsetTime)
                 rain_chance = hour.precipProbability
                 is_today = hr.date() == curr_date
@@ -316,9 +329,9 @@ class PluginWeatherCommon:
 
     def units_decoder(self, units):
         """
-        https://darksky.net/dev/docs has lists out what each
-        unit is. The method below is just a codified version
-        of what is on that page.
+        Decodes the unit system for weather data.
+        Originally based on Dark Sky API unit definitions,
+        now used with Open-Meteo API data (translated via openmeteo.py).
         """
         si_dict = {
             'nearestStormDistance': 'Kilometers',
@@ -437,40 +450,45 @@ class PluginWeatherCommon:
 
     def icon_mapping(self, icon, size):
         """
-        https://darksky.net/dev/docs has this to say about icons:
-        icon optional
-        A machine-readable text summary of this data point, suitable for
-        selecting an icon for display. If defined, this property will have one
-        of the following values: clear-day, clear-night, rain, snow, sleet,
+        Maps weather icon codes to image files for display.
+        Icon values follow the Dark Sky convention (used internally for
+        backward compatibility): clear-day, clear-night, rain, snow, sleet,
         wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night.
-        (Developers should ensure that a sensible default is defined, as
-        additional values, such as hail, thunderstorm, or tornado, may be
-        defined in the future.)
+        The Open-Meteo WMO codes are translated to these values in openmeteo.py.
 
         Based on that, this method will map the Dark Sky icon name to the name
-        of an icon in this project.
+        of an icon in this project. If the resolved file does not exist, falls
+        back to unknown.png to prevent crashes.
         """
-        if icon == 'clear-day':
-            icon_path = 'icons/{}/clear.png'.format(size)
-        elif icon == 'clear-night':
-            icon_path = 'icons/{}/nt_clear.png'.format(size)
-        elif icon == 'rain':
-            icon_path = 'icons/{}/rain.png'.format(size)
-        elif icon == 'snow':
-            icon_path = 'icons/{}/snow.png'.format(size)
-        elif icon == 'sleet':
-            icon_path = 'icons/{}/sleet.png'.format(size)
-        elif icon == 'wind':
-            icon_path = 'icons/alt_icons/{}/wind.png'.format(size)
-        elif icon == 'fog':
-            icon_path = 'icons/{}/fog.png'.format(size)
-        elif icon == 'cloudy':
-            icon_path = 'icons/{}/cloudy.png'.format(size)
-        elif icon == 'partly-cloudy-day':
-            icon_path = 'icons/{}/partlycloudy.png'.format(size)
-        elif icon == 'partly-cloudy-night':
-            icon_path = 'icons/{}/nt_partlycloudy.png'.format(size)
-        else:
-            icon_path = 'icons/{}/unknown.png'.format(size)
+        icon_map = {
+            'clear': 'icons/{}/clear.png',
+            'mostlysunny': 'icons/{}/mostlysunny.png',
+            'partlycloudy': 'icons/{}/partlycloudy.png',
+            'cloudy': 'icons/{}/cloudy.png',
+            'fog': 'icons/{}/fog.png',
+            'hazy': 'icons/{}/hazy.png',
+            'rain': 'icons/{}/rain.png',
+            'chancerain': 'icons/{}/chancerain.png',
+            'chancesleet': 'icons/{}/chancesleet.png',
+            'snow': 'icons/{}/snow.png',
+            'sleet': 'icons/{}/sleet.png',
+            'wind': 'icons/alt_icons/{}/wind.png',
+            'chancesnow': 'icons/{}/chancesnow.png',
+            'tstorms': 'icons/{}/tstorms.png',
+            'tstorm': 'icons/{}/tstorm.png',
+            'chanceflurries': 'icons/{}/chanceflurries.png',
+            'flurries': 'icons/{}/flurries.png',
+            'chancetstorms': 'icons/{}/chancetstorms.png',
+        }
 
-        return path.join(path.dirname(__file__), icon_path)
+        base_dir = path.dirname(__file__)
+        icon_template = icon_map.get(icon, 'icons/{}/unknown.png')
+        icon_path = path.join(base_dir, icon_template.format(size))
+
+        if not path.isfile(icon_path):
+            logging.warning(
+                "Icon file not found: %s (icon=%s). Falling back to unknown.png.",
+                icon_path, icon)
+            icon_path = path.join(base_dir, 'icons/{}/unknown.png'.format(size))
+
+        return icon_path

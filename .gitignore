@@ -3,6 +3,7 @@ config.py
 config.json
 *.swp
 .log
+*.bak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

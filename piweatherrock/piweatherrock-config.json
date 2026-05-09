@@ -1,0 +1,39 @@
+{
+    "12hour_disp": false,
+    "ds_api_key": "openmeteo-request-piweatherrock",
+    "fullscreen": true,
+    "icon_offset": -23.5,
+    "info_delay": 900,
+    "info_pause": 300,
+    "lang": "es",
+    "lat": 40.416775,
+    "log_level": "INFO",
+    "lon": -3.70379,
+    "plugins": {
+        "daily": {
+            "enabled": true,
+            "pause": 60
+        },
+        "hourly": {
+            "enabled": true,
+            "pause": 60
+        },
+        "info": {
+            "enabled": false,
+            "pause": 300
+        },
+        "media": {
+            "enabled": false,
+            "extensions": "jpg,jpeg,png,gif,bmp,mp4,mov,m4v,avi,webm",
+            "fit": "cover",
+            "path": "/home/pi/images",
+            "pause": 60,
+            "shuffle": true
+        }
+    },
+    "timezone": "Europe/Madrid",
+    "ui_lang": "es",
+    "units": "si",
+    "update_freq": 300,
+    "version": "3.0.0"
+}

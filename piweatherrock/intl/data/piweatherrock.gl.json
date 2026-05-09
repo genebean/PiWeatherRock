@@ -1,0 +1,19 @@
+{
+    "gl": {
+        "feels_like": "Sensación térmica:",
+        "wind": "Vento:",
+        "humidity": "Humidade:",
+        "umbrella": "Colle o paraugas!",
+        "no_umbrella": "Hoxe non fai falta paraugas.",
+        "today": "hoxe",
+        "powered_by": "Weather rock grazas a Open-Meteo",
+        "tonight": "esta noite",
+        "tomorrow": "mañá",
+        "check_at": "Parte meteorolóxico das",
+        "sunrise": "Amencer: %{sunrise}",
+        "sunset": "Solpor: %{sunset}",
+        "sunrise_at": "Amence en %{hour} h %{minute} min",
+        "sunset_at": "Solpor en %{hour} h %{minute} min",
+        "daylight": "Luz do día: %{hour} h %{minute} min"
+    }
+}
